@@ -17,6 +17,7 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatIconModule } from '@angular/material/icon';
 import { KevinMaterialModule } from './material.module';
+import { SchoolModule } from './school/school.module';
 
 @NgModule({
   declarations: [
@@ -34,6 +35,7 @@ import { KevinMaterialModule } from './material.module';
     BrowserAnimationsModule,
     KevinMaterialModule,
     CustomersModule,
+    SchoolModule,
     ReactiveFormsModule,
   ],
   exports: [

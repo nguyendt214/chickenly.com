@@ -1,7 +1,5 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { CustomersComponent } from './customers/customers.component';
-import { CustomersRoutingModule } from './customers-routing.module';
 import { AddComponent } from './add/add.component';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatButtonModule } from '@angular/material/button';
@@ -9,19 +7,21 @@ import { MatInputModule } from '@angular/material/input';
 import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { KevinMaterialModule } from '../material.module';
 import { EditComponent } from './edit/edit.component';
+import { SchoolComponent } from './school.component';
+import { SchoolRoutingModule } from './school-routing.module';
 
 
 
 @NgModule({
   declarations: [
-    CustomersComponent,
+    SchoolComponent,
     AddComponent,
     EditComponent
   ],
   imports: [
     CommonModule,
     FormsModule,
-    CustomersRoutingModule,
+    SchoolRoutingModule,
     KevinMaterialModule,
     MatButtonModule,
     MatDividerModule,
@@ -29,7 +29,7 @@ import { EditComponent } from './edit/edit.component';
     ReactiveFormsModule,
   ],
   exports: [
-    CustomersComponent,
+    SchoolComponent,
   ]
 })
-export class CustomersModule { }
+export class SchoolModule { }

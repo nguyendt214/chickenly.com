@@ -1,0 +1,41 @@
+<h3>QUẢN LÝ TRƯỜNG</h3>
+<section>
+  <div class="example-button-row">
+    <button mat-flat-button color="primary" (click)="addNew()">+</button>
+  </div>
+</section>
+<mat-divider></mat-divider>
+<div class="example-container mat-elevation-z8" *ngIf="schools?.length">
+  <div class="table-responsive">
+    <table class="table">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">KH</th>
+        <th scope="col">Phone</th>
+        <th scope="col">Address</th>
+        <th scope="col">Note</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let school of schools">
+        <td>{{ school?.name }}</td>
+        <td>{{ getCustomerByKey(school?.customerKey) }}</td>
+        <td>{{ school?.phone }}</td>
+        <td>{{ school?.address }}</td>
+        <td>{{ school?.note }}</td>
+        <td>
+          <section>
+            <div class="example-button-row">
+              <button mat-flat-button color="primary" (click)="edit(school)">SỬA</button>
+              <button mat-flat-button color="warn" (click)="delete(school)">XÓA</button>
+            </div>
+          </section>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+

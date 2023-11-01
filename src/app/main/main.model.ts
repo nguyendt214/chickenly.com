@@ -12,7 +12,7 @@ export class School {
   address?: string;
   phone?: string;
   note?: string;
-  customerId?: number | null;
+  customerKey?: number | null;
 }
 
 export class Product {
