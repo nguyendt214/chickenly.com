@@ -1,0 +1,28 @@
+<h3>SỬA KHÁCH HÀNG</h3>
+<form class="example-form">
+  <mat-form-field class="example-full-width">
+    <mat-label>Tên</mat-label>
+    <input matInput value="" name="name" [(ngModel)]="customer.name">
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+    <mat-label>Số ĐT</mat-label>
+    <input matInput value="" name="phone" [(ngModel)]="customer.phone">
+  </mat-form-field>
+  <p>
+    <mat-form-field class="example-full-width">
+      <mat-label>Địa chỉ</mat-label>
+      <textarea matInput placeholder="" name="address" [(ngModel)]="customer.address"></textarea>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field class="example-full-width">
+      <mat-label>Ghi chú</mat-label>
+      <textarea matInput placeholder="" name="note" [(ngModel)]="customer.note"></textarea>
+    </mat-form-field>
+  </p>
+  <section>
+    <div class="example-button-row">
+      <button mat-flat-button color="primary" (click)="edit()">CẬP NHẬT</button>
+    </div>
+  </section>
+</form>

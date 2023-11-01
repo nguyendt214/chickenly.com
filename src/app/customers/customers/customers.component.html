@@ -1,0 +1,38 @@
+<section>
+  <div class="example-button-row">
+    <button mat-flat-button color="primary" (click)="addNewCustomer()">+</button>
+  </div>
+</section>
+<mat-divider></mat-divider>
+<div class="example-container mat-elevation-z8" *ngIf="customers?.length">
+  <div class="table-responsive">
+    <table class="table">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Phone</th>
+        <th scope="col">Address</th>
+        <th scope="col">Note</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let customer of customers">
+        <td>{{ customer?.name }}</td>
+        <td>{{ customer?.phone }}</td>
+        <td>{{ customer?.address }}</td>
+        <td>{{ customer?.note }}</td>
+        <td>
+          <section>
+            <div class="example-button-row">
+              <button mat-flat-button color="primary" (click)="edit(customer)">SỬA</button>
+              <button mat-flat-button color="warn" (click)="delete(customer)">XÓA</button>
+            </div>
+          </section>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
