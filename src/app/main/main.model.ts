@@ -15,6 +15,12 @@ export class School {
   customerKey?: number | null;
 }
 
+export class Category {
+  key?: any;
+  name?: string;
+  note?: string;
+}
+
 export class Product {
   key?: any;
   name?: string;

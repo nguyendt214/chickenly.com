@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { Tutorial } from '../models/tutorial.model';
-import { Customer, Product, School } from './main.model';
+import { Category, Customer, Product, School } from './main.model';
 import { map } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 
@@ -12,23 +12,27 @@ export class MainService {
   private dbPath = '/tutorials';
   private dbCustomers = '/customers';
   private dbSchools = '/schools';
+  private dbCategories = '/category';
   private dbProducts = '/products';
 
   public mO = {
     customer: 'customer',
     school: 'school',
+    category: 'category',
     product: 'product'
   };
 
   tutorialsRef: AngularFireList<Tutorial>;
   customerRef:  AngularFireList<Customer>;
   schoolsRef:  AngularFireList<School>;
+  categoryRef:  AngularFireList<Product>;
   productRef:  AngularFireList<Product>;
 
   constructor(private db: AngularFireDatabase) {
     this.tutorialsRef = db.list(this.dbPath);
     this.customerRef = db.list(this.dbCustomers);
     this.schoolsRef = db.list(this.dbSchools);
+    this.categoryRef = db.list(this.dbCategories);
     this.productRef = db.list(this.dbProducts);
   }
 
@@ -61,6 +65,9 @@ export class MainService {
     if (type instanceof School) {
       return this.schoolsRef.push(type);
     }
+    if (type instanceof Category) {
+      return this.categoryRef.push(type);
+    }
     if (type instanceof Product) {
       return this.productRef.push(type);
     }
@@ -72,6 +79,9 @@ export class MainService {
     }
     if (type instanceof School || d === this.mO.school) {
       return this.schoolsRef.remove(type?.key);
+    }
+    if (type instanceof Category || d === this.mO.category) {
+      return this.categoryRef.remove(type?.key);
     }
     if (type instanceof Product || d === this.mO.product) {
       return this.productRef.remove(type?.key);
@@ -87,6 +97,8 @@ export class MainService {
         return this.customerRef;
       case this.mO.school:
         return this.schoolsRef;
+      case this.mO.category:
+        return this.categoryRef;
       case this.mO.product:
         return this.productRef;
       default:
@@ -111,6 +123,9 @@ export class MainService {
     if (type === this.mO.school) {
       return this.db.object(this.dbSchools +'/' + key).valueChanges();
     }
+    if (type === this.mO.category) {
+      return this.db.object(this.dbCategories +'/' + key).valueChanges();
+    }
     if (type === this.mO.product) {
       return this.db.object(this.dbProducts +'/' + key).valueChanges();
     }
@@ -123,6 +138,9 @@ export class MainService {
     }
     if (type === this.mO.school) {
       return this.schoolsRef.update(key, value);
+    }
+    if (type === this.mO.category) {
+      return this.categoryRef.update(key, value);
     }
     if (type === this.mO.product) {
       return this.productRef.update(key, value);

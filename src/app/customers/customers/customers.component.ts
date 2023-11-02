@@ -19,7 +19,7 @@ export class CustomersComponent {
     this.getList();
   }
   addNewCustomer() {
-    this.utilService.gotoPage('customers/add');
+    this.utilService.gotoPage('customer/add');
   }
   delete(customer: Customer) {
     this.mainService.kDelete(customer, this.mainService.mO.customer).then(
@@ -30,7 +30,7 @@ export class CustomersComponent {
     );
   }
   edit(customer: Customer){
-    this.utilService.gotoPage('customers/edit/' + customer.key);
+    this.utilService.gotoPage('customer/edit/' + customer.key);
   }
   getList() {
     this.customers = this.mainService.retrieveData(this.mainService.mO.customer).subscribe(

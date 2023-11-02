@@ -1,0 +1,35 @@
+<h3>QUẢN LÝ NHÓM SẢN PHẨM</h3>
+<section>
+  <div class="example-button-row">
+    <button mat-flat-button color="primary" (click)="addNew()">+</button>
+  </div>
+</section>
+<mat-divider></mat-divider>
+<div class="example-container mat-elevation-z8" *ngIf="categories?.length">
+  <div class="table-responsive">
+    <table class="table">
+      <thead class="table-dark">
+      <tr>
+        <th scope="col">Name</th>
+        <th scope="col">Note</th>
+        <th scope="col"></th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr *ngFor="let model of categories">
+        <td>{{ model?.name }}</td>
+        <td>{{ model?.note }}</td>
+        <td>
+          <section>
+            <div class="example-button-row">
+              <button mat-flat-button color="primary" (click)="edit(model)">SỬA</button>
+              <button mat-flat-button color="warn" (click)="delete(model)">XÓA</button>
+            </div>
+          </section>
+        </td>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+</div>
+
