@@ -12,7 +12,7 @@ export class AddComponent {
   public customer: Customer = new Customer();
   customers: Customer[] = [];
   dataSource: Customer[] = [];
-  school: School = new School();
+  model: School = new School();
 
   constructor(
     private mainService: MainService,
@@ -22,7 +22,7 @@ export class AddComponent {
   }
 
   public add() {
-    this.mainService.addNew(this.school).then(() => {
+    this.mainService.addNew(this.model).then(() => {
       this.utilService.gotoPage('school');
     });
   }
