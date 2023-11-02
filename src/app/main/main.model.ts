@@ -21,12 +21,20 @@ export class Category {
   note?: string;
 }
 
+export class ProductType {
+  key?: any;
+  name?: string;
+  note?: string;
+}
+
 export class Product {
   key?: any;
   name?: string;
   price?: string;
   priceStock?: string;
   qty?: number;
+  categoryKey?: string;
+  productTypeKey?: string;
   note?: string;
 }
 

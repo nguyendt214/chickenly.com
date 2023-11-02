@@ -1,0 +1,18 @@
+<h3>THÊM MỚI KIỂU CÁCH SẢN PHẨM</h3>
+<form class="example-form">
+  <mat-form-field class="example-full-width">
+    <mat-label>Tên</mat-label>
+    <input matInput value="" name="name" [(ngModel)]="model.name">
+  </mat-form-field>
+  <p>
+    <mat-form-field class="example-full-width">
+      <mat-label>Ghi chú</mat-label>
+      <textarea matInput placeholder="" name="note" [(ngModel)]="model.note"></textarea>
+    </mat-form-field>
+  </p>
+  <section>
+    <div class="example-button-row">
+      <button mat-flat-button color="primary" (click)="add()">THÊM</button>
+    </div>
+  </section>
+</form>

@@ -19,6 +19,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { KevinMaterialModule } from './material.module';
 import { SchoolModule } from './school/school.module';
 import { CategoryModule } from './category/category.module';
+import { ProductModule } from './product/product.module';
+import { ProductTypeModule } from './product-type/product-type.module';
 
 @NgModule({
   declarations: [
@@ -38,6 +40,8 @@ import { CategoryModule } from './category/category.module';
     CustomersModule,
     SchoolModule,
     CategoryModule,
+    ProductModule,
+    ProductTypeModule,
     ReactiveFormsModule,
   ],
   exports: [

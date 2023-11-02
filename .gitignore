@@ -43,4 +43,6 @@ Thumbs.db
 
 docs/
 
-.firebase/hosting.ZG9jcw.cache
+.firebase/hosting.*.cache
+
+firebase-debug.log

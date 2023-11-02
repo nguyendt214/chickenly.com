@@ -1,0 +1,50 @@
+<h3>THÊM MỚI SẢN PHẨM</h3>
+<form class="example-form">
+  <mat-form-field class="example-full-width">
+    <mat-label>Tên</mat-label>
+    <input matInput value="" name="name" [(ngModel)]="model.name">
+  </mat-form-field>
+  <mat-form-field class="example-full-width">
+    <mat-label>Giá</mat-label>
+    <input matInput value="" name="price" [(ngModel)]="model.price">
+  </mat-form-field>
+  <p>
+    <mat-form-field class="example-full-width">
+      <mat-label>Giá Nhập</mat-label>
+      <input matInput value="" name="price" [(ngModel)]="model.priceStock">
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field class="example-full-width">
+      <mat-label>Số Lượng</mat-label>
+      <input matInput value="" name="qty" [(ngModel)]="model.qty">
+    </mat-form-field>
+  </p>
+  <p *ngIf="categories?.length">
+    <mat-form-field>
+      <mat-label>NHÓM SẢN PHẨM</mat-label>
+      <select matNativeControl [(ngModel)]="model.categoryKey" name="customerKey">
+        <option value="{{ model.key }}" *ngFor="let model of categories">{{ model.name }}</option>
+      </select>
+    </mat-form-field>
+  </p>
+  <p *ngIf="productTypes?.length">
+    <mat-form-field>
+      <mat-label>QUY CÁCH SẢN PHẨM</mat-label>
+      <select matNativeControl [(ngModel)]="model.productTypeKey" name="customerKey">
+        <option value="{{ model.key }}" *ngFor="let model of productTypes">{{ model.name }}</option>
+      </select>
+    </mat-form-field>
+  </p>
+  <p>
+    <mat-form-field class="example-full-width">
+      <mat-label>Ghi chú</mat-label>
+      <textarea matInput placeholder="" name="note" [(ngModel)]="model.note"></textarea>
+    </mat-form-field>
+  </p>
+  <section>
+    <div class="example-button-row">
+      <button mat-flat-button color="primary" (click)="add()">THÊM</button>
+    </div>
+  </section>
+</form>
