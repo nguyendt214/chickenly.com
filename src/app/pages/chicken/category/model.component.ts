@@ -2,15 +2,16 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
-import { MainService } from '../../../main/main.service';
+import { map } from 'rxjs/operators';
+import { Category, CategoryService } from '../../../main/category.service';
 
 @Component({
-  selector: 'ngx-smart-table',
-  templateUrl: './smart-table.component.html',
-  styleUrls: ['./smart-table.component.scss'],
+  selector: 'ngx-smart-table-category',
+  templateUrl: './model.component.html',
+  styleUrls: ['./model.component.scss'],
 })
-export class SmartTableComponent implements OnInit {
-
+export class CategoryComponent implements OnInit {
+  all?: Category[] = [];
   settings = {
     add: {
       confirmCreate: true,
@@ -30,15 +31,7 @@ export class SmartTableComponent implements OnInit {
     },
     columns: {
       name: {
-        title: 'Name',
-        type: 'string',
-      },
-      phone: {
-        title: 'Số Điện Thoại',
-        type: 'string',
-      },
-      address: {
-        title: 'Địa chỉ',
+        title: 'Tên',
         type: 'string',
       },
       note: {
@@ -52,18 +45,42 @@ export class SmartTableComponent implements OnInit {
 
   constructor(
     private service: SmartTableData,
+    private modelService: CategoryService,
   ) {
+    this.modelService.getAll().snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()})
+        )
+      )
+    ).subscribe(all => {
+      this.all = all;
+      this.source.load(this.all);
+    });
   }
 
-  ngOnInit() { }
+  ngOnInit() {
+  }
 
-  onCreateConfirm(e: any) {}
+  onCreateConfirm(e: any) {
+    this.modelService.create(e?.newData)
+      .then(() => {
+      })
+      .catch(() => e.confirm.reject());
+  }
 
-  onEditConfirm(e: any) {}
+  onEditConfirm(e: any) {
+    this.modelService.update(e?.newData?.key, e?.newData)
+      .then(() => {
+      })
+      .catch(() => e.confirm.reject());
+  }
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      e.confirm.resolve();
+      this.modelService.delete(e?.data?.key)
+        .then(() => e.confirm.resolve())
+        .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();
     }

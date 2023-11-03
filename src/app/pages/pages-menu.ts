@@ -2,18 +2,37 @@ import { NbMenuItem } from '@nebular/theme';
 
 export const MENU_ITEMS: NbMenuItem[] = [
   {
-    title: 'CHICKEN LY',
+    title: 'CHICKEN-LY',
+    group: true,
+  },
+  {
+    title: 'KHÁCH HÀNG',
+    icon: 'person-done',
+    link: '/pages/chicken/customer',
+  },
+  {
+    title: 'TRƯỜNG',
+    icon: 'star',
+    link: '/pages/chicken/school',
+  },
+  {
+    title: 'SẢN PHẨM',
     icon: 'heart-outline',
-    children: [
-      {
-        title: 'Smart Table',
-        link: '/pages/chicken/smart-table',
-      },
-      {
-        title: 'Tree Grid',
-        link: '/pages/chicken/tree-grid',
-      },
-    ],
+    link: '/pages/chicken/product',
+  },
+  {
+    title: 'NHÓM SẢN PHẨM',
+    icon: 'heart-outline',
+    link: '/pages/chicken/category',
+  },
+  {
+    title: 'KIỂU CÁCH SP',
+    icon: 'heart-outline',
+    link: '/pages/chicken/product-type',
+  },
+  {
+    title: 'FEATURES',
+    group: true,
   },
   {
     title: 'E-commerce',
@@ -25,10 +44,6 @@ export const MENU_ITEMS: NbMenuItem[] = [
     title: 'IoT Dashboard',
     icon: 'home-outline',
     link: '/pages/iot-dashboard',
-  },
-  {
-    title: 'FEATURES',
-    group: true,
   },
   {
     title: 'Layout',
