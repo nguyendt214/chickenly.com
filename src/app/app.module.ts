@@ -20,6 +20,9 @@ import {
   NbToastrModule,
   NbWindowModule,
 } from '@nebular/theme';
+import { environment } from '../../../chickenly.com/src/environments/environment';
+import { AngularFireModule } from '@angular/fire/compat';
+import { AngularFireDatabaseModule } from '@angular/fire/compat/database';
 
 @NgModule({
   declarations: [AppComponent],
@@ -39,6 +42,8 @@ import {
     }),
     CoreModule.forRoot(),
     ThemeModule.forRoot(),
+    AngularFireModule.initializeApp(environment.firebase),
+    AngularFireDatabaseModule,
   ],
   bootstrap: [AppComponent],
 })

@@ -2,6 +2,20 @@ import { NbMenuItem } from '@nebular/theme';
 
 export const MENU_ITEMS: NbMenuItem[] = [
   {
+    title: 'CHICKEN LY',
+    icon: 'heart-outline',
+    children: [
+      {
+        title: 'Smart Table',
+        link: '/pages/chicken/smart-table',
+      },
+      {
+        title: 'Tree Grid',
+        link: '/pages/chicken/tree-grid',
+      },
+    ],
+  },
+  {
     title: 'E-commerce',
     icon: 'shopping-cart-outline',
     link: '/pages/dashboard',

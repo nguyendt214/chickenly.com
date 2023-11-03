@@ -4,10 +4,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/akveo/ngx-admin.git"
+    "url": "https://github.com/nguyendt214/chickenly.com.git"
   },
   "bugs": {
-    "url": "https://github.com/akveo/ngx-admin/issues"
+    "url": "https://github.com/nguyendt214/chickenly.com.git/issues"
   },
   "scripts": {
     "ng": "ng",
@@ -25,9 +25,9 @@
     "e2e": "ng e2e",
     "docs": "compodoc -p src/tsconfig.app.json -d docs",
     "docs:serve": "compodoc -p src/tsconfig.app.json -d docs -s",
-    "prepush": "npm run lint:ci",
     "release:changelog": "npm run conventional-changelog -- -p angular -i CHANGELOG.md -s",
-    "postinstall": "ngcc --properties es2015 es5 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\""
+    "postinstall": "ngcc --properties es2015 es5 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\"",
+    "deploy": "firebase deploy --only hosting"
   },
   "dependencies": {
     "@angular/animations": "^15.2.10",
@@ -35,6 +35,7 @@
     "@angular/common": "^15.2.10",
     "@angular/compiler": "^15.2.10",
     "@angular/core": "^15.2.10",
+    "@angular/fire": "^7.6.1",
     "@angular/forms": "^15.2.10",
     "@angular/google-maps": "^12.2.13",
     "@angular/platform-browser": "^15.2.10",
@@ -54,6 +55,7 @@
     "core-js": "2.5.1",
     "echarts": "^4.9.0",
     "eva-icons": "^1.1.3",
+    "firebase-tools": "^12.8.0",
     "intl": "1.2.5",
     "ionicons": "2.0.1",
     "leaflet": "1.2.0",
