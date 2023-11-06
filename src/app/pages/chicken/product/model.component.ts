@@ -40,7 +40,7 @@ export class ProductComponent implements OnInit {
         type: 'string',
         width: '25%',
       },
-      category: {
+      categoryKey: {
         title: 'NHÓM',
         valuePrepareFunction: (cell) => {
           const c: Category = this.categoryService.getCategoryByKey(this.categories, cell);
@@ -54,7 +54,7 @@ export class ProductComponent implements OnInit {
         },
         sort: true,
       },
-      productType: {
+      productTypeKey: {
         title: 'NHÓM',
         valuePrepareFunction: (cell) => {
           const c: ProductType = this.productTypeService.getProductTypeByKey(this.productTypes, cell);
@@ -67,17 +67,17 @@ export class ProductComponent implements OnInit {
           },
         },
       },
-      phone: {
+      price: {
         title: 'Giá bán',
-        type: 'string',
+        type: 'number',
       },
-      address: {
+      priceStock: {
         title: 'Giá nhập',
-        type: 'string',
+        type: 'number',
       },
       qty: {
         title: 'Số lượng',
-        type: 'string',
+        type: 'number',
       },
       note: {
         title: 'Ghi Chú',
@@ -85,8 +85,8 @@ export class ProductComponent implements OnInit {
       },
     },
     pager: {
-      perPage: 30
-    }
+      perPage: 30,
+    },
   };
 
   source: LocalDataSource = new LocalDataSource();
@@ -149,7 +149,7 @@ export class ProductComponent implements OnInit {
     ).subscribe(all => {
       this.categories = all;
       this.categories.forEach((c: Category) => {
-        this.settings.columns.category.editor.config.list.push({
+        this.settings.columns.categoryKey.editor.config.list.push({
           value: c.key,
           title: c.name,
         });
@@ -168,7 +168,7 @@ export class ProductComponent implements OnInit {
     ).subscribe(all => {
       this.productTypes = all;
       this.productTypes.forEach((c: ProductType) => {
-        this.settings.columns.productType.editor.config.list.push({
+        this.settings.columns.productTypeKey.editor.config.list.push({
           value: c.key,
           title: c.name,
         });

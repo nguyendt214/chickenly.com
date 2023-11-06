@@ -1,8 +1,6 @@
 import { NgModule } from '@angular/core';
 import { Routes, RouterModule } from '@angular/router';
 
-import { SmartTableComponent } from './smart-table/smart-table.component';
-import { TreeGridComponent } from './tree-grid/tree-grid.component';
 import { ChickenComponent } from './chicken.component';
 import { CustomerComponent } from './customer/model.component';
 import { CategoryComponent } from './category/model.component';
@@ -10,18 +8,17 @@ import { ProductTypeComponent } from './product-type/model.component';
 import { SchoolComponent } from './school/model.component';
 import { ProductComponent } from './product/model.component';
 import { NotFoundComponent } from '../miscellaneous/not-found/not-found.component';
+import { EmployeeComponent } from './employee/model.component';
+import { OrderComponent } from './order/order.component';
+import { ProductListComponent } from './product/list/list.component';
 
 const routes: Routes = [{
   path: '',
   component: ChickenComponent,
   children: [
     {
-      path: 'smart-table',
-      component: SmartTableComponent,
-    },
-    {
-      path: 'tree-grid',
-      component: TreeGridComponent,
+      path: 'order',
+      component: OrderComponent,
     },
     {
       path: 'customer',
@@ -44,6 +41,10 @@ const routes: Routes = [{
       component: ProductComponent,
     },
     {
+      path: 'employee',
+      component: EmployeeComponent,
+    },
+    {
       path: '',
       redirectTo: 'customer',
       pathMatch: 'full',
@@ -63,11 +64,12 @@ export class ChickenRoutingModule { }
 
 export const routedComponents = [
   ChickenComponent,
-  SmartTableComponent,
-  TreeGridComponent,
   CustomerComponent,
   SchoolComponent,
   CategoryComponent,
   ProductTypeComponent,
   ProductComponent,
+  EmployeeComponent,
+  OrderComponent,
+  ProductListComponent,
 ];

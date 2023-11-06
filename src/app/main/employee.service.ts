@@ -1,10 +1,12 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
+import { map } from 'rxjs/operators';
 
-export class Category {
+export class Employee {
   key?: any;
   name?: string;
-  order?: number;
+  address?: string;
+  phone?: string;
   note?: string;
   disable?: boolean;
 }
@@ -12,21 +14,21 @@ export class Category {
 @Injectable({
   providedIn: 'root'
 })
-export class CategoryService {
-  private dbPath = '/Category';
+export class EmployeeService {
+  private dbPath = '/Employee';
 
-  modelRef: AngularFireList<Category>;
+  modelRef: AngularFireList<Employee>;
 
   constructor(private db: AngularFireDatabase) {
     this.modelRef = db.list(this.dbPath);
   }
 
-  getAll(): AngularFireList<Category> {
+  getAll(): AngularFireList<Employee> {
     return this.modelRef;
   }
 
-  create(o: Category): any {
-    return this.modelRef.push(o);
+  create(tutorial: Employee): any {
+    return this.modelRef.push(tutorial);
   }
 
   update(key: string, value: any): Promise<void> {
@@ -41,11 +43,11 @@ export class CategoryService {
     return this.modelRef.remove();
   }
 
-  getCategoryByKey(list: Category[], key: string) {
-    const item = list.filter((c: Category) => c.key === key);
-    if (item?.length) {
-      const o: Category = item.shift();
-      return o;
+  getEmployeeByKey(o: Employee[], key: string) {
+    const e = o.filter((c: Employee) => c.key === key);
+    if (o?.length) {
+      const item: Employee = e.shift();
+      return item;
     }
   }
 }

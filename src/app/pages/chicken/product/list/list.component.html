@@ -1,0 +1,48 @@
+<nb-card *ngIf="order?.item?.length">
+  <nb-card-header>
+    ĐƠN HÀNG HIỆN TẠI
+  </nb-card-header>
+
+  <nb-card-body>
+    <ng2-smart-table [settings]="settings" [source]="source"
+                     (editConfirm)="onEditConfirm($event)"
+                     (deleteConfirm)="onDeleteConfirm($event)">
+    </ng2-smart-table>
+  </nb-card-body>
+</nb-card>
+
+<!--<nb-card>-->
+<!--  <div class="table-responsive">-->
+<!--    <div class="table-container table  table-bordered order-products">-->
+<!--      <table>-->
+<!--        <thead>-->
+<!--        <tr>-->
+<!--          <th>STT</th>-->
+<!--          <th colspan="2">Sản phẩm</th>-->
+<!--          <th>Đơn vị tính</th>-->
+<!--          <th>Số Lượng Giao</th>-->
+<!--          <th>Giá</th>-->
+<!--          <th>Ghi Chú</th>-->
+<!--        </tr>-->
+<!--        </thead>-->
+<!--        <tbody>-->
+<!--        <tr *ngFor="let item of order?.item; index as stt">-->
+<!--          <td>-->
+<!--            {{ stt + 1 }}-->
+<!--          </td>-->
+<!--          <td rowspan="{{ item.qty }}">-->
+<!--            {{ item?.product?.category?.name }}-->
+<!--          </td>-->
+<!--          <td>-->
+<!--            {{ item?.product?.name }}-->
+<!--          </td>-->
+<!--          <td>{{ item?.product?.productType?.name }}</td>-->
+<!--          <td>{{ item.qty }}</td>-->
+<!--          <td>{{ item.price  }}</td>-->
+<!--          <td>{{ item.note  }}</td>-->
+<!--        </tr>-->
+<!--        </tbody>-->
+<!--      </table>-->
+<!--    </div>-->
+<!--  </div>-->
+<!--</nb-card>-->

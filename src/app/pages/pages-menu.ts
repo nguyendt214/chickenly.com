@@ -6,6 +6,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
     group: true,
   },
   {
+    title: 'ORDER',
+    icon: 'heart',
+    link: '/pages/chicken/order',
+  },
+  {
     title: 'KHÁCH HÀNG',
     icon: 'person-done',
     link: '/pages/chicken/customer',
@@ -29,6 +34,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
     title: 'KIỂU CÁCH SP',
     icon: 'heart-outline',
     link: '/pages/chicken/product-type',
+  },
+  {
+    title: 'NHÂN VIÊN',
+    icon: 'person',
+    link: '/pages/chicken/employee',
   },
   {
     title: 'FEATURES',

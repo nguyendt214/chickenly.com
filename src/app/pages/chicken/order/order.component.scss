@@ -1,0 +1,101 @@
+:host ::ng-deep nb-stepper .step-content {
+  text-align: center;
+
+  button {
+    cursor: pointer;
+    margin: 0.5rem;
+  }
+
+
+  .example-form-fields {
+    display: flex;
+    align-items: flex-start;
+  }
+  .list-product {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: space-between;
+    align-items: center;
+  }
+  mat-card {
+    width: 150px;
+    height: 150px;
+    border-radius: 50%;
+    justify-content: center;
+    text-align: center;
+    margin-bottom: 10px;
+    cursor: pointer;
+    outline: 1px solid lightgrey;
+    &:hover {
+      outline: 1px solid greenyellow;
+    }
+    .mat-mdc-card-header {
+      justify-content: center;
+      padding-top: 0;
+      user-select: none;
+    }
+    .qty-in-cart {
+      position: absolute;
+      top: 0;
+      right: 0;
+      width: 30px;
+      height: 30px;
+      background: black;
+      color: #FFF;
+      border-radius: 50px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      flex-wrap: nowrap;
+      font-weight: bold;
+      user-select: none;
+    }
+  }
+
+  .example-accordion {
+    display: block;
+  }
+
+  .example-accordion-item {
+    display: block;
+    border: solid 1px #ccc;
+  }
+
+  .example-accordion-item + .example-accordion-item {
+    border-top: none;
+  }
+
+  .example-accordion-item-header {
+    display: flex;
+    align-content: center;
+    justify-content: space-between;
+  }
+
+  .example-accordion-item-description {
+    font-size: 0.85em;
+    color: #999;
+  }
+
+  .example-accordion-item-header,
+  .example-accordion-item-body {
+    padding: 16px;
+  }
+
+  .example-accordion-item-header:hover {
+    cursor: pointer;
+    background-color: #eee;
+  }
+
+  .example-accordion-item:first-child {
+    border-top-left-radius: 4px;
+    border-top-right-radius: 4px;
+  }
+
+  .example-accordion-item:last-child {
+    border-bottom-left-radius: 4px;
+    border-bottom-right-radius: 4px;
+  }
+}

@@ -1,20 +1,24 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
+import { Category } from './category.service';
+import { ProductType } from './product-type.service';
 
 export class Product {
   key?: any;
   name?: string;
-  price?: string;
-  priceStock?: string;
+  price?: number;
+  priceStock?: number;
   qty?: number;
+  category?: Category | null;
   categoryKey?: string;
+  productType?: ProductType | null;
   productTypeKey?: string;
   note?: string;
   disable?: boolean;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductService {
   private dbPath = '/Products';
@@ -43,5 +47,18 @@ export class ProductService {
 
   deleteAll(): Promise<void> {
     return this.modelRef.remove();
+  }
+
+  /**
+   * Group product by Category
+   * @param products
+   */
+  groupProductByCategory(products: Product[]) {
+    const groupBy = (x, f) => x.reduce((a, b, i) => ((a[f(b, i, x)] ||= []).push(b), a), {});
+    // Sort by category `order`
+    products = groupBy(products, p => p.category.name);
+    console.log(products);
+    // products = Object.keys(products).map(key => products[key]);
+    return products;
   }
 }

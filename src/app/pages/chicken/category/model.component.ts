@@ -34,6 +34,9 @@ export class CategoryComponent implements OnInit {
         title: 'Tên',
         type: 'string',
       },
+      order: {
+        title: 'Hiển thị theo thứ tự',
+      },
       note: {
         title: 'Ghi Chú',
         type: 'string',
@@ -50,9 +53,9 @@ export class CategoryComponent implements OnInit {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()})
-        )
-      )
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
