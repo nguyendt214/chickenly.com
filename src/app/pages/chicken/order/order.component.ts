@@ -8,6 +8,10 @@ import { Product, ProductService } from '../../../main/product.service';
 import { map } from 'rxjs/operators';
 import { Category, CategoryService } from '../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../main/product-type.service';
+import { MatDialog } from '@angular/material/dialog';
+import { NbDialogService } from '@nebular/theme';
+import { ShowcaseDialogComponent } from '../../modal-overlays/dialog/showcase-dialog/showcase-dialog.component';
+import { CartDialog } from './cart-dialog/cart-dialog.component';
 
 @Component({
   selector: 'ngx-order',
@@ -36,6 +40,7 @@ export class OrderComponent implements OnInit {
     private categoryService: CategoryService,
     private productTypeService: ProductTypeService,
     private productService: ProductService,
+    private dialog: MatDialog,
   ) {
     this.getAllProductTypes();
     this.getAllCategories();
@@ -118,7 +123,6 @@ export class OrderComponent implements OnInit {
         p.productType = this.productTypes.find((pt: ProductType) => pt.key === p.productTypeKey);
       });
       this.products = this.productService.groupProductByCategory(this.products);
-      console.log(this.products);
     });
   }
 
@@ -185,5 +189,17 @@ export class OrderComponent implements OnInit {
 
   trackByFn(index, item) {
     return item.key;
+  }
+
+  open() {
+    const dialogRef = this.dialog.open(CartDialog, {
+      width: '100%',
+      data: { order: this.order, products: this.products },
+    });
+
+    dialogRef.afterClosed().subscribe(result => {
+      console.log('The dialog was closed');
+      console.log(result);
+    });
   }
 }

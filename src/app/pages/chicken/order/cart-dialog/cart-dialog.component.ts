@@ -1,31 +1,36 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges } from '@angular/core';
-import { LocalDataSource } from 'ng2-smart-table';
-
-import { SmartTableData } from '../../../../@core/data/smart-table';
-import { map } from 'rxjs/operators';
-import { CustomerService } from '../../../../main/customer.service';
+import { Component, Inject, OnInit, SimpleChanges } from '@angular/core';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
+import { Cart, Order, OrderService } from '../../../../main/order.service';
+import { Product, ProductService } from '../../../../main/product.service';
 import { Category, CategoryService } from '../../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../../main/product-type.service';
-import { Product, ProductService } from '../../../../main/product.service';
-import { Cart, Order, OrderService } from '../../../../main/order.service';
+import { LocalDataSource } from 'ng2-smart-table';
+import { SmartTableData } from '../../../../@core/data/smart-table';
+import { CustomerService } from '../../../../main/customer.service';
 import { CurrencyPipe } from '@angular/common';
+import { map } from 'rxjs/operators';
+
+export interface DialogData {
+  order: Order;
+  products: Product[];
+}
 
 @Component({
-  selector: 'app-product-list',
-  templateUrl: './list.component.html',
-  styleUrls: ['./list.component.scss'],
+  selector: 'dialog-overview-example-dialog',
+  templateUrl: './dialog.html',
 })
-export class ProductListComponent implements OnInit, OnChanges {
-  @Input() products: Product[] = [];
-  @Input() order: Order;
-
+export class CartDialog implements OnInit {
   categories?: Category[] = [];
+  order: Order;
+  products: Product[];
   productTypes?: ProductType[] = [];
   all?: Product[] = [];
 
   settings = {
     actions: {
       add: false,
+      edit: false,
+      delete: false,
       columnTitle: 'Tác vụ',
     },
     edit: {
@@ -81,12 +86,15 @@ export class ProductListComponent implements OnInit, OnChanges {
         title: 'Ghi Chú',
         type: 'string',
       },
+      hideSubHeader: true,
     },
-    hideSubHeader: false,
   };
   source: LocalDataSource = new LocalDataSource();
 
   constructor(
+    public dialogRef: MatDialogRef<CartDialog>,
+    @Inject(MAT_DIALOG_DATA) public data: DialogData,
+
     private service: SmartTableData,
     private modelService: ProductService,
     private customerService: CustomerService,
@@ -95,35 +103,20 @@ export class ProductListComponent implements OnInit, OnChanges {
     private productService: ProductService,
     private orderService: OrderService,
     private currencyPipe: CurrencyPipe,
-  ) {
+
+    ) {}
+
+  onNoClick(): void {
+    this.dialogRef.close();
   }
+
 
   ngOnInit() {
+    this.order = this.data.order;
+    this.products = this.data.products;
     this.getAllCategories();
     this.getAllProductType();
-  }
-
-  ngOnChanges(changes: SimpleChanges) {
     this.initProducts();
-  }
-
-  onEditConfirm(e: any) {
-    this.order.item.forEach((item: Cart) => {
-      if (item.product.key === e.newData.product.key) {
-        item.qty = +e.newData.qty;
-        item.price = e.newData.price;
-        e.confirm.resolve();
-      }
-    });
-  }
-
-  onDeleteConfirm(e): void {
-    if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.order.item.filter((item: Cart) => item.product.key !== e.data.product.key);
-      e.confirm.resolve();
-    } else {
-      e.confirm.reject();
-    }
   }
 
   getAllCategories() {

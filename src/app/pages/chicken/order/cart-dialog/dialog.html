@@ -1,0 +1,9 @@
+<nb-card *ngIf="order?.item?.length">
+  <nb-card-header>
+    ĐƠN HÀNG HIỆN TẠI
+  </nb-card-header>
+
+  <nb-card-body>
+    <ng2-smart-table [settings]="settings" [source]="source"></ng2-smart-table>
+  </nb-card-body>
+</nb-card>

@@ -11,6 +11,7 @@ import { NotFoundComponent } from '../miscellaneous/not-found/not-found.componen
 import { EmployeeComponent } from './employee/model.component';
 import { OrderComponent } from './order/order.component';
 import { ProductListComponent } from './product/list/list.component';
+import { CartDialog } from './order/cart-dialog/cart-dialog.component';
 
 const routes: Routes = [{
   path: '',
@@ -72,4 +73,5 @@ export const routedComponents = [
   EmployeeComponent,
   OrderComponent,
   ProductListComponent,
+  CartDialog,
 ];

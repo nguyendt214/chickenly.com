@@ -27,6 +27,7 @@ import { MatTableModule } from '@angular/material/table';
 import { CurrencyPipe } from '@angular/common';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
+import { MatDialogModule } from '@angular/material/dialog';
 
 @NgModule({
   imports: [
@@ -60,6 +61,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
     MatTableModule,
     CdkAccordionModule,
     MatExpansionModule,
+    MatDialogModule,
     ChickenRoutingModule,
     Ng2SmartTableModule,
   ],
