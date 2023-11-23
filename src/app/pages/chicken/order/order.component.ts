@@ -182,8 +182,8 @@ export class OrderComponent implements OnInit {
   }
 
   getAllSchools() {
-    if (this.employeeService.cacheEmployees) {
-      this.schools = this.allSchools = this.employeeService.cacheEmployees;
+    if (this.schoolService.cacheSchools) {
+      this.schools = this.allSchools = this.schoolService.cacheSchools;
     } else {
       this.schoolService.getAll().snapshotChanges().pipe(
         map(changes =>
@@ -192,7 +192,7 @@ export class OrderComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
-        this.schools = this.allSchools = this.employeeService.cacheEmployees = all;
+        this.schools = this.allSchools = this.schoolService.cacheSchools = all;
       });
     }
   }

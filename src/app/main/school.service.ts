@@ -17,7 +17,7 @@ export class School {
 })
 export class SchoolService {
   private dbPath = '/School';
-
+  cacheSchools: any;
   modelRef: AngularFireList<School>;
 
   constructor(private db: AngularFireDatabase) {

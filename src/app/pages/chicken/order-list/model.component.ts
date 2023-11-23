@@ -49,6 +49,8 @@ export class OrderListComponent implements OnInit {
         valuePrepareFunction: (c, row) => {
           return this.datePipe.transform(new Date(c), 'dd/MM/YYYY');
         },
+        sort: true,
+        sortDirection: 'asc',
       },
       customer: {
         title: 'KHÁCH HÀNG',
