@@ -1,0 +1,50 @@
+<nb-card class="col-md-12 col-lg-12 col-xxxl-12 tao-don-hang">
+  <nb-card-body class="top-padding">
+    <h4 class="text-center">ĐỔI TRẢ ĐƠN HÀNG</h4>
+    <div class="col-md-12 col-lg-12 col-xxxl-12">
+      <div class="kselect">
+        <h5>Ngày ra đơn: {{ order?.date | date: 'dd/MM/yyyy'}}</h5>
+        <div class="example-form-fields">
+          <!--            KHÁCH HÀNG -->
+          <mat-form-field>
+            <mat-label>KHÁCH HÀNG</mat-label>
+            <mat-select [value]="order?.customer?.key" disabled="true">
+              <mat-option *ngFor="let o of customers" [value]="o.key">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!--            TRƯỜNG-->
+          <mat-form-field class="padding-left-10">
+            <mat-label>Trường</mat-label>
+            <mat-select [value]="order?.school?.key" disabled="true">
+              <mat-option *ngFor="let o of schools" [value]="o.key">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!--            NHAN VIEN-->
+          <mat-form-field class="padding-left-10">
+            <mat-label>NHÂN VIÊN GIAO</mat-label>
+            <mat-select [value]="order?.employee?.key" disabled="true">
+              <mat-option *ngFor="let o of employees" [value]="o.key">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+
+        <!--Sản phẩm-->
+        <div class="clearfix"></div>
+        <h5>SẢN PHẨM</h5>
+        <!--  Shopping cart -->
+        <app-product-list [products]="products" [order]="order" [editOrder]="true" class="shopping-cart"></app-product-list>
+      </div>
+    </div>
+    <!--  END CONTENT-->
+    <div class="text-center">
+      <button mat-raised-button (click)="capNhatDonHang()" color="accent">CẬP NHẬT ĐƠN HÀNG</button>
+    </div>
+  </nb-card-body>
+</nb-card>
+

@@ -101,9 +101,9 @@ export class ProductComponent implements OnInit {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()})
-        )
-      )
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
@@ -140,41 +140,59 @@ export class ProductComponent implements OnInit {
   }
 
   getAllCategories() {
-    this.categoryService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()})
+    if (this.categoryService.cacheCategory) {
+      this.categories = this.categoryService.cacheCategory;
+      this.prepareCategory();
+    } else {
+      this.categoryService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
         ),
-      ),
-    ).subscribe(all => {
-      this.categories = all;
-      this.categories.forEach((c: Category) => {
-        this.settings.columns.categoryKey.editor.config.list.push({
-          value: c.key,
-          title: c.name,
-        });
+      ).subscribe(all => {
+        this.categories = this.categoryService.cacheCategory = all;
+        this.prepareCategory();
       });
-      this.settings = Object.assign({}, this.settings);
+    }
+  }
+
+  prepareCategory() {
+    this.categories.forEach((c: Category) => {
+      this.settings.columns.categoryKey.editor.config.list.push({
+        value: c.key,
+        title: c.name,
+      });
     });
+    this.settings = Object.assign({}, this.settings);
   }
 
   getAllProductType() {
-    this.productTypeService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()})
+    if (this.productTypeService.cacheProductTypes) {
+      this.productTypes = this.productTypeService.cacheProductTypes;
+      this.prepareProductType();
+    } else {
+      this.productTypeService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
         ),
-      ),
-    ).subscribe(all => {
-      this.productTypes = all;
-      this.productTypes.forEach((c: ProductType) => {
-        this.settings.columns.productTypeKey.editor.config.list.push({
-          value: c.key,
-          title: c.name,
-        });
+      ).subscribe(all => {
+        this.productTypes = this.productTypeService.cacheProductTypes = all;
+        this.prepareProductType();
       });
-      this.settings = Object.assign({}, this.settings);
+    }
+  }
+
+  prepareProductType() {
+    this.productTypes.forEach((c: ProductType) => {
+      this.settings.columns.productTypeKey.editor.config.list.push({
+        value: c.key,
+        title: c.name,
+      });
     });
+    this.settings = Object.assign({}, this.settings);
   }
 
 }

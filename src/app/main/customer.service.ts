@@ -12,11 +12,11 @@ export class Customer {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class CustomerService {
   private dbPath = '/Customer';
-
+  cacheCustomers: any;
   modelRef: AngularFireList<Customer>;
 
   constructor(private db: AngularFireDatabase) {

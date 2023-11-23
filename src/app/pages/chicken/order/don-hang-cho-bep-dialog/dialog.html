@@ -1,0 +1,22 @@
+<div class="in-don-hang in-bep">
+  <h1 class="text-center">BẾP - HÀNG HÓA CHO NGÀY: {{dateStr}}</h1>
+  <div class="ktable">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th scope="col" class="text-center align-middle">STT</th>
+        <th scope="col" class="text-center align-middle">Sản Phẩm</th>
+        <th scope="col" class="text-center align-middle">Số lượng</th>
+      </tr>
+      </thead>
+      <tbody *ngFor="let item of cart; let idx = index;">
+      <tr class="k-no-border-top">
+        <th class="text-center">{{ idx + 1 }}</th>
+        <th class="text-left big-text">{{ item?.product?.name }}</th>
+        <th class="text-center big-text">{{ item?.qty }}</th>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+  <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN</button>
+</div>

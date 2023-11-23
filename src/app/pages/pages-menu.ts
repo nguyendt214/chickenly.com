@@ -6,9 +6,18 @@ export const MENU_ITEMS: NbMenuItem[] = [
     group: true,
   },
   {
-    title: 'ORDER',
+    title: 'QUẢN LÝ ORDER',
     icon: 'heart',
-    link: '/pages/chicken/order',
+    children: [
+      {
+        title: 'TẠO ORDER',
+        link: '/pages/chicken/order',
+      },
+      {
+        title: 'DANH SÁCH ORDER',
+        link: '/pages/chicken/order-list',
+      },
+    ],
   },
   {
     title: 'KHÁCH HÀNG',

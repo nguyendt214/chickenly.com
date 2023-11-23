@@ -28,6 +28,7 @@ import { CurrencyPipe } from '@angular/common';
 import { CdkAccordionModule } from '@angular/cdk/accordion';
 import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
+import { MatButtonModule } from '@angular/material/button';
 
 @NgModule({
   imports: [
@@ -59,6 +60,7 @@ import { MatDialogModule } from '@angular/material/dialog';
     MatBadgeModule,
     MatCardModule,
     MatTableModule,
+    MatButtonModule,
     CdkAccordionModule,
     MatExpansionModule,
     MatDialogModule,

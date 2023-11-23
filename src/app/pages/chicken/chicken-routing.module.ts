@@ -12,6 +12,9 @@ import { EmployeeComponent } from './employee/model.component';
 import { OrderComponent } from './order/order.component';
 import { ProductListComponent } from './product/list/list.component';
 import { CartDialog } from './order/cart-dialog/cart-dialog.component';
+import { OrderListComponent } from './order-list/model.component';
+import { BepDialog } from './order/don-hang-cho-bep-dialog/bep-dialog.component';
+import { EditOrderComponent } from './order/edit/order.component';
 
 const routes: Routes = [{
   path: '',
@@ -20,6 +23,14 @@ const routes: Routes = [{
     {
       path: 'order',
       component: OrderComponent,
+    },
+    {
+      path: 'order/:orderId',
+      component: EditOrderComponent,
+    },
+    {
+      path: 'order-list',
+      component: OrderListComponent,
     },
     {
       path: 'customer',
@@ -72,6 +83,9 @@ export const routedComponents = [
   ProductComponent,
   EmployeeComponent,
   OrderComponent,
+  OrderListComponent,
+  EditOrderComponent,
   ProductListComponent,
   CartDialog,
+  BepDialog,
 ];

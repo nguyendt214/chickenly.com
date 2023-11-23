@@ -15,6 +15,8 @@ export class Product {
   productTypeKey?: string;
   note?: string;
   disable?: boolean;
+  cartPrice?: number;
+  cartQty?: number;
 }
 
 @Injectable({
@@ -22,7 +24,7 @@ export class Product {
 })
 export class ProductService {
   private dbPath = '/Products';
-
+  cacheProducts: any;
   modelRef: AngularFireList<Product>;
 
   constructor(private db: AngularFireDatabase) {

@@ -18,6 +18,7 @@ import { CurrencyPipe } from '@angular/common';
 export class ProductListComponent implements OnInit, OnChanges {
   @Input() products: Product[] = [];
   @Input() order: Order;
+  @Input() editOrder = false;
 
   categories?: Category[] = [];
   productTypes?: ProductType[] = [];
@@ -27,6 +28,7 @@ export class ProductListComponent implements OnInit, OnChanges {
     actions: {
       add: false,
       columnTitle: 'Tác vụ',
+      delete: false,
     },
     edit: {
       confirmSave: true,
@@ -39,7 +41,7 @@ export class ProductListComponent implements OnInit, OnChanges {
       confirmDelete: true,
     },
     columns: {
-      'product.category': {
+      categoryName: {
         title: 'Nhóm Sản Phẩm',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
@@ -47,7 +49,7 @@ export class ProductListComponent implements OnInit, OnChanges {
         },
         editable: false,
       },
-      'product.name': {
+      productName: {
         title: 'Sản Phẩm',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
@@ -55,27 +57,39 @@ export class ProductListComponent implements OnInit, OnChanges {
         },
         editable: false,
       },
-      'product.productType': {
+      productType: {
         title: 'Qui cách',
-        type: 'string',
+        type: 'html',
         valuePrepareFunction: (cell, row) => {
-          return row.product.productType.name;
+          return '<span class="text-center d-block">' + row.product.productType.name + '</span>';
         },
         editable: false,
       },
       qty: {
         title: 'Số Lượng Giao',
-        type: 'string',
+        type: 'html',
         valuePrepareFunction: (cell, row) => {
-          return row.qty;
+          return '<span class="text-center d-block">' + row.qty + '</span>';
         },
+        editable: true,
+      },
+      qtyReturn: {
+        title: 'Số Lượng Trả',
+        type: 'html',
+        valuePrepareFunction: (cell, row) => {
+          if (row.qtyReturn) {
+            return '<span class="text-center d-block">' + row.qtyReturn + '</span>';
+          }
+        },
+        class: 'd-none',
       },
       price: {
         title: 'Giá',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
-          return this.currencyPipe.transform(row.price, '', '', '1.0-0');
+          return this.currencyPipe.transform(row.price, '', '', '1.0-0') + ' VNĐ';
         },
+        editable: true,
       },
       note: {
         title: 'Ghi Chú',
@@ -101,6 +115,15 @@ export class ProductListComponent implements OnInit, OnChanges {
   ngOnInit() {
     this.getAllCategories();
     this.getAllProductType();
+    this.initTable();
+  }
+
+  initTable() {
+    if (this.editOrder) {
+      this.settings.columns.qtyReturn.class = 'd-show';
+      this.settings.columns.qty.editable = false;
+      this.settings.columns.price.editable = false;
+    }
   }
 
   ngOnChanges(changes: SimpleChanges) {
@@ -127,27 +150,36 @@ export class ProductListComponent implements OnInit, OnChanges {
   }
 
   getAllCategories() {
-    this.categoryService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
+    if (this.categoryService.cacheCategory) {
+      this.categories = this.categoryService.cacheCategory;
+    } else {
+      this.categoryService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
         ),
-      ),
-    ).subscribe(all => {
-      this.categories = all;
-    });
+      ).subscribe(all => {
+        this.categories = all;
+        this.categoryService.cacheCategory = all;
+      });
+    }
   }
 
   getAllProductType() {
-    this.productTypeService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
+    if (this.productTypeService.cacheProductTypes) {
+      this.productTypes = this.productTypeService.cacheProductTypes;
+    } else {
+      this.productTypeService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
         ),
-      ),
-    ).subscribe(all => {
-      this.productTypes = all;
-    });
+      ).subscribe(all => {
+        this.productTypes = this.productTypeService.cacheProductTypes = all;
+      });
+    }
   }
 
   initProducts() {
@@ -156,5 +188,4 @@ export class ProductListComponent implements OnInit, OnChanges {
       this.source.load(this.order.item);
     }
   }
-
 }

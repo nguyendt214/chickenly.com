@@ -11,27 +11,31 @@ import { CurrencyPipe } from '@angular/common';
 import { map } from 'rxjs/operators';
 
 export interface DialogData {
-  order: Order;
-  products: Product[];
+  cart: Cart[];
+  dateStr: string;
 }
 
 @Component({
-  selector: 'dialog-overview-example-dialog',
+  selector: 'dialog-overview-example-dialog-bep',
   templateUrl: './dialog.html',
 })
-export class CartDialog implements OnInit {
-  categories?: Category[] = [];
-  order: Order;
-  products: Product[];
-  productTypes?: ProductType[] = [];
-  all?: Product[] = [];
-  orderDate: string;
-
+export class BepDialog implements OnInit {
+  cart: Cart[] = [];
+  dateStr: string;
   constructor(
-    public dialogRef: MatDialogRef<CartDialog>,
+    public dialogRef: MatDialogRef<BepDialog>,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
-  ) {
-  }
+
+    private service: SmartTableData,
+    private modelService: ProductService,
+    private customerService: CustomerService,
+    private categoryService: CategoryService,
+    private productTypeService: ProductTypeService,
+    private productService: ProductService,
+    private orderService: OrderService,
+    private currencyPipe: CurrencyPipe,
+
+    ) {}
 
   onNoClick(): void {
     this.dialogRef.close();
@@ -39,22 +43,12 @@ export class CartDialog implements OnInit {
 
 
   ngOnInit() {
-    this.order = this.data.order;
-    this.orderDate = (new Date(this.order?.date ?? '')).toLocaleDateString();
+    this.cart = this.data.cart;
+    this.dateStr = this.data.dateStr;
   }
 
   printOrder() {
     window.print();
-  }
-
-  getReturnByProductKey(productKey: string) {
-    let qtyReturn: any = '';
-    this.order.item.forEach((c: Cart) => {
-      if (c.product.key === productKey) {
-        qtyReturn = c.qtyReturn;
-      }
-    });
-    return qtyReturn;
   }
 
 }

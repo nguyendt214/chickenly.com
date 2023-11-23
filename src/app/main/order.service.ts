@@ -2,6 +2,10 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { Product } from './product.service';
 import { UtilService } from './util.service';
+import { Employee } from './employee.service';
+import { Customer } from './customer.service';
+import { School } from './school.service';
+import { Observable } from 'rxjs';
 
 export class Order {
   key?: any;
@@ -12,20 +16,24 @@ export class Order {
   closeDate?: string;
   status?: string;
   item?: Cart[];
-  employeeKey: any;
-  customerKey: any;
-  schoolKey: any;
+  employee: Employee;
+  customer: Customer;
+  school: School;
+  sItem: any;
 }
 
 export class Cart {
   qty?: number;
   price?: number;
   product?: Product;
+  categoryKey?: any;
+  qtyReturn?: number;
 
-  constructor(qty: number, price: number, p: Product) {
+  constructor(qty: number, price: number, p: Product, categoryKey: string) {
     this.qty = qty;
     this.price = price;
     this.product = p;
+    this.categoryKey = categoryKey;
   }
 }
 
@@ -34,8 +42,10 @@ export class Cart {
 })
 export class OrderService {
   private dbPath = '/Order';
-
+  public filterStartDate: any;
+  public filterEndDate: any;
   modelRef: AngularFireList<Order>;
+  cacheOrder: any;
 
   constructor(
     private db: AngularFireDatabase,
@@ -64,6 +74,10 @@ export class OrderService {
     return this.modelRef.remove();
   }
 
+  getOrderByKey(key: string): Observable<any> {
+    return this.db.object(this.dbPath + '/' + key).valueChanges();
+  }
+
   /**
    * Group item in cart by product->category
    * @param order
@@ -76,5 +90,30 @@ export class OrderService {
   sortCartByCategory(order: Order): Order {
     order.item.sort((a, b) => a.product.categoryKey.localeCompare(b.product.categoryKey));
     return order;
+  }
+
+  sortByCategory(cart: Cart[]): Cart[] {
+    cart.sort((a, b) => a.product.categoryKey.localeCompare(b.product.categoryKey));
+    return cart;
+  }
+
+  removePropertiesBeforeSave(order: Order): Order {
+    order.item.forEach((c: Cart) => {
+      delete c['categoryName'];
+      delete c['productName'];
+      delete c['productType'];
+      if (c.qtyReturn) {
+        c.qtyReturn = +c.qtyReturn;
+      }
+    });
+    return order;
+  }
+
+  getLast7Days() {
+    if (!this.filterStartDate) {
+      this.filterStartDate = new Date(new Date().setDate((new Date()).getDate() - 7));
+      this.filterEndDate = new Date();
+    }
+    return [this.filterStartDate, this.filterEndDate];
   }
 }

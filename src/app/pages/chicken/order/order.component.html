@@ -1,119 +1,100 @@
-<nb-card class="col-md-12 col-lg-12 col-xxxl-12">
-  <nb-card-body>
-    <nb-stepper orientation="horizontal">
-      <nb-step [label]="labelOne">
-        <ng-template #labelOne>ĐƠN GIAO HÀNG</ng-template>
-
-        <!--        CONTENT-->
-        <div class="col-md-12 col-lg-6 col-xxxl-6" *ngIf="!order?.date">
-          <nb-card>
-            <nb-card-header>NGÀY RA ĐƠN</nb-card-header>
-            <nb-card-body>
-              <mat-form-field>
-                <mat-label>Chọn ngày</mat-label>
-                <input matInput [matDatepicker]="picker" disabled (dateChange)="createDateChooice('change', $event)">
-                <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
-                <mat-datepicker #picker disabled="false"></mat-datepicker>
-              </mat-form-field>
-            </nb-card-body>
-          </nb-card>
+<nb-card class="col-md-12 col-lg-12 col-xxxl-12 tao-don-hang">
+  <nb-card-body class="top-padding">
+    <!--        CONTENT-->
+    <div class="col-md-12 col-lg-12 col-xxxl-12">
+      <nb-card>
+        <nb-card-header>NGÀY RA ĐƠN</nb-card-header>
+        <nb-card-body>
+          <mat-form-field>
+            <mat-label>Chọn ngày</mat-label>
+            <input matInput [matDatepicker]="picker" (dateChange)="createDateChooice('change', $event)"
+                   (click)="picker.open()" [ngModel]="today">
+            <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+            <mat-datepicker #picker disabled="false"></mat-datepicker>
+          </mat-form-field>
+        </nb-card-body>
+      </nb-card>
+    </div>
+    <div class="col-md-12 col-lg-12 col-xxxl-12" *ngIf="order.date">
+      <div class="kselect">
+        <h5>Ngày ra đơn: {{ order?.date | date: 'dd/MM/yyyy'}}</h5>
+        <div class="example-form-fields">
+          <!--            KHÁCH HÀNG -->
+          <mat-form-field>
+            <mat-label>KHÁCH HÀNG</mat-label>
+            <mat-select required>
+              <mat-option *ngFor="let o of customers" [value]="o.key" (click)="chonKH(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!--            TRƯỜNG-->
+          <mat-form-field class="padding-left-10">
+            <mat-label>Trường</mat-label>
+            <mat-select required>
+              <mat-option *ngFor="let o of schools" [value]="o.key" (click)="chonTruong(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!--            NHAN VIEN-->
+          <mat-form-field class="padding-left-10">
+            <mat-label>NHÂN VIÊN GIAO</mat-label>
+            <mat-select required>
+              <mat-option *ngFor="let o of employees" [value]="o.key" (click)="chonNV(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
         </div>
-        <div class="col-md-12 col-lg-12 col-xxxl-12" *ngIf="!order.date">
-          <div class="text-left">
-            <h5>Ngày ra đơn: {{ order?.date | date: 'dd/MM/yyyy'}}</h5>
-            <div class="example-form-fields">
-              <!--            KHÁCH HÀNG -->
-              <mat-form-field>
-                <mat-label>KHÁCH HÀNG</mat-label>
-                <mat-select required>
-                  <mat-option *ngFor="let o of customers" [value]="o.key">
-                    {{o.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-              <!--            TRƯỜNG-->
-              <mat-form-field class="padding-left-10">
-                <mat-label>Trường</mat-label>
-                <mat-select required>
-                  <mat-option *ngFor="let o of schools" [value]="o.key">
-                    {{o.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-              <!--            NHAN VIEN-->
-              <mat-form-field class="padding-left-10">
-                <mat-label>NHÂN VIÊN GIAO</mat-label>
-                <mat-select required>
-                  <mat-option *ngFor="let o of employees" [value]="o.key">
-                    {{o.name}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
+
+        <!--              Sản phẩm-->
+        <div class="clearfix"></div>
+        <h5>SẢN PHẨM</h5>
+        <!--            Hiển thị luôn-->
+        <!--            <div class="list-product" *ngIf="products?.length">-->
+        <!--              <mat-card *ngFor="let o of products; trackBy: trackByFn; index as i;" (click)="addToCart(o);">-->
+        <!--                <div class="qty-in-cart">{{ itemInCart(o) }}</div>-->
+        <!--                <mat-card-header>-->
+        <!--                  <mat-card-title>{{ o?.name }}</mat-card-title>-->
+        <!--                </mat-card-header>-->
+        <!--              </mat-card>-->
+        <!--            </div>-->
+
+        <mat-accordion>
+          <mat-expansion-panel *ngFor="let category of products | keyvalue; let index = index;"
+                               [expanded]="index === 0">
+            <mat-expansion-panel-header>
+              <mat-panel-title>
+                {{ category.key }}
+              </mat-panel-title>
+            </mat-expansion-panel-header>
+
+            <div class="list-product" *ngIf="category?.value?.length">
+              <mat-card *ngFor="let o of category?.value; trackBy: trackByFn; index as i;" (click)="addToCart(o);">
+                <div class="qty-in-cart" *ngIf="itemInCart(o)">{{ itemInCart(o) }}</div>
+                <mat-card-header>
+                  <mat-card-title>{{ o?.name }}</mat-card-title>
+                </mat-card-header>
+              </mat-card>
             </div>
 
-            <!--              Sản phẩm-->
-            <div class="clearfix"></div>
-            <h5>SẢN PHẨM</h5>
-            <!--            Hiển thị luôn-->
-            <!--            <div class="list-product" *ngIf="products?.length">-->
-            <!--              <mat-card *ngFor="let o of products; trackBy: trackByFn; index as i;" (click)="addToCart(o);">-->
-            <!--                <div class="qty-in-cart">{{ itemInCart(o) }}</div>-->
-            <!--                <mat-card-header>-->
-            <!--                  <mat-card-title>{{ o?.name }}</mat-card-title>-->
-            <!--                </mat-card-header>-->
-            <!--              </mat-card>-->
-            <!--            </div>-->
+          </mat-expansion-panel>
+        </mat-accordion>
 
-            <mat-accordion>
-              <mat-expansion-panel *ngFor="let category of products | keyvalue; let index = index;"
-                                   [expanded]="index === 0">
-                <mat-expansion-panel-header>
-                  <mat-panel-title>
-                    {{ category.key }}
-                  </mat-panel-title>
-                </mat-expansion-panel-header>
+        <!--  Shopping cart -->
+        <app-product-list [products]="products" [order]="order" class="shopping-cart"></app-product-list>
+        <!--  END Shopping cart -->
 
-                <div class="list-product" *ngIf="category?.value?.length">
-                  <mat-card *ngFor="let o of category?.value; trackBy: trackByFn; index as i;" (click)="addToCart(o);">
-                    <div class="qty-in-cart" *ngIf="itemInCart(o)">{{ itemInCart(o) }}</div>
-                    <mat-card-header>
-                      <mat-card-title>{{ o?.name }}</mat-card-title>
-                    </mat-card-header>
-                  </mat-card>
-                </div>
+<!--        <div class="col-md-12 col-lg-6 col-xxxl-3">-->
+<!--          <button nbButton (click)="open()">IN ĐƠN HÀNG</button>-->
+<!--        </div>-->
 
-              </mat-expansion-panel>
-            </mat-accordion>
-
-            <!--  Shopping cart -->
-            <app-product-list [products]="products" [order]="order" class="shopping-cart"></app-product-list>
-            <!--  END Shopping cart -->
-
-            <div class="col-md-12 col-lg-6 col-xxxl-3">
-              <button nbButton (click)="open()">IN ĐƠN HÀNG</button>
-            </div>
-
-          </div>
-        </div>
-        <!--  END CONTENT-->
-
-        <button nbButton disabled nbStepperNext>QUAY LẠI</button>
-        <button nbButton nbStepperNext disabled="true">BƯỚC TIẾP THEO</button>
-      </nb-step>
-      <!--      STEP 2-->
-      <nb-step [label]="labelTwo">
-        <ng-template #labelTwo>ĐƠN ĐỔI TRẢ</ng-template>
-        <h3>Step content #2</h3>
-        <button nbButton nbStepperPrevious>QUAY LẠI</button>
-        <button nbButton nbStepperNext>BƯỚC TIẾP THEO</button>
-      </nb-step>
-      <!--      STEP 3-->
-      <nb-step [label]="labelOne">
-        <ng-template #labelOne>CHỐT ĐƠN</ng-template>
-        <button nbButton nbStepperPrevious>QUAY LẠI</button>
-        <button nbButton nbStepperNext>BƯỚC TIẾP THEO</button>
-      </nb-step>
-    </nb-stepper>
+      </div>
+    </div>
+    <!--  END CONTENT-->
+    <button mat-raised-button disabled *ngIf="!enableTaoDonHang"  color="warn">TẠO ĐƠN HÀNG</button>
+    <button mat-raised-button  *ngIf="enableTaoDonHang" (click)="taoDonHang()"  color="accent">TẠO ĐƠN HÀNG</button>
   </nb-card-body>
 </nb-card>
 

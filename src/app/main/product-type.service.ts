@@ -9,11 +9,11 @@ export class ProductType {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class ProductTypeService {
   private dbPath = '/ProductType';
-
+  cacheProductTypes: any;
   modelRef: AngularFireList<ProductType>;
 
   constructor(private db: AngularFireDatabase) {

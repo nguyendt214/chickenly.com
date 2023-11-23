@@ -1,0 +1,33 @@
+<nb-card>
+  <nb-card-header>
+    DANH SÁCH ĐƠN HÀNG
+  </nb-card-header>
+
+  <nb-card-body class="list-order">
+    <div class="order-date-filter">
+      <mat-form-field>
+        <mat-label>LỌC THEO NGÀY</mat-label>
+        <mat-date-range-input [rangePicker]="picker" (click)="picker.open()">
+          <input matStartDate placeholder="Ngày Bắt Đầu" #dateRangeStart [ngModel]="startDate">
+          <input matEndDate placeholder="Ngày Cuối"
+                 #dateRangeEnd  [ngModel]="endDate"
+                 (dateChange)="filterByDate(dateRangeStart, dateRangeEnd)">
+        </mat-date-range-input>
+        <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-date-range-picker #picker></mat-date-range-picker>
+      </mat-form-field>
+    </div>
+    <ng2-smart-table [settings]="settings" [source]="source"
+                     (createConfirm)="onCreateConfirm($event)"
+                     (editConfirm)="onEditConfirm($event)"
+                     (deleteConfirm)="onDeleteConfirm($event)"
+                     (userRowSelect)="printOrder($event)"
+                     (custom)="onCustom($event)">
+    </ng2-smart-table>
+    <div class="indonchobep">
+      <div class="example-button-row">
+        <button mat-button color="accent" (click)="indonchobep()">IN ĐƠN CHO BẾP</button>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>

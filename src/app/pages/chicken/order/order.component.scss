@@ -1,4 +1,4 @@
-:host ::ng-deep nb-stepper .step-content {
+:host ::ng-deep .tao-don-hang {
   text-align: center;
 
   button {
@@ -10,13 +10,15 @@
   .example-form-fields {
     display: flex;
     align-items: flex-start;
+    justify-content: center;
+    flex-wrap: wrap;
   }
   .list-product {
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
     align-content: center;
-    justify-content: space-between;
+    justify-content: center;
     align-items: center;
   }
   mat-card {
@@ -25,9 +27,9 @@
     border-radius: 50%;
     justify-content: center;
     text-align: center;
-    margin-bottom: 10px;
     cursor: pointer;
     outline: 1px solid lightgrey;
+    margin: 5px;
     &:hover {
       outline: 1px solid greenyellow;
     }

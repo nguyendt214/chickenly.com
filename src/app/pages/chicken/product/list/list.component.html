@@ -1,8 +1,4 @@
 <nb-card *ngIf="order?.item?.length">
-  <nb-card-header>
-    ĐƠN HÀNG HIỆN TẠI
-  </nb-card-header>
-
   <nb-card-body>
     <ng2-smart-table [settings]="settings" [source]="source"
                      (editConfirm)="onEditConfirm($event)"

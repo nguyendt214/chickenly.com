@@ -1,9 +1,62 @@
-<nb-card *ngIf="order?.item?.length">
-  <nb-card-header>
-    ĐƠN HÀNG HIỆN TẠI
-  </nb-card-header>
+<div class="in-don-hang">
+  <h1 class="text-center">PHIẾU GIAO NHẬN HÀNG HÓA</h1>
+  <h5 class="text-right">Ngày giao hàng: {{ orderDate }}</h5>
+  <div class="dvgh">
+    <strong>Đơn Vị Giao Hàng: </strong>
+    <span>Nhà Phân Phối Chế Biến Thực Phẩm Nguyễn Đỉnh</span>
+  </div>
+  <div class="dia-chi">
+    Đ/C: Số 41 Gia Quất, Tổ 1 Phường Thượng Thanh, Quận Long Biên, Thành Phố Hà Nội
+  </div>
+  <div class="kmst">
+    MST : 01N8006168
+  </div>
+  <div class="kdcgh">
+    <strong>Địa Chỉ Giao Hàng: {{ order?.school?.name }}</strong>
+  </div>
+  <div class="khsd">
+    <strong>Hạn sử dụng: </strong>
+    <span>Hạn sử dụng trong vòng 24h, quay nóng trong vòng 2 phút sẽ ngon hơn.</span>
+  </div>
+  <div class="klh">
+    <strong>Liên hệ người nhận: </strong>
+  </div>
+  <div class="ktable">
+    <table class="table table-bordered">
+      <thead>
+      <tr>
+        <th scope="col" class="text-center align-middle">STT</th>
+        <th scope="col" class="text-center align-middle" colspan="2">Sản Phẩm</th>
+        <th scope="col" class="text-center align-middle">Đơn vị tính</th>
+        <th scope="col" class="text-center align-middle">Số Lượng Giao</th>
+        <th scope="col" class="text-center align-middle">Số Lượng Trả</th>
+        <th scope="col" class="text-center align-middle">Ghi Chú</th>
+      </tr>
+      </thead>
+      <tbody *ngFor="let item of order.sItem | keyvalue; let idx = index;">
+      <tr *ngFor="let sp of item.value; let spIdx = index;" class="k-no-border-top">
+        <th scope="row" [attr.rowspan]="item?.value?.length" class="align-middle text-center" *ngIf="spIdx === 0">
+          {{ idx + 1 }}
+        </th>
+        <th scope="row" [attr.rowspan]="item?.value?.length" class="align-middle text-center" *ngIf="spIdx === 0">
+          {{ sp?.product?.category?.name }}
+        </th>
+        <th>{{ sp?.product?.name }}</th>
+        <th class="text-left">{{ sp?.product?.productType?.name }}</th>
+        <th class="text-center">{{ sp?.qty }}</th>
+        <th class="text-center">{{ getReturnByProductKey(sp?.product?.key) }}</th>
+        <th class="text-left">{{ sp?.note }}</th>
+      </tr>
+      </tbody>
+      <tbody>
+      <th class="align-middle" colspan="7">Tổng cộng:</th>
+      </tbody>
+    </table>
+  </div>
+  <div class="ksign row">
+    <div class="kban text-right text-bold">Người bán hàng</div>
+    <div class="knhan text-right text-bold">Người nhận hàng</div>
+  </div>
 
-  <nb-card-body>
-    <ng2-smart-table [settings]="settings" [source]="source"></ng2-smart-table>
-  </nb-card-body>
-</nb-card>
+  <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN HÀNG</button>
+</div>

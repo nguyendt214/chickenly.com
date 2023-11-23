@@ -31,3 +31,114 @@
 
   @include nb-overrides();
 };
+.table-bordered {
+  tbody {
+    border-top-width: 1px !important;
+  }
+  thead th {
+    border-bottom-width: 1px !important;
+  }
+  .k-no-border-top {
+    th {
+      border-top: 0;
+    }
+  }
+}
+.mat-expansion-panel-header {
+  user-select: none;
+}
+@media print {
+  .ng2-smart-titles {
+    display: none !important;
+  }
+}
+.in-don-hang {
+  padding: 0 10px;
+  .dvgh {
+    padding-bottom: 10px;
+  }
+  .dia-chi {
+    padding-bottom: 10px;
+  }
+  .kmst {
+    padding-bottom: 10px;
+  }
+  .kdcgh {
+    padding-bottom: 10px;
+  }
+  .khsd {
+    padding-bottom: 10px;
+  }
+  .klh {
+    padding-bottom: 10px;
+  }
+ .ksign {
+   justify-content: flex-end;
+   padding-top: 20px;
+   padding-bottom: 20px;
+   margin: auto 0;
+   .knhan {
+     padding-right: 20px;
+     font-weight: bold;
+     width: 40%;
+     text-transform: uppercase;
+   }
+   .kban {
+     font-weight: bold;
+     text-transform: uppercase;
+   }
+ }
+}
+
+.tao-don-hang {
+  padding: 0;
+  nb-card-body {
+    padding: 0;
+    nb-stepper {
+      .header {
+        display: none;
+      }
+    }
+    .step-content {
+      padding: 10px 0;
+    }
+  }
+  .mat-mdc-form-field-infix {
+    width: 230px;
+  }
+}
+.btn-indonhang {
+  margin-bottom: 10px;
+  color: chocolate !important;
+}
+.indonchobep {
+  padding: 10px 0;
+}
+.in-bep {
+  .big-text {
+    font-size: 30px;
+  }
+}
+.list-order {
+  tr {
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
+ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
+  font-size: 12px !important;
+}
+.ng2-smart-actions {
+  height: 100% !important;
+  .custom-action {
+    &:hover {
+      color: red;
+    }
+  }
+}
+.top-padding {
+  padding-top: 20px !important;
+  padding-bottom: 20px !important;
+}
