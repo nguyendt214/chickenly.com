@@ -21,6 +21,7 @@ import { NbToastrService } from '@nebular/theme';
 export class OrderComponent implements OnInit {
   order: Order = new Order();
   schools: School[] = [];
+  allSchools: School[] = [];
   categories: Category[] = [];
   productTypes: ProductType[] = [];
   products: Product[] = [];
@@ -182,7 +183,7 @@ export class OrderComponent implements OnInit {
 
   getAllSchools() {
     if (this.employeeService.cacheEmployees) {
-      this.schools = this.employeeService.cacheEmployees;
+      this.schools = this.allSchools = this.employeeService.cacheEmployees;
     } else {
       this.schoolService.getAll().snapshotChanges().pipe(
         map(changes =>
@@ -191,7 +192,7 @@ export class OrderComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
-        this.schools = this.employeeService.cacheEmployees = all;
+        this.schools = this.allSchools = this.employeeService.cacheEmployees = all;
       });
     }
   }
@@ -230,6 +231,7 @@ export class OrderComponent implements OnInit {
   chonKH(o) {
     this.order.customer = o;
     this.checkButtonTaoDonHang();
+    this.schools = this.allSchools.filter((s: School) => s.owner === o.key);
   }
 
   chonTruong(o) {

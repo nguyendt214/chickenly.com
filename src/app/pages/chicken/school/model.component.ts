@@ -63,6 +63,9 @@ export class SchoolComponent implements OnInit {
         type: 'string',
       },
     },
+    pager: {
+      perPage: 30,
+    },
   };
 
   source: LocalDataSource = new LocalDataSource();

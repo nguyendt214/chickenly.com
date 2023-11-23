@@ -59,7 +59,6 @@ export class ProductService {
     const groupBy = (x, f) => x.reduce((a, b, i) => ((a[f(b, i, x)] ||= []).push(b), a), {});
     // Sort by category `order`
     products = groupBy(products, p => p.category.name);
-    console.log(products);
     // products = Object.keys(products).map(key => products[key]);
     return products;
   }

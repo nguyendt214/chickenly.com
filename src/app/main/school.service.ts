@@ -8,11 +8,12 @@ export class School {
   phone?: string;
   note?: string;
   customerKey?: any;
+  owner?: any;
   disable?: boolean;
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SchoolService {
   private dbPath = '/School';
