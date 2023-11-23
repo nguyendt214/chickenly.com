@@ -1,5 +1,6 @@
 # compiled output
 /dist
+/public
 /tmp
 /out-tsc
 
@@ -41,3 +42,5 @@ testem.log
 .DS_Store
 Thumbs.db
 .firebase/hosting.*.cache
+/.firebase
+.firebase

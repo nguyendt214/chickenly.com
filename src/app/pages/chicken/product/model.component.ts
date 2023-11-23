@@ -53,6 +53,7 @@ export class ProductComponent implements OnInit {
           },
         },
         sort: true,
+        sortDirection: 'desc',
       },
       productTypeKey: {
         title: 'NHÓM',
