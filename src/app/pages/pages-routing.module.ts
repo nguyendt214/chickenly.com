@@ -75,7 +75,7 @@ const routes: Routes = [{
     },
     {
       path: '',
-      redirectTo: 'chicken/product',
+      redirectTo: 'chicken/order-list',
       pathMatch: 'full',
     },
     {

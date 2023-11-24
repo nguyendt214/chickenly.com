@@ -361,7 +361,7 @@ export class OrderListComponent implements OnInit {
   }
 
   globalFilter() {
-    // Always filter by date 
+    // Always filter by date
     this.orderFilter = this.all.filter((o: Order) => {
       const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
       return this.modelService.filterStartDate <= orderDate && orderDate <= this.modelService.filterEndDate;

@@ -55,21 +55,27 @@
 .in-don-hang {
   padding: 0 10px;
   .dvgh {
+    font-size: 18px;
     padding-bottom: 10px;
   }
   .dia-chi {
+    font-size: 18px;
     padding-bottom: 10px;
   }
   .kmst {
+    font-size: 18px;
     padding-bottom: 10px;
   }
   .kdcgh {
+    font-size: 18px;
     padding-bottom: 10px;
   }
   .khsd {
+    font-size: 18px;
     padding-bottom: 10px;
   }
   .klh {
+    font-size: 18px;
     padding-bottom: 10px;
   }
  .ksign {
@@ -77,6 +83,7 @@
    padding-top: 20px;
    padding-bottom: 20px;
    margin: auto 0;
+   font-size: 22px;
    .knhan {
      padding-right: 20px;
      font-weight: bold;
@@ -159,4 +166,7 @@ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
   button {
     border: 1px solid grey;
   }
+}
+.tra-hang-note {
+  width: 100%;
 }

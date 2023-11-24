@@ -42,11 +42,14 @@
           {{ sp?.product?.category?.name }}
         </th>
         <th>{{ sp?.product?.name }}</th>
-        <th class="text-left">{{ sp?.product?.productType?.name }}</th>
+        <th class="text-center">{{ sp?.product?.productType?.name }}</th>
         <th class="text-center">{{ sp?.qty }}</th>
         <th class="text-center">{{ getReturnByProductKey(sp?.product?.key) }}</th>
         <th class="text-left">{{ sp?.note }}</th>
       </tr>
+      </tbody>
+      <tbody *ngIf="order?.note?.length">
+      <th class="align-middle" colspan="7">Ghi chú: {{ order?.note }}</th>
       </tbody>
       <tbody>
       <th class="align-middle" colspan="7">Tổng cộng:</th>

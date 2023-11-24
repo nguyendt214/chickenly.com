@@ -39,6 +39,10 @@
         <h5>SẢN PHẨM</h5>
         <!--  Shopping cart -->
         <app-product-list [products]="products" [order]="order" [editOrder]="true" class="shopping-cart"></app-product-list>
+        <mat-form-field class="example-full-width tra-hang-note">
+          <mat-label>Ghi chú trả hàng</mat-label>
+          <textarea matInput placeholder="Ghi chi tiết nhất có thể: ngày trả, lý do, ..." [(ngModel)]="order.note"></textarea>
+        </mat-form-field>
       </div>
     </div>
     <!--  END CONTENT-->
