@@ -112,7 +112,10 @@
   color: chocolate !important;
 }
 .indonchobep {
-  padding: 10px 0;
+  padding: 10px 0 0;
+  button {
+    border: 1px solid grey;
+  }
 }
 .in-bep {
   .big-text {
@@ -150,4 +153,10 @@ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
 }
 * {
   touch-action: manipulation;
+}
+.reset-filter {
+  margin-bottom: 10px;
+  button {
+    border: 1px solid grey;
+  }
 }
