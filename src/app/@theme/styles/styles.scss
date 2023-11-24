@@ -145,3 +145,9 @@ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
 .cdk-overlay-container {
   z-index: 1200 !important;
 }
+.disable-dbl-tap-zoom {
+  touch-action: manipulation;
+}
+* {
+  touch-action: manipulation;
+}

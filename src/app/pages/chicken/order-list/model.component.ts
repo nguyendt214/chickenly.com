@@ -50,7 +50,18 @@ export class OrderListComponent implements OnInit {
           return this.datePipe.transform(new Date(c), 'dd/MM/YYYY');
         },
         sort: true,
-        sortDirection: 'asc',
+        sortDirection: 'desc',
+        compareFunction: (direction: any, c1: string, c2: string) => {
+          const first = (new Date(c1)).getTime();
+          const second = (new Date(c2)).getTime();
+          if (first < second) {
+            return -1 * direction;
+          }
+          if (first > second) {
+            return direction;
+          }
+          return 0;
+        },
       },
       customer: {
         title: 'KHÁCH HÀNG',

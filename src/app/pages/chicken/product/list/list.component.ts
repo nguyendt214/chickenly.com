@@ -81,7 +81,6 @@ export class ProductListComponent implements OnInit, OnChanges {
             return '<span class="text-center d-block">' + row.qtyReturn + '</span>';
           }
         },
-        class: 'd-none',
       },
       price: {
         title: 'Giá',
@@ -120,9 +119,10 @@ export class ProductListComponent implements OnInit, OnChanges {
 
   initTable() {
     if (this.editOrder) {
-      this.settings.columns.qtyReturn.class = 'd-show';
       this.settings.columns.qty.editable = false;
       this.settings.columns.price.editable = false;
+    } else {
+      delete this.settings.columns.qtyReturn;
     }
   }
 

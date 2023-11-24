@@ -1,4 +1,4 @@
-<nb-card class="col-md-12 col-lg-12 col-xxxl-12 tao-don-hang">
+<nb-card class="col-md-12 col-lg-12 col-xxxl-12 tao-don-hang disable-dbl-tap-zoom">
   <nb-card-body class="top-padding">
     <!--        CONTENT-->
     <div class="col-md-12 col-lg-12 col-xxxl-12">
@@ -51,16 +51,6 @@
         <!--              Sản phẩm-->
         <div class="clearfix"></div>
         <h5>SẢN PHẨM</h5>
-        <!--            Hiển thị luôn-->
-        <!--            <div class="list-product" *ngIf="products?.length">-->
-        <!--              <mat-card *ngFor="let o of products; trackBy: trackByFn; index as i;" (click)="addToCart(o);">-->
-        <!--                <div class="qty-in-cart">{{ itemInCart(o) }}</div>-->
-        <!--                <mat-card-header>-->
-        <!--                  <mat-card-title>{{ o?.name }}</mat-card-title>-->
-        <!--                </mat-card-header>-->
-        <!--              </mat-card>-->
-        <!--            </div>-->
-
         <mat-accordion>
           <mat-expansion-panel *ngFor="let category of products | keyvalue; let index = index;"
                                [expanded]="index === 0">
@@ -83,12 +73,8 @@
         </mat-accordion>
 
         <!--  Shopping cart -->
-        <app-product-list [products]="products" [order]="order" class="shopping-cart"></app-product-list>
+        <app-product-list [products]="products" [order]="order" [editOrder]="false" class="shopping-cart"></app-product-list>
         <!--  END Shopping cart -->
-
-<!--        <div class="col-md-12 col-lg-6 col-xxxl-3">-->
-<!--          <button nbButton (click)="open()">IN ĐƠN HÀNG</button>-->
-<!--        </div>-->
 
       </div>
     </div>
