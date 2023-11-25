@@ -12,14 +12,14 @@
     MST : 01N8006168
   </div>
   <div class="kdcgh">
-    <strong>Địa Chỉ Giao Hàng: {{ order?.school?.name }}</strong>
+    <strong>Địa Chỉ Giao Hàng: <span>{{ order?.school?.name }}</span></strong>
   </div>
   <div class="khsd">
     <strong>Hạn sử dụng: </strong>
     <span>Hạn sử dụng trong vòng 24h, quay nóng trong vòng 2 phút sẽ ngon hơn.</span>
   </div>
   <div class="klh">
-    <strong>Liên hệ người nhận: </strong>
+    <strong>Liên hệ người nhận:</strong> ........
   </div>
   <div class="ktable">
     <table class="table table-bordered">
@@ -45,7 +45,7 @@
         <th class="text-center">{{ sp?.product?.productType?.name }}</th>
         <th class="text-center">{{ sp?.qty }}</th>
         <th class="text-center">{{ getReturnByProductKey(sp?.product?.key) }}</th>
-        <th class="text-left">{{ sp?.note }}</th>
+        <th class="text-left">{{ sp?.product?.note }}</th>
       </tr>
       </tbody>
       <tbody *ngIf="order?.note?.length">
@@ -57,8 +57,12 @@
     </table>
   </div>
   <div class="ksign row">
-    <div class="kban text-right text-bold">Người bán hàng</div>
-    <div class="knhan text-right text-bold">Người nhận hàng</div>
+    <div class="kban text-left text-bold">Chữ ký nhận</div>
+    <div class="knhan text-right text-bold">Chữ ký trả</div>
+  </div>
+  <div class="kreturn row">
+    <div class="kban text-left text-bold">Ngày nhận</div>
+    <div class="knhan text-right text-bold">Ngày trả</div>
   </div>
 
   <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN HÀNG</button>

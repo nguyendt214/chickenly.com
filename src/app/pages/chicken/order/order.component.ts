@@ -19,6 +19,7 @@ import { NbToastrService } from '@nebular/theme';
   styleUrls: ['order.component.scss'],
 })
 export class OrderComponent implements OnInit {
+  // TẠO ĐƠN HÀNG
   order: Order = new Order();
   schools: School[] = [];
   allSchools: School[] = [];
@@ -34,6 +35,9 @@ export class OrderComponent implements OnInit {
   enableTaoDonHang = false;
   today = new Date();
   toaConfig = {};
+  selectKH = '';
+  selectSchool = '';
+  selectEmployee = '';
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -232,6 +236,8 @@ export class OrderComponent implements OnInit {
     this.order.customer = o;
     this.checkButtonTaoDonHang();
     this.schools = this.allSchools.filter((s: School) => s.owner === o.key);
+    this.selectSchool = '';
+    this.order.school = null;
   }
 
   chonTruong(o) {
@@ -256,7 +262,7 @@ export class OrderComponent implements OnInit {
 
   checkButtonTaoDonHang() {
     this.enableTaoDonHang = !!this.order.customer && !!this.order.school
-      && !!this.order.employee && (this.order.item.length > 0);
+      && (this.order.item.length > 0);
   }
 
   taoDonHang() {
@@ -265,6 +271,7 @@ export class OrderComponent implements OnInit {
       () => {
         this.order.item = [];
         this.order.sItem = null;
+        this.orderService.cacheOrder = null;
         this.showToa();
         this.checkButtonTaoDonHang();
       },

@@ -1,6 +1,6 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Cart, Order, OrderService } from '../../../../main/order.service';
+import { UntypedFormBuilder } from '@angular/forms';
+import { Order, OrderService } from '../../../../main/order.service';
 import { School, SchoolService } from '../../../../main/school.service';
 import { Customer, CustomerService } from '../../../../main/customer.service';
 import { Employee, EmployeeService } from '../../../../main/employee.service';
@@ -9,7 +9,6 @@ import { map } from 'rxjs/operators';
 import { Category, CategoryService } from '../../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../../main/product-type.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CartDialog } from '../cart-dialog/cart-dialog.component';
 import { UtilService } from '../../../../main/util.service';
 import { NbToastrService } from '@nebular/theme';
 import { ActivatedRoute } from '@angular/router';
@@ -22,15 +21,13 @@ export class EditOrderComponent implements OnInit {
   order: Order = new Order();
   orderId: string;
   schools: School[] = [];
+  allSchools: School[] = [];
   categories: Category[] = [];
   productTypes: ProductType[] = [];
   products: Product[] = [];
   customers: Customer[] = [];
   employees: Employee[] = [];
   panelOpenState = false;
-  firstForm: UntypedFormGroup;
-  secondForm: UntypedFormGroup;
-  thirdForm: UntypedFormGroup;
   enableTaoDonHang = false;
   today = new Date();
   toaConfig = {};
@@ -64,7 +61,22 @@ export class EditOrderComponent implements OnInit {
 
   getOrderDetail() {
     this.orderService.getOrderByKey(this.orderId)
-      .subscribe(order => this.order = order);
+      .subscribe(order => {
+        this.order = order;
+      });
+  }
+
+  chonKH(o) {
+    this.order.customer = o;
+    this.schools = this.allSchools.filter((s: School) => s.owner === o.key);
+  }
+
+  chonTruong(o) {
+    this.order.school = o;
+  }
+
+  chonNV(o) {
+    this.order.employee = o;
   }
 
   toastrConfig() {
@@ -80,7 +92,7 @@ export class EditOrderComponent implements OnInit {
 
   showToa() {
     this.toastrService.show(
-      'Tự động quay trở lại danh sách đơn hàng sau 5 giây',
+      'Tự động quay trở lại danh sách đơn hàng sau 3 giây',
       `CẬP NHẬT ĐƠN HÀNG THÀNH CÔNG`,
       this.toaConfig);
   }
@@ -152,7 +164,7 @@ export class EditOrderComponent implements OnInit {
 
   getAllSchools() {
     if (this.employeeService.cacheEmployees) {
-      this.schools = this.employeeService.cacheEmployees;
+      this.schools = this.allSchools = this.schoolService.cacheSchools;
     } else {
       this.schoolService.getAll().snapshotChanges().pipe(
         map(changes =>
@@ -161,7 +173,7 @@ export class EditOrderComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
-        this.schools = this.employeeService.cacheEmployees = all;
+        this.schools = this.allSchools = this.schoolService.cacheSchools = all;
       });
     }
   }
@@ -173,7 +185,7 @@ export class EditOrderComponent implements OnInit {
         this.showToa();
         setTimeout(() => {
           this.utilService.gotoPage('pages/chicken/order-list');
-        }, 5000);
+        }, 3000);
       },
     );
   }

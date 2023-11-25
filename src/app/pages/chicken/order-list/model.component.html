@@ -1,6 +1,6 @@
 <nb-card>
   <nb-card-header>
-    DANH SÁCH ĐƠN HÀNG
+    DANH SÁCH ĐƠN HÀNG ( <b>{{ source?.count() }}</b> )
   </nb-card-header>
 
   <nb-card-body class="list-order">
@@ -19,7 +19,7 @@
         </mat-form-field>
         <div class="example-form-fields">
           <!--            KHÁCH HÀNG -->
-          <mat-form-field>
+          <mat-form-field class="padding-right-10">
             <mat-label>KHÁCH HÀNG</mat-label>
             <mat-select [(ngModel)]="selectKH">
               <mat-option value="" (click)="filterByCustomer(null)">Chọn KH</mat-option>
@@ -29,17 +29,17 @@
             </mat-select>
           </mat-form-field>
           <!--            TRƯỜNG-->
-          <mat-form-field class="padding-left-10">
-            <mat-label>TRƯỜNG</mat-label>
+          <mat-form-field class="padding-right-10">
+            <mat-label>ĐỊA ĐIỂM</mat-label>
             <mat-select [(ngModel)]="selectSchool">
-              <mat-option value="" (click)="filterBySchool(null)">Chọn Trường</mat-option>
+              <mat-option value="" (click)="filterBySchool(null)">Chọn Địa Điểm</mat-option>
               <mat-option *ngFor="let o of schools" [value]="o.key" (click)="filterBySchool(o)">
                 {{o.name}}
               </mat-option>
             </mat-select>
           </mat-form-field>
           <!--            NHAN VIEN-->
-          <mat-form-field class="padding-left-10">
+          <mat-form-field class="padding-right-10">
             <mat-label>NHÂN VIÊN GIAO</mat-label>
             <mat-select [(ngModel)]="selectEmployee">
               <mat-option value="" (click)="filterByEmployee(null)">Chọn NV</mat-option>

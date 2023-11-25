@@ -62,4 +62,14 @@ export class ProductService {
     // products = Object.keys(products).map(key => products[key]);
     return products;
   }
+
+  initProductBeforeSave(p: Product): Product {
+    delete p['phone'];
+    delete p['address'];
+    p.qty = +p.qty;
+    p.price = +p.price;
+    p.priceStock = +p.priceStock;
+    p.name = p.name.trim();
+    return p;
+  }
 }

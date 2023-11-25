@@ -102,6 +102,8 @@ export class OrderService {
       delete c['categoryName'];
       delete c['productName'];
       delete c['productType'];
+      c.qty = +c.qty;
+      c.price = +c.price;
       if (c.qtyReturn) {
         c.qtyReturn = +c.qtyReturn;
       }

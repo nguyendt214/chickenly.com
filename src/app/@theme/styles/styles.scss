@@ -32,11 +32,13 @@
   @include nb-overrides();
 };
 .table-bordered {
+  border: 2px solid #000;
   tbody {
-    border-top-width: 1px !important;
+    border-top-width: 2px !important;
+    border-color: #000;
   }
-  thead th {
-    border-bottom-width: 1px !important;
+  tr, th {
+    border: 2px solid #000 !important;
   }
   .k-no-border-top {
     th {
@@ -53,7 +55,7 @@
   }
 }
 .in-don-hang {
-  padding: 0 10px;
+  padding: 0 20px;
   .dvgh {
     font-size: 18px;
     padding-bottom: 10px;
@@ -69,6 +71,9 @@
   .kdcgh {
     font-size: 18px;
     padding-bottom: 10px;
+    span {
+      font-size: 22px;
+    }
   }
   .khsd {
     font-size: 18px;
@@ -79,13 +84,12 @@
     padding-bottom: 10px;
   }
  .ksign {
-   justify-content: flex-end;
+   justify-content: space-around;
    padding-top: 20px;
    padding-bottom: 20px;
    margin: auto 0;
-   font-size: 22px;
+   font-size: 20px;
    .knhan {
-     padding-right: 20px;
      font-weight: bold;
      width: 40%;
      text-transform: uppercase;
@@ -95,6 +99,22 @@
      text-transform: uppercase;
    }
  }
+  .kreturn {
+    justify-content: space-around;
+    padding-top: 60px;
+    padding-bottom: 20px;
+    margin: auto 0;
+    font-size: 16px;
+    .knhan {
+      font-weight: bold;
+      width: 40%;
+      text-transform: uppercase;
+    }
+    .kban {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  }
 }
 
 .tao-don-hang {
@@ -139,6 +159,8 @@
 
 ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
   font-size: 12px !important;
+  text-align: center;
+  min-width: 70px;
 }
 .ng2-smart-actions {
   height: 100% !important;
@@ -169,4 +191,16 @@ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
 }
 .tra-hang-note {
   width: 100%;
+}
+.mat-mdc-dialog-container {
+  max-height: 94vh !important;
+}
+.cdk-overlay-pane {
+  max-width: 96vw !important;
+}
+.padding-right-10 {
+  padding-right: 10px;
+}
+button:focus {
+  outline: 0px;
 }

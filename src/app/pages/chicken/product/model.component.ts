@@ -56,7 +56,7 @@ export class ProductComponent implements OnInit {
         sortDirection: 'desc',
       },
       productTypeKey: {
-        title: 'NHÓM',
+        title: 'QUI CÁCH',
         valuePrepareFunction: (cell) => {
           const c: ProductType = this.productTypeService.getProductTypeByKey(this.productTypes, cell);
           return c ? c.name : '';
@@ -117,14 +117,16 @@ export class ProductComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    const p: Product = Object.assign({}, this.modelService.initProductBeforeSave(e?.newData));
+    this.modelService.create(p)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    const p: Product = Object.assign({}, this.modelService.initProductBeforeSave(e?.newData));
+    this.modelService.update(e?.newData?.key, p)
       .then(() => {
       })
       .catch(() => e.confirm.reject());

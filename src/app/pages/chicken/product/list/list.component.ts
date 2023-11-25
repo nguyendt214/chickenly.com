@@ -27,7 +27,7 @@ export class ProductListComponent implements OnInit, OnChanges {
   settings = {
     actions: {
       add: false,
-      columnTitle: 'Tác vụ',
+      columnTitle: '',
       delete: false,
     },
     edit: {
@@ -93,6 +93,9 @@ export class ProductListComponent implements OnInit, OnChanges {
       note: {
         title: 'Ghi Chú',
         type: 'string',
+        valuePrepareFunction: (cell, row) => {
+          return row.product.note;
+        },
       },
     },
     hideSubHeader: false,
@@ -119,8 +122,8 @@ export class ProductListComponent implements OnInit, OnChanges {
 
   initTable() {
     if (this.editOrder) {
-      this.settings.columns.qty.editable = false;
-      this.settings.columns.price.editable = false;
+      // this.settings.columns.qty.editable = false;
+      // this.settings.columns.price.editable = false;
     } else {
       delete this.settings.columns.qtyReturn;
     }

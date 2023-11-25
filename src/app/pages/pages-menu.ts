@@ -7,12 +7,12 @@ export const MENU_ITEMS: NbMenuItem[] = [
   },
   {
     title: 'TẠO ĐƠN HÀNG',
-    icon: 'star',
+    icon: 'bulb',
     link: '/pages/chicken/order',
   },
   {
     title: 'DANH SÁCH ĐƠN HÀNG',
-    icon: 'heart',
+    icon: 'archive',
     link: '/pages/chicken/order-list',
   },
   {
@@ -26,8 +26,8 @@ export const MENU_ITEMS: NbMenuItem[] = [
     link: '/pages/chicken/customer',
   },
   {
-    title: 'TRƯỜNG',
-    icon: 'star',
+    title: 'ĐỊA ĐIỂM',
+    icon: 'pin',
     link: '/pages/chicken/school',
   },
   {

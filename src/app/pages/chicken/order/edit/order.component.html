@@ -8,8 +8,8 @@
           <!--            KHÁCH HÀNG -->
           <mat-form-field>
             <mat-label>KHÁCH HÀNG</mat-label>
-            <mat-select [value]="order?.customer?.key" disabled="true">
-              <mat-option *ngFor="let o of customers" [value]="o.key">
+            <mat-select [value]="order?.customer?.key">
+              <mat-option *ngFor="let o of customers" [value]="o.key" (click)="chonKH(o)">
                 {{o.name}}
               </mat-option>
             </mat-select>
@@ -17,8 +17,8 @@
           <!--            TRƯỜNG-->
           <mat-form-field class="padding-left-10">
             <mat-label>Trường</mat-label>
-            <mat-select [value]="order?.school?.key" disabled="true">
-              <mat-option *ngFor="let o of schools" [value]="o.key">
+            <mat-select [value]="order?.school?.key">
+              <mat-option *ngFor="let o of schools" [value]="o.key" (click)="chonTruong(o)">
                 {{o.name}}
               </mat-option>
             </mat-select>
@@ -26,8 +26,8 @@
           <!--            NHAN VIEN-->
           <mat-form-field class="padding-left-10">
             <mat-label>NHÂN VIÊN GIAO</mat-label>
-            <mat-select [value]="order?.employee?.key" disabled="true">
-              <mat-option *ngFor="let o of employees" [value]="o.key">
+            <mat-select [value]="order?.employee?.key">
+              <mat-option *ngFor="let o of employees" [value]="o.key" (click)="chonNV(o)">
                 {{o.name}}
               </mat-option>
             </mat-select>

@@ -12,6 +12,7 @@ import { CartDialog } from '../order/cart-dialog/cart-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UtilService } from '../../../main/util.service';
 import { BepDialog } from '../order/don-hang-cho-bep-dialog/bep-dialog.component';
+import { CategoryService } from '../../../main/category.service';
 
 @Component({
   selector: 'ngx-smart-table-order-list',
@@ -50,7 +51,7 @@ export class OrderListComponent implements OnInit {
     },
     columns: {
       date: {
-        title: 'Ngày',
+        title: 'NGÀY',
         type: 'string',
         valuePrepareFunction: (c, row) => {
           return this.datePipe.transform(new Date(c), 'dd/MM/YYYY');
@@ -92,7 +93,7 @@ export class OrderListComponent implements OnInit {
         },
       },
       school: {
-        title: 'TRƯỜNG',
+        title: 'ĐỊA ĐIỂM',
         type: 'string',
         valuePrepareFunction: (c: School) => {
           return c.name;
@@ -155,6 +156,7 @@ export class OrderListComponent implements OnInit {
           title: '<span class="custom-action">Trả hàng</span>',
         },
       ],
+      columnTitle: '',
     },
   };
 
@@ -170,6 +172,7 @@ export class OrderListComponent implements OnInit {
     private customerService: CustomerService,
     private schoolService: SchoolService,
     private employeeService: EmployeeService,
+    private categoryService: CategoryService,
   ) {
     if (this.modelService.cacheOrder) {
       this.all = this.modelService.cacheOrder;
@@ -234,6 +237,7 @@ export class OrderListComponent implements OnInit {
     const dialogRef = this.dialog.open(CartDialog, {
       width: '100%',
       data: {order: e.data},
+      position: {top: '10px'},
     });
 
     dialogRef.afterClosed().subscribe(result => {
@@ -253,7 +257,9 @@ export class OrderListComponent implements OnInit {
   indonchobep() {
     let items: Cart[] = [];
     let date = (new Date()).toLocaleDateString('vi-VN');
-    this.orderFilter.forEach((o: Order) => {
+    let comQty = 0;
+    const orders: Order[] = JSON.parse(JSON.stringify(this.orderFilter));
+    orders.forEach((o: Order) => {
       date = (new Date(o?.date ?? '')).toLocaleDateString('vi-VN');
       o.item.forEach((c: Cart) => {
         const exists = items.filter((item: Cart) => item.product.key === c.product.key).length;
@@ -266,12 +272,17 @@ export class OrderListComponent implements OnInit {
         } else {
           items.push(c);
         }
+        // Tính tổng CƠM
+        if (c.categoryKey === this.categoryService.comKey) {
+          comQty += c.qty;
+        }
       });
     });
     items = this.modelService.sortByCategory(items);
     this.dialog.open(BepDialog, {
       width: '100%',
-      data: {cart: items, dateStr: date},
+      data: {cart: items, dateStr: date, comQty: comQty},
+      position: {top: '10px'},
     });
   }
 
@@ -384,6 +395,9 @@ export class OrderListComponent implements OnInit {
     const date = this.modelService.getLast7Days();
     this.startDate = date[0];
     this.endDate = date[1];
+    this.selectKH = '';
+    this.selectSchool = '';
+    this.selectEmployee = '';
     this.oFilter = {
       startDate: this.startDate,
       endDate: this.endDate,

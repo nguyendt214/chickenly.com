@@ -22,7 +22,8 @@
           <!--            KHÁCH HÀNG -->
           <mat-form-field>
             <mat-label>KHÁCH HÀNG</mat-label>
-            <mat-select required>
+            <mat-select required [(ngModel)]="selectKH">
+              <mat-option value="" (click)="chonKH(null)">Chọn KH</mat-option>
               <mat-option *ngFor="let o of customers" [value]="o.key" (click)="chonKH(o)">
                 {{o.name}}
               </mat-option>
@@ -30,8 +31,9 @@
           </mat-form-field>
           <!--            TRƯỜNG-->
           <mat-form-field class="padding-left-10">
-            <mat-label>TRƯỜNG</mat-label>
-            <mat-select required>
+            <mat-label>ĐỊA ĐIỂM</mat-label>
+            <mat-select [(ngModel)]="selectSchool" required>
+              <mat-option value="" (click)="chonTruong(null)">Chọn Địa Điểm</mat-option>
               <mat-option *ngFor="let o of schools" [value]="o.key" (click)="chonTruong(o)">
                 {{o.name}}
               </mat-option>
@@ -40,7 +42,8 @@
           <!--            NHAN VIEN-->
           <mat-form-field class="padding-left-10">
             <mat-label>NHÂN VIÊN GIAO</mat-label>
-            <mat-select required>
+            <mat-select [(ngModel)]="selectEmployee">
+              <mat-option value="" (click)="chonNV(null)">Chọn NV</mat-option>
               <mat-option *ngFor="let o of employees" [value]="o.key" (click)="chonNV(o)">
                 {{o.name}}
               </mat-option>
@@ -73,14 +76,15 @@
         </mat-accordion>
 
         <!--  Shopping cart -->
-        <app-product-list [products]="products" [order]="order" [editOrder]="false" class="shopping-cart"></app-product-list>
+        <app-product-list [products]="products" [order]="order" [editOrder]="false"
+                          class="shopping-cart"></app-product-list>
         <!--  END Shopping cart -->
 
       </div>
     </div>
     <!--  END CONTENT-->
-    <button mat-raised-button disabled *ngIf="!enableTaoDonHang"  color="warn">TẠO ĐƠN HÀNG</button>
-    <button mat-raised-button  *ngIf="enableTaoDonHang" (click)="taoDonHang()"  color="accent">TẠO ĐƠN HÀNG</button>
+    <button mat-raised-button disabled *ngIf="!enableTaoDonHang" color="warn">TẠO ĐƠN HÀNG</button>
+    <button mat-raised-button *ngIf="enableTaoDonHang" (click)="taoDonHang()" color="accent">TẠO ĐƠN HÀNG</button>
   </nb-card-body>
 </nb-card>
 
