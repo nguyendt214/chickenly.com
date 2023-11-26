@@ -17,6 +17,9 @@ export class PagesComponent {
   menu = MENU_ITEMS;
 
   menuCick() {
-    document.getElementById('humberger-menu').click();
+    const kmenuSidebar = document.getElementById('kmenu-sidebar');
+    if (kmenuSidebar.classList.contains('expanded')) {
+      document.getElementById('humberger-menu').click();
+    }
   }
 }

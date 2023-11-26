@@ -20,6 +20,7 @@ export class Order {
   customer: Customer;
   school: School;
   sItem: any;
+  master?: Order;
 }
 
 export class Cart {
@@ -29,11 +30,12 @@ export class Cart {
   categoryKey?: any;
   qtyReturn?: number;
 
-  constructor(qty: number, price: number, p: Product, categoryKey: string) {
+  constructor(qty: number, price: number, p: Product, categoryKey: string, qtyReturn: number = 0) {
     this.qty = qty;
     this.price = price;
     this.product = p;
     this.categoryKey = categoryKey;
+    this.qtyReturn = qtyReturn;
   }
 }
 

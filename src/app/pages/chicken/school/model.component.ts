@@ -49,6 +49,16 @@ export class SchoolComponent implements OnInit {
           },
         },
         sort: true,
+        sortDirection: 'asc',
+        compareFunction: (direction: any, c1: string, c2: string) => {
+          if (c1 < c2) {
+            return -1 * direction;
+          }
+          if (c1 > c2) {
+            return direction;
+          }
+          return 0;
+        },
       },
       phone: {
         title: 'Điện thoại',

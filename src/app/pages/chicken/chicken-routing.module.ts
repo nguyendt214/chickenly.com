@@ -15,6 +15,7 @@ import { CartDialog } from './order/cart-dialog/cart-dialog.component';
 import { OrderListComponent } from './order-list/model.component';
 import { BepDialog } from './order/don-hang-cho-bep-dialog/bep-dialog.component';
 import { EditOrderComponent } from './order/edit/order.component';
+import { CongNoComponent } from './cong-no/model.component';
 
 const routes: Routes = [{
   path: '',
@@ -31,6 +32,10 @@ const routes: Routes = [{
     {
       path: 'order-list',
       component: OrderListComponent,
+    },
+    {
+      path: 'cong-no',
+      component: CongNoComponent,
     },
     {
       path: 'customer',
@@ -84,6 +89,7 @@ export const routedComponents = [
   EmployeeComponent,
   OrderComponent,
   OrderListComponent,
+  CongNoComponent,
   EditOrderComponent,
   ProductListComponent,
   CartDialog,

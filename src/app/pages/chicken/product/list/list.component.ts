@@ -96,6 +96,7 @@ export class ProductListComponent implements OnInit, OnChanges {
         valuePrepareFunction: (cell, row) => {
           return row.product.note;
         },
+        editable: false,
       },
     },
     hideSubHeader: false,

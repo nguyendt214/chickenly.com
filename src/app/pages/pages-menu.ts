@@ -18,7 +18,7 @@ export const MENU_ITEMS: NbMenuItem[] = [
   {
     title: 'CÔNG NỢ',
     icon: 'heart',
-    link: '/pages/chicken/order-list',
+    link: '/pages/chicken/cong-no',
   },
   {
     title: 'KHÁCH HÀNG',

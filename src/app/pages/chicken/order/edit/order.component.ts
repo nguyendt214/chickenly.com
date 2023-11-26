@@ -183,6 +183,8 @@ export class EditOrderComponent implements OnInit {
     this.orderService.update(this.orderId, this.order).then(
       () => {
         this.showToa();
+        // Clear order cache
+        this.orderService.cacheOrder = null;
         setTimeout(() => {
           this.utilService.gotoPage('pages/chicken/order-list');
         }, 3000);
