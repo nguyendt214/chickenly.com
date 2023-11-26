@@ -2,7 +2,7 @@
   <nb-card-header>
     CÔNG NỢ
   </nb-card-header>
-  <nb-card-body class="list-order">
+  <nb-card-body class="list-order cong-no">
     <div class="order-date-filter">
       <div class="col-md-12 col-lg-12 col-xxxl-12">
         <mat-form-field>
@@ -53,14 +53,15 @@
         </div>
       </div>
     </div>
-    <h6>CÔNG NỢ THEO ĐỊA ĐIỂM</h6>
+    <!--    CÔNG NỢ THEO ĐỊA ĐIỂM-->
+    <h6 class="text-center cn-title">CÔNG NỢ THEO ĐỊA ĐIỂM</h6>
     <div class="cong-no">
       <mat-accordion>
         <mat-expansion-panel *ngFor="let item of orderBySchool; let index = index;"
                              [expanded]="index === 0">
           <mat-expansion-panel-header>
             <mat-panel-title>
-              {{ item[0]?.school?.name }}
+              {{ item[0]?.school?.name | uppercase }}
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Chi tiết theo ngày -->
@@ -102,7 +103,8 @@
             <!-- Tổng hợp trong 1 order -->
             <mat-divider></mat-divider>
             <div class="order-master">
-              <span>Tổng hợp từ ngày: </span> <b>{{ startDate | date : 'dd/MM/YYYY' }} - {{ endDate | date : 'dd/MM/YYYY' }}</b>
+              <span>Tổng hợp từ ngày: </span> <b>{{ startDate | date : 'dd/MM/YYYY' }}
+              - {{ endDate | date : 'dd/MM/YYYY' }}</b>
             </div>
             <div class="order-tong-hop" *ngFor="let order of item; index as i;" [ngClass]="{ 'd-none': i >= 1}">
               <div class="ktable">
@@ -138,6 +140,61 @@
         </mat-expansion-panel>
       </mat-accordion>
     </div>
+
+
+    <!--    END CÔNG NỢ THEO ĐỊA ĐIỂM-->
+    <!--    CÔNG NỢ THEO KHÁCH HÀNG-->
+    <h6 class="text-center cn-title cn-kh">CÔNG NỢ THEO KHÁCH HÀNG</h6>
+    <div class="cong-no">
+      <mat-accordion>
+        <mat-expansion-panel *ngFor="let congNo of congNoByCustomer; let index = index;"
+                             [expanded]="index === 0">
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Đối tác: {{ congNo?.customer?.name }}
+            </mat-panel-title>
+          </mat-expansion-panel-header>
+          <!-- Chi tiết theo ngày -->
+          <div class="list-product">
+            <div class="time">
+              <span>Thời gian: </span> <b>Từ {{ startDate | date : 'dd/MM/YYYY' }}
+              tới {{ endDate | date : 'dd/MM/YYYY' }}</b>
+            </div>
+            <mat-card>
+              <div class="ktable">
+                <table class="table table-bordered">
+                  <thead>
+                  <tr>
+                    <th scope="col" class="text-center align-middle">STT</th>
+                    <th scope="col" class="text-center align-middle">ĐIỂM TRƯỜNG</th>
+                    <th scope="col" class="text-left align-middle">TIỀN</th>
+                    <th scope="col" class="text-left align-middle">GHI CHÚ</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                  <tr *ngFor="let diemTruong of congNo?.schools; index as i;" class="k-no-border-top">
+                    <th class="align-middle text-left">
+                      {{ i + 1 }}
+                    </th>
+                    <th>{{ diemTruong?.school?.name }}</th>
+                    <th class="text-left">{{ diemTruong?.total | currency : '' : '' : '1.0-0' }} VNĐ</th>
+                    <th class="text-left">{{ congNo?.note }}</th>
+                  </tr>
+                  </tbody>
+                  <tbody>
+                  <th class="align-middle text-right total" colspan="7">Tổng cộng: {{ congNo?.masterTotal | currency : '' : '' : '1.0-0' }} VNĐ</th>
+                  </tbody>
+                </table>
+              </div>
+            </mat-card>
+          </div>
+
+        </mat-expansion-panel>
+      </mat-accordion>
+    </div>
+    <!--    END CÔNG NỢ THEO KHÁCH HÀNG-->
+
+
     <ng2-smart-table [settings]="settings" [source]="source"
                      (createConfirm)="onCreateConfirm($event)"
                      (editConfirm)="onEditConfirm($event)"

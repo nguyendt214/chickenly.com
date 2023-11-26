@@ -205,7 +205,7 @@ button:focus {
   outline: 0px;
 }
 .mat-expansion-panel-header.mat-expanded {
-  font-size: 18px;
+  font-size: 16px;
 }
 .cong-no {
   .cong-not-date-title {
@@ -226,6 +226,12 @@ button:focus {
   .total {
     font-weight: 700;
     color: blue;
-    font-size: 18px;
+    font-size: 16px;
+  }
+  .cn-title {
+    color: chocolate;
+  }
+  .cn-kh {
+    margin-top: 30px;
   }
 }

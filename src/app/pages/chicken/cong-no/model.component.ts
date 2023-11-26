@@ -3,7 +3,7 @@ import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { map } from 'rxjs/operators';
-import { Cart, Order, OrderService } from '../../../main/order.service';
+import { Cart, CongNoByCustomer, CongNoBySchool, Order, OrderService } from '../../../main/order.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { School, SchoolService } from '../../../main/school.service';
 import { Employee, EmployeeService } from '../../../main/employee.service';
@@ -36,6 +36,7 @@ export class CongNoComponent implements OnInit {
   orderBySchool = [];
   orderTotalBySchool = [];
   orderByEmployee = [];
+  congNoByCustomer: CongNoByCustomer[] = [];
   settings = {
     add: {
       confirmCreate: true,
@@ -212,8 +213,6 @@ export class CongNoComponent implements OnInit {
     this.oFilter.startDate = this.startDate;
     this.oFilter.endDate = this.endDate;
     this.filterByDate(this.startDate, this.endDate);
-    // Cong no
-    this.groupByCustomer();
   }
 
   ngOnInit() {
@@ -366,6 +365,8 @@ export class CongNoComponent implements OnInit {
       this.orderFilter = this.orderFilter.filter((o: Order) => o.employee.key === this.oFilter.employee.key);
     }
     this.source.load(this.orderFilter);
+    // Cong no
+    this.tongHopCongNo();
   }
 
   resetFilter() {
@@ -425,8 +426,13 @@ export class CongNoComponent implements OnInit {
     return this.currencyPipe.transform(total, '', '', '1.0-0') + ' VNĐ';
   }
 
-  groupByCustomer() {
+  tongHopCongNo() {
     const orders: Order[] = JSON.parse(JSON.stringify(this.orderFilter));
+    this.orderByCustomer = [];
+    this.orderBySchool = [];
+    this.orderTotalBySchool = [];
+    this.orderByEmployee = [];
+    this.congNoByCustomer = [];
     const orderByCustomer = this.utilService.groupItemBy(orders, 'customer.key');
     const orderBySchool = this.utilService.groupItemBy(orders, 'school.key');
     const orderByEmployee = this.utilService.groupItemBy(orders, 'employee.key');
@@ -440,16 +446,60 @@ export class CongNoComponent implements OnInit {
     Object.entries(orderByEmployee).forEach(
       ([key, value]) => this.orderByEmployee.push(value),
     );
-    // Order total by customer, school, employee
-    // this.orderTotalBySchool = this.hoaDonTong(this.orderBySchool);
+    // Master Order total by customer
     this.orderBySchool.forEach((_orders: Order[]) => {
       _orders.forEach((order: Order) => {
-        order.master = this.hoaDonTong(_orders);
+        order.master = this.hoaDonTongBySchool(_orders);
+      });
+    });
+    // Cong No Tong theo Khach Hang
+    this.hoaDonTongByCustomer(this.orderByCustomer);
+  }
+
+  hoaDonTongByCustomer(orders: Order[]) {
+    orders.forEach((customer: any) => {
+      customer.forEach((order: Order, idx) => {
+        if (idx === 0) {
+          const groupBySchool = this.utilService.groupItemBy(customer, 'school.key');
+          const congNo = new CongNoByCustomer();
+          congNo.schools = [];
+          congNo.masterTotal = 0;
+          const schoolKeys = [];
+          Object.entries(groupBySchool).forEach(([key, value], index) => {
+            const _orders: Order[] = Object.values(value);
+            _orders.forEach((o: Order, _idx: number) => {
+              if (_idx === 0) {
+                // Thêm trường mới
+                schoolKeys.push(key);
+                const congNoBySchool = new CongNoBySchool();
+                congNoBySchool.total = 0;
+                congNoBySchool.school = o.school;
+                // Tính tổng tiền
+                o.item.forEach((cart: Cart) => {
+                  congNoBySchool.total += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
+                });
+                congNo.customer = o.customer;
+                congNo.masterTotal += congNoBySchool.total;
+                congNo.schools.push(congNoBySchool);
+              } else {
+                // Đã có trong công nợ, tìm trường và cộng dồn total
+                congNo.schools.forEach((cnbs: CongNoBySchool) => {
+                  // Tính tổng tiền
+                  o.item.forEach((cart: Cart) => {
+                    cnbs.total += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
+                    congNo.masterTotal += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
+                  });
+                });
+              }
+            });
+          });
+          this.congNoByCustomer.push(congNo);
+        }
       });
     });
   }
 
-  hoaDonTong(orders: Order[]) {
+  hoaDonTongBySchool(orders: Order[]) {
     const order = new Order();
     order.item = [];
     orders.forEach((o: Order) => {

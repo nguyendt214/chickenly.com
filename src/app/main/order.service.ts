@@ -21,6 +21,7 @@ export class Order {
   school: School;
   sItem: any;
   master?: Order;
+  updated: string;
 }
 
 export class Cart {
@@ -37,6 +38,18 @@ export class Cart {
     this.categoryKey = categoryKey;
     this.qtyReturn = qtyReturn;
   }
+}
+
+export class CongNoByCustomer {
+  customer?: Customer;
+  schools?: CongNoBySchool[];
+  masterTotal?: number;
+  note?: string;
+}
+export class CongNoBySchool {
+  school?: School;
+  total?: number;
+  note?: string;
 }
 
 @Injectable({

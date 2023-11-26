@@ -180,6 +180,7 @@ export class EditOrderComponent implements OnInit {
 
   capNhatDonHang() {
     this.order = this.orderService.removePropertiesBeforeSave(this.order);
+    this.order.updated = (new Date()).toLocaleDateString();
     this.orderService.update(this.orderId, this.order).then(
       () => {
         this.showToa();
