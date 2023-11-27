@@ -42,6 +42,9 @@ export class CategoryComponent implements OnInit {
         type: 'string',
       },
     },
+    pager: {
+      perPage: 50,
+    },
   };
 
   source: LocalDataSource = new LocalDataSource();

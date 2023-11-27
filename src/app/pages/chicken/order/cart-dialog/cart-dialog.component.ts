@@ -45,6 +45,7 @@ export class CartDialog implements OnInit {
 
   printOrder() {
     window.print();
+    this.onNoClick();
   }
 
   getReturnByProductKey(productKey: string) {
@@ -54,7 +55,7 @@ export class CartDialog implements OnInit {
         qtyReturn = c.qtyReturn;
       }
     });
-    return qtyReturn;
+    return qtyReturn === 0 ? ' ' : qtyReturn;
   }
 
 }

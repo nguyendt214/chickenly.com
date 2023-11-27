@@ -158,6 +158,9 @@ export class OrderListComponent implements OnInit {
       ],
       columnTitle: '',
     },
+    pager: {
+      perPage: 50,
+    },
   };
 
   source: LocalDataSource = new LocalDataSource();

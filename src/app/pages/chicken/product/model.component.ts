@@ -86,7 +86,7 @@ export class ProductComponent implements OnInit {
       },
     },
     pager: {
-      perPage: 30,
+      perPage: 50,
     },
   };
 

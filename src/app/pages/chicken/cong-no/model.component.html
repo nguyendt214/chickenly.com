@@ -101,42 +101,43 @@
             </mat-card>
 
             <!-- Tổng hợp trong 1 order -->
-            <mat-divider></mat-divider>
-            <div class="order-master">
-              <span>Tổng hợp từ ngày: </span> <b>{{ startDate | date : 'dd/MM/YYYY' }}
-              - {{ endDate | date : 'dd/MM/YYYY' }}</b>
-            </div>
-            <div class="order-tong-hop" *ngFor="let order of item; index as i;" [ngClass]="{ 'd-none': i >= 1}">
-              <div class="ktable">
-                <table class="table table-bordered">
-                  <thead>
-                  <tr>
-                    <th scope="col" class="text-center align-middle" colspan="2">Sản Phẩm</th>
-                    <th scope="col" class="text-center align-middle">Đơn vị tính</th>
-                    <th scope="col" class="text-center align-middle">Số Lượng Giao</th>
-                    <th scope="col" class="text-center align-middle">Số Lượng Trả</th>
-                  </tr>
-                  </thead>
-                  <tbody *ngFor="let item of order?.master?.sItem | keyvalue; let idx = index;">
-                  <tr *ngFor="let sp of item.value; let spIdx = index;" class="k-no-border-top">
-                    <th scope="row" [attr.rowspan]="item?.value?.length" class="align-middle text-center"
-                        *ngIf="spIdx === 0">
-                      {{ sp?.product?.category?.name }}
-                    </th>
-                    <th>{{ sp?.product?.name }}</th>
-                    <th class="text-center">{{ sp?.product?.productType?.name }}</th>
-                    <th class="text-center">{{ sp?.qty }}</th>
-                    <th class="text-center">{{ getReturnByProductKey(order, sp?.product?.key) }}</th>
-                  </tr>
-                  </tbody>
-                </table>
+            <div class="tong-hop" [ngClass]="{ 'd-none': isSameDay}">
+              <mat-divider></mat-divider>
+              <div class="order-master">
+                <span>Tổng hợp từ ngày: </span> <b>{{ modelService.filterStartDate | date : 'dd/MM/YYYY' }}
+                - {{ modelService.filterEndDate | date : 'dd/MM/YYYY' }}</b>
+              </div>
+              <div class="order-tong-hop" *ngFor="let order of item; index as i;" [ngClass]="{ 'd-none': i >= 1}">
+                <div class="ktable">
+                  <table class="table table-bordered">
+                    <thead>
+                    <tr>
+                      <th scope="col" class="text-center align-middle" colspan="2">Sản Phẩm</th>
+                      <th scope="col" class="text-center align-middle">Đơn vị tính</th>
+                      <th scope="col" class="text-center align-middle">Số Lượng Giao</th>
+                      <th scope="col" class="text-center align-middle">Số Lượng Trả</th>
+                    </tr>
+                    </thead>
+                    <tbody *ngFor="let item of order?.master?.sItem | keyvalue; let idx = index;">
+                    <tr *ngFor="let sp of item.value; let spIdx = index;" class="k-no-border-top">
+                      <th scope="row" [attr.rowspan]="item?.value?.length" class="align-middle text-center"
+                          *ngIf="spIdx === 0">
+                        {{ sp?.product?.category?.name }}
+                      </th>
+                      <th>{{ sp?.product?.name }}</th>
+                      <th class="text-center">{{ sp?.product?.productType?.name }}</th>
+                      <th class="text-center">{{ sp?.qty }}</th>
+                      <th class="text-center">{{ getReturnByProductKey(order, sp?.product?.key) }}</th>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="total text-right">
+                TỔNG: {{ tongTienByOrders(item) }}
               </div>
             </div>
-            <div class="total text-right">
-              TỔNG: {{ tongTienByOrders(item) }}
-            </div>
           </div>
-
         </mat-expansion-panel>
       </mat-accordion>
     </div>
@@ -156,9 +157,12 @@
           </mat-expansion-panel-header>
           <!-- Chi tiết theo ngày -->
           <div class="list-product">
-            <div class="time">
-              <span>Thời gian: </span> <b>Từ {{ startDate | date : 'dd/MM/YYYY' }}
-              tới {{ endDate | date : 'dd/MM/YYYY' }}</b>
+            <div class="time" [ngClass]="{ 'd-none': isSameDay}">
+              <span>Thời gian: </span> <b>Từ {{ modelService.filterStartDate | date : 'dd/MM/YYYY' }}
+              tới {{ modelService.filterEndDate | date : 'dd/MM/YYYY' }}</b>
+            </div>
+            <div class="time" [ngClass]="{ 'd-none': !isSameDay}">
+              <span>Thời gian: </span> <b>ngày {{ modelService.filterStartDate | date : 'dd/MM/YYYY' }}</b>
             </div>
             <mat-card>
               <div class="ktable">
@@ -166,23 +170,25 @@
                   <thead>
                   <tr>
                     <th scope="col" class="text-center align-middle">STT</th>
-                    <th scope="col" class="text-center align-middle">ĐIỂM TRƯỜNG</th>
-                    <th scope="col" class="text-left align-middle">TIỀN</th>
+                    <th scope="col" class="text-left align-middle">ĐIỂM TRƯỜNG</th>
+                    <th scope="col" class="text-left align-middle">TIỀN (VNĐ)</th>
                     <th scope="col" class="text-left align-middle">GHI CHÚ</th>
                   </tr>
                   </thead>
                   <tbody>
                   <tr *ngFor="let diemTruong of congNo?.schools; index as i;" class="k-no-border-top">
-                    <th class="align-middle text-left">
+                    <th class="align-middle text-center">
                       {{ i + 1 }}
                     </th>
                     <th>{{ diemTruong?.school?.name }}</th>
-                    <th class="text-left">{{ diemTruong?.total | currency : '' : '' : '1.0-0' }} VNĐ</th>
+                    <th class="text-left">{{ diemTruong?.total | currency : '' : '' : '1.0-0' }}</th>
                     <th class="text-left">{{ congNo?.note }}</th>
                   </tr>
                   </tbody>
                   <tbody>
-                  <th class="align-middle text-right total" colspan="7">Tổng cộng: {{ congNo?.masterTotal | currency : '' : '' : '1.0-0' }} VNĐ</th>
+                  <th class="align-middle text-right total" colspan="7">Tổng
+                    cộng: {{ congNo?.masterTotal | currency : '' : '' : '1.0-0' }} VNĐ
+                  </th>
                   </tbody>
                 </table>
               </div>

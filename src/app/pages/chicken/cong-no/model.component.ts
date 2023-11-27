@@ -37,6 +37,7 @@ export class CongNoComponent implements OnInit {
   orderTotalBySchool = [];
   orderByEmployee = [];
   congNoByCustomer: CongNoByCustomer[] = [];
+  isSameDay = false;
   settings = {
     add: {
       confirmCreate: true,
@@ -154,14 +155,10 @@ export class CongNoComponent implements OnInit {
     actions: {
       edit: false,
       add: false,
-      delete: true,
-      custom: [
-        {
-          name: 'tra-hang',
-          title: '<span class="custom-action">Trả hàng</span>',
-        },
-      ],
-      columnTitle: '',
+      delete: false,
+    },
+    pager: {
+      perPage: 50,
     },
   };
 
@@ -169,7 +166,7 @@ export class CongNoComponent implements OnInit {
 
   constructor(
     private service: SmartTableData,
-    private modelService: OrderService,
+    public modelService: OrderService,
     private currencyPipe: CurrencyPipe,
     private dialog: MatDialog,
     private utilService: UtilService,
@@ -259,6 +256,8 @@ export class CongNoComponent implements OnInit {
       this.modelService.filterEndDate = this.utilService.getDateFromString(endDate.value);
       this.oFilter.startDate = this.modelService.filterStartDate;
       this.oFilter.endDate = this.modelService.filterEndDate;
+      this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
+        this.modelService.filterStartDate.getTime() === this.modelService.filterEndDate.getTime();
     }
     this.globalFilter();
   }
@@ -394,7 +393,7 @@ export class CongNoComponent implements OnInit {
         qtyReturn = c.qtyReturn;
       }
     });
-    return qtyReturn;
+    return qtyReturn === 0 ? ' ' : qtyReturn;
   }
 
   /**

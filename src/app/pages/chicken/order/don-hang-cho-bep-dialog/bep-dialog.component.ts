@@ -36,6 +36,7 @@ export class BepDialog implements OnInit {
 
   printOrder() {
     window.print();
+    this.onNoClick();
   }
 
 }

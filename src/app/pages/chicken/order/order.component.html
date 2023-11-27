@@ -67,7 +67,7 @@
               <mat-card *ngFor="let o of category?.value; trackBy: trackByFn; index as i;" (click)="addToCart(o);">
                 <div class="qty-in-cart" *ngIf="itemInCart(o)">{{ itemInCart(o) }}</div>
                 <mat-card-header>
-                  <mat-card-title>{{ o?.name }}</mat-card-title>
+                  <mat-card-title>{{ o?.name }} ({{ o?.productType?.name }})</mat-card-title>
                 </mat-card-header>
               </mat-card>
             </div>

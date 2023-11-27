@@ -39,6 +39,9 @@ export class ProductTypeComponent implements OnInit {
         type: 'string',
       },
     },
+    pager: {
+      perPage: 50,
+    },
   };
 
   source: LocalDataSource = new LocalDataSource();
@@ -50,9 +53,9 @@ export class ProductTypeComponent implements OnInit {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()})
-        )
-      )
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
