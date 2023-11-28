@@ -45,6 +45,7 @@ export class CategoryComponent implements OnInit {
     pager: {
       perPage: 50,
     },
+    noDataMessage: 'Không thấy Nhóm SP nào!',
   };
 
   source: LocalDataSource = new LocalDataSource();

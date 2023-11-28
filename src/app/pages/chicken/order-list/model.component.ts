@@ -161,6 +161,7 @@ export class OrderListComponent implements OnInit {
     pager: {
       perPage: 50,
     },
+    noDataMessage: 'Không thấy ĐƠN HÀNG nào!',
   };
 
   source: LocalDataSource = new LocalDataSource();

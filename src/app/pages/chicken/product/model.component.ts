@@ -88,6 +88,7 @@ export class ProductComponent implements OnInit {
     pager: {
       perPage: 50,
     },
+    noDataMessage: 'Không thấy SẢN PHẨM nào!',
   };
 
   source: LocalDataSource = new LocalDataSource();

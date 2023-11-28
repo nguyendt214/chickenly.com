@@ -160,6 +160,7 @@ export class CongNoComponent implements OnInit {
     pager: {
       perPage: 50,
     },
+    noDataMessage: 'Không thấy công nợ nào!',
   };
 
   source: LocalDataSource = new LocalDataSource();

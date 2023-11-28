@@ -1,8 +1,10 @@
 <nb-card *ngIf="order?.item?.length">
   <nb-card-body>
-    <ng2-smart-table [settings]="settings" [source]="source"
+    <ng2-smart-table #table [settings]="settings" [source]="source"
                      (editConfirm)="onEditConfirm($event)"
-                     (deleteConfirm)="onDeleteConfirm($event)">
+                     (deleteConfirm)="onDeleteConfirm($event)"
+                     (edit)="editPopup($event)"
+                     (userRowSelect)="editProduct($event)">
     </ng2-smart-table>
   </nb-card-body>
 </nb-card>

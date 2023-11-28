@@ -30,7 +30,7 @@
             </mat-select>
           </mat-form-field>
           <!--            TRƯỜNG-->
-          <mat-form-field class="padding-left-10">
+          <mat-form-field>
             <mat-label>ĐỊA ĐIỂM</mat-label>
             <mat-select [(ngModel)]="selectSchool" required>
               <mat-option value="" (click)="chonTruong(null)">Chọn Địa Điểm</mat-option>
@@ -40,7 +40,7 @@
             </mat-select>
           </mat-form-field>
           <!--            NHAN VIEN-->
-          <mat-form-field class="padding-left-10">
+          <mat-form-field>
             <mat-label>NHÂN VIÊN GIAO</mat-label>
             <mat-select [(ngModel)]="selectEmployee">
               <mat-option value="" (click)="chonNV(null)">Chọn NV</mat-option>
@@ -53,7 +53,7 @@
 
         <!--              Sản phẩm-->
         <div class="clearfix"></div>
-        <h5>SẢN PHẨM</h5>
+        <h6>( click từng dòng để chỉnh sửa )</h6>
         <mat-accordion>
           <mat-expansion-panel *ngFor="let category of products | keyvalue; let index = index;"
                                [expanded]="index === 0">

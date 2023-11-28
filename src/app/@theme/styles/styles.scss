@@ -133,6 +133,9 @@
   .mat-mdc-form-field-infix {
     width: 230px;
   }
+  .mat-mdc-form-field {
+    padding: 0 10px;
+  }
 }
 .btn-indonhang {
   margin-bottom: 10px;
@@ -233,5 +236,19 @@ button:focus {
   }
   .cn-kh {
     margin-top: 30px;
+  }
+}
+.edit-order-item {
+  mat-form-field {
+    margin-right: 10px;
+  }
+  .qui-cach-sp {
+    width: 50%;
+    .mat-mdc-text-field-wrapper {
+      background-color: white;
+    }
+  }
+  .success {
+    margin-right: 16px;
   }
 }

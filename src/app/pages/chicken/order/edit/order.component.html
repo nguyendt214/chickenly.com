@@ -1,6 +1,6 @@
 <nb-card class="col-md-12 col-lg-12 col-xxxl-12 tao-don-hang">
   <nb-card-body class="top-padding">
-    <h4 class="text-center">ĐỔI TRẢ ĐƠN HÀNG</h4>
+    <h4 class="text-center">CHỈNH SỬA ĐƠN HÀNG</h4>
     <div class="col-md-12 col-lg-12 col-xxxl-12">
       <div class="kselect">
         <h5>Ngày ra đơn: {{ order?.date | date: 'dd/MM/yyyy'}}</h5>
@@ -15,8 +15,8 @@
             </mat-select>
           </mat-form-field>
           <!--            TRƯỜNG-->
-          <mat-form-field class="padding-left-10">
-            <mat-label>Trường</mat-label>
+          <mat-form-field>
+            <mat-label>ĐỊA ĐIỂM</mat-label>
             <mat-select [value]="order?.school?.key">
               <mat-option *ngFor="let o of schools" [value]="o.key" (click)="chonTruong(o)">
                 {{o.name}}
@@ -24,7 +24,7 @@
             </mat-select>
           </mat-form-field>
           <!--            NHAN VIEN-->
-          <mat-form-field class="padding-left-10">
+          <mat-form-field>
             <mat-label>NHÂN VIÊN GIAO</mat-label>
             <mat-select [value]="order?.employee?.key">
               <mat-option *ngFor="let o of employees" [value]="o.key" (click)="chonNV(o)">
@@ -37,10 +37,11 @@
         <!--Sản phẩm-->
         <div class="clearfix"></div>
         <h5>SẢN PHẨM</h5>
+        <h6>( click từng dòng để chỉnh sửa )</h6>
         <!--  Shopping cart -->
-        <app-product-list [products]="products" [order]="order" [editOrder]="true" class="shopping-cart"></app-product-list>
+        <app-product-list [products]="products" [order]="order" [editOrder]="true" [orderKey]="orderId" class="shopping-cart"></app-product-list>
         <mat-form-field class="example-full-width tra-hang-note">
-          <mat-label>Ghi chú trả hàng</mat-label>
+          <mat-label>Ghi chú cho cả đơn hàng</mat-label>
           <textarea matInput placeholder="Ghi chi tiết nhất có thể: ngày trả, lý do, ..." [(ngModel)]="order.note"></textarea>
         </mat-form-field>
       </div>

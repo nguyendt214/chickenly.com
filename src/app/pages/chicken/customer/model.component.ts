@@ -5,6 +5,7 @@ import { SmartTableData } from '../../../@core/data/smart-table';
 import { MainService } from '../../../main/main.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { map } from 'rxjs/operators';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'ngx-smart-table-customer',
@@ -51,6 +52,7 @@ export class CustomerComponent implements OnInit {
     pager: {
       perPage: 50,
     },
+    noDataMessage: 'Không thấy KHÁCH HÀNG nào!',
   };
 
   source: LocalDataSource = new LocalDataSource();
@@ -59,6 +61,7 @@ export class CustomerComponent implements OnInit {
     private service: SmartTableData,
     private mainService: MainService,
     private modelService: CustomerService,
+    private dialog: MatDialog,
   ) {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>

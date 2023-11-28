@@ -1,0 +1,46 @@
+<nb-card class="edit-order-item">
+  <nb-card-header>Chỉnh sửa Sản Phẩm: {{cart.product.name}}</nb-card-header>
+  <nb-card-body>
+    <mat-form-field class="example-full-width">
+      <mat-label>Nhóm sản phẩm</mat-label>
+      <input matInput value="{{cart.product.category.name}}" disabled>
+    </mat-form-field>
+    <mat-form-field class="example-full-width">
+      <mat-label>Tên sản phẩm</mat-label>
+      <input matInput value="{{cart.product.name}}" disabled>
+    </mat-form-field>
+    <div class="clearfix"></div>
+    <mat-form-field class="qui-cach-sp">
+      <mat-form-field>
+        <mat-label>Qui cách sản phẩm</mat-label>
+        <mat-select [value]="cart?.product?.productType.key">
+          <mat-option *ngFor="let prt of data.productTypes" [value]="prt.key" (click)="selectProductType(prt)">
+            {{prt.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+    </mat-form-field>
+    <div class="clearfix"></div>
+    <mat-form-field class="example-form-field">
+      <mat-label>SỐ LƯỢNG GIAO</mat-label>
+      <input matInput type="text" [(ngModel)]="qty" (keyup.enter)="submit()">
+    </mat-form-field>
+    <mat-form-field class="example-form-field">
+      <mat-label>SỐ LƯỢNG TRẢ</mat-label>
+      <input matInput type="text" [(ngModel)]="qtyReturn" (keyup.enter)="submit()">
+    </mat-form-field>
+    <mat-form-field class="example-form-field">
+      <mat-label>GIÁ</mat-label>
+      <input matInput type="text" [(ngModel)]="price" (keyup.enter)="submit()">
+    </mat-form-field>
+    <div class="clearfix"></div>
+    <mat-form-field class="w-100">
+      <mat-label>GHI CHÚ CHO SẢN PHẨM</mat-label>
+      <textarea matInput placeholder="Càng chi tiết càng tốt ..." [(ngModel)]="note"></textarea>
+    </mat-form-field>
+  </nb-card-body>
+  <nb-card-footer>
+    <button nbButton status="success" class="success" (click)="submit()">Cập nhật sản phẩm</button>
+    <button class="cancel" nbButton status="danger" (click)="cancel()">HỦY BỎ</button>
+  </nb-card-footer>
+</nb-card>

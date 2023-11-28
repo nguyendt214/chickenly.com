@@ -16,6 +16,7 @@ import { OrderListComponent } from './order-list/model.component';
 import { BepDialog } from './order/don-hang-cho-bep-dialog/bep-dialog.component';
 import { EditOrderComponent } from './order/edit/order.component';
 import { CongNoComponent } from './cong-no/model.component';
+import { OrderItemDialog } from './product/order-dialog/order-item-dialog.component';
 
 const routes: Routes = [{
   path: '',
@@ -92,6 +93,7 @@ export const routedComponents = [
   CongNoComponent,
   EditOrderComponent,
   ProductListComponent,
+  OrderItemDialog,
   CartDialog,
   BepDialog,
 ];
