@@ -5,6 +5,8 @@ import { SmartTableData } from '../../../@core/data/smart-table';
 import { MainService } from '../../../main/main.service';
 import { map } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../../../main/employee.service';
+import { MatDialog } from '@angular/material/dialog';
+import { NbToastrService } from '@nebular/theme';
 
 @Component({
   selector: 'ngx-smart-table-employee',
@@ -55,10 +57,14 @@ export class EmployeeComponent implements OnInit {
 
   source: LocalDataSource = new LocalDataSource();
 
+  toaConfig = {};
+
   constructor(
     private service: SmartTableData,
     private mainService: MainService,
     private modelService: EmployeeService,
+    private dialog: MatDialog,
+    private toastrService: NbToastrService,
   ) {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
@@ -97,5 +103,23 @@ export class EmployeeComponent implements OnInit {
     } else {
       e.confirm.reject();
     }
+  }
+
+  toastrConfig() {
+    this.toaConfig = {
+      status: 'success',
+      destroyByClick: true,
+      duration: 3000,
+      hasIcon: true,
+      position: 'bottom-right',
+      preventDuplicates: true,
+    };
+  }
+
+  showToa() {
+    this.toastrService.show(
+      'Tiếp tục nào!!!',
+      `Tạo ĐƠN HÀNG THÀNH CÔNG`,
+      this.toaConfig);
   }
 }

@@ -30,6 +30,7 @@ import { MatExpansionModule } from '@angular/material/expansion';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 
 @NgModule({
   imports: [
@@ -63,6 +64,7 @@ import { MatDividerModule } from '@angular/material/divider';
     MatTableModule,
     MatButtonModule,
     MatDividerModule,
+    MatTooltipModule,
     CdkAccordionModule,
     MatExpansionModule,
     MatDialogModule,

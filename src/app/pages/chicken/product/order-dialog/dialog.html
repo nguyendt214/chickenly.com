@@ -25,7 +25,7 @@
       <mat-label>SỐ LƯỢNG GIAO</mat-label>
       <input matInput type="text" [(ngModel)]="qty" (keyup.enter)="submit()">
     </mat-form-field>
-    <mat-form-field class="example-form-field">
+    <mat-form-field class="example-form-field" *ngIf="orderKey">
       <mat-label>SỐ LƯỢNG TRẢ</mat-label>
       <input matInput type="text" [(ngModel)]="qtyReturn" (keyup.enter)="submit()">
     </mat-form-field>

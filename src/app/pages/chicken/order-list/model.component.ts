@@ -135,13 +135,13 @@ export class OrderListComponent implements OnInit {
         },
       },
       orderTotal: {
-        title: 'Tổng tiền',
+        title: 'Tổng tiền (VNĐ)',
         valuePrepareFunction: (cell, row) => {
           let total = 0;
           row.item.forEach((item: Cart) => {
             total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
           });
-          return this.currencyPipe.transform(total, '', '', '1.0-0') + ' VNĐ';
+          return this.currencyPipe.transform(total, '', '', '1.0-0');
         },
         filter: false,
       },
@@ -292,7 +292,7 @@ export class OrderListComponent implements OnInit {
 
   onCustom(event) {
     if (event.action === 'tra-hang') {
-      this.utilService.gotoPage('pages/chicken/order/' + event.data.key);
+      this.utilService.gotoPage('pages/chicken/order/edit/' + event.data.key);
     }
   }
 

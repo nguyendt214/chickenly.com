@@ -1,4 +1,4 @@
-import { Component, Input, OnChanges, OnInit, SimpleChanges, ViewChild } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
 import { LocalDataSource, Ng2SmartTableComponent } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../../@core/data/smart-table';
@@ -22,7 +22,8 @@ export class ProductListComponent implements OnInit, OnChanges {
   @Input() order: Order;
   @Input() editOrder = false;
   @Input() orderKey: string = '';
-
+  @Output() deleteProduct: EventEmitter<any> = new EventEmitter();
+  @Output() createNewOrder: EventEmitter<any> = new EventEmitter();
   categories?: Category[] = [];
   productTypes?: ProductType[] = [];
   all?: Product[] = [];
@@ -68,7 +69,7 @@ export class ProductListComponent implements OnInit, OnChanges {
         valuePrepareFunction: (cell, row) => {
           return '<span class="text-center d-block">' + row.product.productType.name + '</span>';
         },
-        editable: false,
+        editable: true,
         filter: false,
       },
       qty: {
@@ -110,7 +111,7 @@ export class ProductListComponent implements OnInit, OnChanges {
       },
     },
     hideSubHeader: false,
-    mode: 'inline',
+    mode: 'external',
     pager: {
       perPage: 50,
     },
@@ -141,7 +142,7 @@ export class ProductListComponent implements OnInit, OnChanges {
     if (this.editOrder) {
       // this.settings.columns.qty.editable = false;
       // this.settings.columns.price.editable = false;
-      this.settings.mode = 'external';
+      // this.settings.mode = 'external';
     } else {
       delete this.settings.columns.qtyReturn;
     }
@@ -164,8 +165,13 @@ export class ProductListComponent implements OnInit, OnChanges {
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.order.item.filter((item: Cart) => item.product.key !== e.data.product.key);
-      e.confirm.resolve();
+      this.order.item = this.order.item.filter((item: Cart) => item.product.key !== e.data.product.key);
+      if (this.editOrder) {
+        this.deleteProduct.emit(e.data.product.key);
+      } else {
+        this.createNewOrder.emit(this.order);
+      }
+      // e.confirm.resolve();
     } else {
       e.confirm.reject();
     }
@@ -256,17 +262,17 @@ export class ProductListComponent implements OnInit, OnChanges {
       position: {top: '10px'},
     });
 
-    dialogRef.afterClosed().subscribe(() => {
-
+    dialogRef.afterClosed().subscribe((data) => {
+      if (!this.editOrder) {
+        this.order = data?.order;
+        this.createNewOrder.emit(this.order);
+      }
     });
   }
   editProduct(event) {
-    if (this.editOrder) {
-      this.editPopup(event);
-    } else {
-      this.table.grid.getSelectedRows().forEach((row) => {
-        this.table.grid.edit(row);
-      });
-    }
+    this.editPopup(event);
+    // this.table.grid.getSelectedRows().forEach((row) => {
+    //   this.table.grid.edit(row);
+    // });
   }
 }

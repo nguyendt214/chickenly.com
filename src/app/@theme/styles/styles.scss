@@ -136,6 +136,16 @@
   .mat-mdc-form-field {
     padding: 0 10px;
   }
+  .mat-expansion-panel-header-title {
+    &:hover {
+      color: red;
+    }
+  }
+  .mat-expanded {
+    .mat-expansion-panel-header-title {
+      color: red;
+    }
+  }
 }
 .btn-indonhang {
   margin-bottom: 10px;

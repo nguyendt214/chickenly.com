@@ -1,24 +1,25 @@
 import { ChangeDetectorRef, Component, OnInit } from '@angular/core';
-import { UntypedFormBuilder, UntypedFormGroup, Validators } from '@angular/forms';
-import { Cart, Order, OrderService } from '../../../main/order.service';
-import { School, SchoolService } from '../../../main/school.service';
-import { Customer, CustomerService } from '../../../main/customer.service';
-import { Employee, EmployeeService } from '../../../main/employee.service';
-import { Product, ProductService } from '../../../main/product.service';
+import { UntypedFormBuilder, UntypedFormGroup } from '@angular/forms';
+import { Cart, Order, OrderService } from '../../../../main/order.service';
+import { School, SchoolService } from '../../../../main/school.service';
+import { Customer, CustomerService } from '../../../../main/customer.service';
+import { Employee, EmployeeService } from '../../../../main/employee.service';
+import { Product, ProductService } from '../../../../main/product.service';
 import { map } from 'rxjs/operators';
-import { Category, CategoryService } from '../../../main/category.service';
-import { ProductType, ProductTypeService } from '../../../main/product-type.service';
+import { Category, CategoryService } from '../../../../main/category.service';
+import { ProductType, ProductTypeService } from '../../../../main/product-type.service';
 import { MatDialog } from '@angular/material/dialog';
-import { CartDialog } from './cart-dialog/cart-dialog.component';
-import { UtilService } from '../../../main/util.service';
+import { CartDialog } from '../cart-dialog/cart-dialog.component';
+import { UtilService } from '../../../../main/util.service';
 import { NbToastrService } from '@nebular/theme';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
-  selector: 'ngx-order',
+  selector: 'ngx-order-edit',
   templateUrl: 'order.component.html',
   styleUrls: ['order.component.scss'],
 })
-export class OrderComponent implements OnInit {
+export class OrderEdit2Component implements OnInit {
   // TẠO ĐƠN HÀNG
   order: Order = new Order();
   schools: School[] = [];
@@ -38,6 +39,7 @@ export class OrderComponent implements OnInit {
   selectKH = '';
   selectSchool = '';
   selectEmployee = '';
+  orderId: string;
 
   constructor(
     private fb: UntypedFormBuilder,
@@ -52,19 +54,33 @@ export class OrderComponent implements OnInit {
     private dialog: MatDialog,
     private utilService: UtilService,
     private toastrService: NbToastrService,
+    private activatedRoute: ActivatedRoute,
   ) {
+    this.orderId = this.activatedRoute.snapshot.paramMap.get('orderId');
     this.getAllProductTypes();
     this.getAllCategories();
     this.getAllCustomer();
     this.getAllEmployee();
     this.getAllProducts();
     this.getAllSchools();
-    this.order.item = [];
-    this.order.date = this.today.toString();
-    this.toastrConfig();
+    this.getOrderDetail();
   }
 
   ngOnInit() {
+  }
+
+  getOrderDetail() {
+    this.orderService.getOrderByKey(this.orderId)
+      .subscribe(order => {
+        this.order = order;
+        this.selectKH = this.order?.customer?.key ?? '';
+        this.selectSchool = this.order?.school?.key ?? '';
+        this.selectEmployee = this.order?.employee?.key ?? '';
+        this.today = new Date(this.order.date);
+        this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
+        this.order = Object.assign({}, this.order);
+        this.checkButtonTaoDonHang();
+      });
   }
 
   toastrConfig() {
@@ -79,9 +95,10 @@ export class OrderComponent implements OnInit {
   }
 
   showToa() {
+    this.toastrConfig();
     this.toastrService.show(
-      'Tiếp tục nào!!!',
-      `Tạo ĐƠN HÀNG THÀNH CÔNG`,
+      'Tự động quay trở lại danh sách đơn hàng sau 3 giây',
+      `CẬP NHẬT ĐƠN HÀNG THÀNH CÔNG`,
       this.toaConfig);
   }
 
@@ -264,22 +281,23 @@ export class OrderComponent implements OnInit {
     this.enableTaoDonHang = !!this.order.customer && !!this.order.school
       && (this.order.item.length > 0);
   }
-  createNewOrder(order: any) {
-    this.order = order;
+  removeProduct(productKey: string) {
+    this.order.item = this.order.item.filter((item: Cart) => item.product.key !== productKey);
     this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
     this.order = Object.assign({}, this.order);
-    this.checkButtonTaoDonHang();
   }
 
-  taoDonHang() {
+  capNhatDonHang() {
     this.order = this.orderService.removePropertiesBeforeSave(this.order);
-    this.orderService.create(this.order).then(
+    this.order.updated = (new Date()).toLocaleDateString();
+    this.orderService.update(this.orderId, this.order).then(
       () => {
-        this.order.item = [];
-        this.order.sItem = null;
-        this.orderService.cacheOrder = null;
         this.showToa();
-        this.checkButtonTaoDonHang();
+        // Clear order cache
+        this.orderService.cacheOrder = null;
+        setTimeout(() => {
+          this.utilService.gotoPage('pages/chicken/order-list');
+        }, 3000);
       },
     );
   }

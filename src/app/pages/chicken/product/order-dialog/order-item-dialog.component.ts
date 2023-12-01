@@ -46,7 +46,7 @@ export class OrderItemDialog implements OnInit {
   }
 
   onNoClick(): void {
-    this.dialogRef.close();
+    this.dialogRef.close({order: this.order});
   }
 
 
@@ -89,7 +89,7 @@ export class OrderItemDialog implements OnInit {
     this.toastrConfig();
     this.toastrService.show(
       `SP: ${this.cart.product.name}`,
-      `CẬP NHẬT SẢN PHẨM THÀNH CÔNG`,
+      `CẬP NHẬT SẢN PHẨM VÀ ĐƠN HÀNG THÀNH CÔNG`,
       this.toaConfig);
   }
 
@@ -105,13 +105,15 @@ export class OrderItemDialog implements OnInit {
         cart.product.note = this.note;
       }
     });
-    this.orderService.update(this.orderKey, this.order).then(
-      () => {
-        this.showToa();
-        // Clear order cache
-        this.orderService.cacheOrder = null;
-      },
-    );
+    if (this.orderKey) {
+      this.orderService.update(this.orderKey, this.order).then(
+        () => {
+          this.showToa();
+          // Clear order cache
+          this.orderService.cacheOrder = null;
+        },
+      );
+    }
   }
 
   selectProductType(prt: ProductType) {

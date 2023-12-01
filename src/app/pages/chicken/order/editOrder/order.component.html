@@ -75,15 +75,19 @@
         </mat-accordion>
 
         <!--  Shopping cart -->
-        <app-product-list [products]="products" [order]="order" [editOrder]="false" (createNewOrder)="createNewOrder($event)"
+        <app-product-list [products]="products" [order]="order" [editOrder]="true" (deleteProduct)="removeProduct($event)"  [orderKey]="orderId"
                           class="shopping-cart"></app-product-list>
         <!--  END Shopping cart -->
+        <mat-form-field class="example-full-width tra-hang-note">
+          <mat-label>Ghi chú cho cả đơn hàng</mat-label>
+          <textarea matInput placeholder="Ghi chi tiết nhất có thể: ngày trả, lý do, ..." [(ngModel)]="order.note"></textarea>
+        </mat-form-field>
 
       </div>
     </div>
     <!--  END CONTENT-->
-    <button mat-raised-button disabled *ngIf="!enableTaoDonHang" color="warn">TẠO ĐƠN HÀNG</button>
-    <button mat-raised-button *ngIf="enableTaoDonHang" (click)="taoDonHang()" color="accent">TẠO ĐƠN HÀNG</button>
+    <button mat-raised-button disabled *ngIf="!enableTaoDonHang" color="warn">CẬP NHẬT ĐƠN HÀNG</button>
+    <button mat-raised-button *ngIf="enableTaoDonHang" (click)="capNhatDonHang()" color="accent">CẬP NHẬT ĐƠN HÀNG</button>
   </nb-card-body>
 </nb-card>
 
