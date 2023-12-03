@@ -58,7 +58,7 @@
     <div class="cong-no">
       <mat-accordion>
         <mat-expansion-panel *ngFor="let item of orderBySchool; let index = index;"
-                             [expanded]="index === 0">
+                             [expanded]="false">
           <mat-expansion-panel-header>
             <mat-panel-title>
               {{ item[0]?.school?.name | uppercase }}

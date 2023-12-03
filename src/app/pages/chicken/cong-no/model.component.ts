@@ -177,6 +177,9 @@ export class CongNoComponent implements OnInit {
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
   ) {
+    this.getAllCustomer();
+    this.getAllSchools();
+    this.getAllEmployee();
     if (this.modelService.cacheOrder) {
       this.preparePageData(this.modelService.cacheOrder);
     } else {
@@ -191,10 +194,6 @@ export class CongNoComponent implements OnInit {
         this.preparePageData(all);
       });
     }
-
-    this.getAllCustomer();
-    this.getAllSchools();
-    this.getAllEmployee();
   }
 
   preparePageData(orders: Order[]) {
@@ -453,22 +452,52 @@ export class CongNoComponent implements OnInit {
       });
     });
     // Cong No Tong theo Khach Hang
-    this.hoaDonTongByCustomer(this.orderByCustomer);
+    // this.hoaDonTongByCustomer(this.orderByCustomer);
+    this.congNoTheoKhachHang();
   }
 
+  congNoTheoKhachHang() {
+    this.customers.forEach((c: Customer) => {
+      const cnbs = JSON.parse(JSON.stringify(this.orderBySchool));
+      const congNo = new CongNoByCustomer();
+      congNo.schools = [];
+      congNo.masterTotal = 0;
+      congNo.customer = Object.assign({}, c);
+      cnbs.forEach((orders: Order[], index: number) => {
+        const order = orders.shift();
+        if (order) {
+          const masterOrder = order.master;
+          if (masterOrder.customer.key === c.key) {
+            const congNoBySchool = new CongNoBySchool();
+            congNoBySchool.school = Object.assign({}, masterOrder.school);
+            congNoBySchool.total = this.calaulatorOrderPrice(masterOrder);
+            congNo.masterTotal += congNoBySchool.total;
+            congNo.schools.push(congNoBySchool);
+          }
+        }
+      });
+      this.congNoByCustomer.push(congNo);
+    });
+  }
+
+  /**
+   * Công nợ theo khách hàng
+   * @param orders
+   */
   hoaDonTongByCustomer(orders: Order[]) {
     orders.forEach((customer: any) => {
       customer.forEach((order: Order, idx) => {
-        if (idx === 0) {
+        if (idx === 0 && order.customer.key === '-NiLEWbxAR_J42ncXqL0') {
           const groupBySchool = this.utilService.groupItemBy(customer, 'school.key');
+          const schoolKeys = [];
           const congNo = new CongNoByCustomer();
           congNo.schools = [];
           congNo.masterTotal = 0;
-          const schoolKeys = [];
+          // Tổng hợp theo trường
           Object.entries(groupBySchool).forEach(([key, value], index) => {
             const _orders: Order[] = Object.values(value);
             _orders.forEach((o: Order, _idx: number) => {
-              if (_idx === 0) {
+              if (!schoolKeys.includes(key)) {
                 // Thêm trường mới
                 schoolKeys.push(key);
                 const congNoBySchool = new CongNoBySchool();
@@ -483,12 +512,16 @@ export class CongNoComponent implements OnInit {
                 congNo.schools.push(congNoBySchool);
               } else {
                 // Đã có trong công nợ, tìm trường và cộng dồn total
-                congNo.schools.forEach((cnbs: CongNoBySchool) => {
-                  // Tính tổng tiền
-                  o.item.forEach((cart: Cart) => {
-                    cnbs.total += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
-                    congNo.masterTotal += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
-                  });
+                congNo.schools.forEach((cnbs: CongNoBySchool, cnbsIndex: number) => {
+                  if (o.school.key === key && cnbsIndex === 0) {
+                    // Tính tổng tiền
+                    // console.log(o.item);
+                    o.item.forEach((cart: Cart) => {
+                      cnbs.total += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
+                      congNo.masterTotal += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
+                    });
+
+                  }
                 });
               }
             });
@@ -499,6 +532,10 @@ export class CongNoComponent implements OnInit {
     });
   }
 
+  /**
+   * Công nợ theo từng trường
+   * @param orders
+   */
   hoaDonTongBySchool(orders: Order[]) {
     const order = new Order();
     order.item = [];
