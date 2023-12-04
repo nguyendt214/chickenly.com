@@ -31,6 +31,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
 
 @NgModule({
   imports: [
@@ -65,6 +66,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatDividerModule,
     MatTooltipModule,
+    MatCheckboxModule,
     CdkAccordionModule,
     MatExpansionModule,
     MatDialogModule,

@@ -41,11 +41,11 @@
         <th scope="row" [attr.rowspan]="item?.value?.length" class="align-middle text-center" *ngIf="spIdx === 0">
           {{ sp?.product?.category?.name }}
         </th>
-        <th>{{ sp?.product?.name }}</th>
-        <th class="text-center">{{ sp?.product?.productType?.name }}</th>
-        <th class="text-center">{{ sp?.qty }}</th>
-        <th class="text-center">{{ getReturnByProductKey(sp?.product?.key) }}</th>
-        <th class="text-left">{{ sp?.product?.note }}</th>
+        <th class=" align-middle">{{ sp?.product?.name }}</th>
+        <th class="text-center align-middle ">{{ sp?.product?.productType?.name }}</th>
+        <th class="text-center align-middle">{{ sp?.qty }}</th>
+        <th class="text-center align-middle">{{ getReturnByProductKey(sp?.product?.key) }}</th>
+        <th class="text-left align-middle">{{ sp?.product?.note }}</th>
       </tr>
       </tbody>
       <tbody *ngIf="order?.note?.length">

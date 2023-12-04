@@ -38,6 +38,8 @@ export class CongNoComponent implements OnInit {
   orderByEmployee = [];
   congNoByCustomer: CongNoByCustomer[] = [];
   isSameDay = false;
+  showOrder = false;
+  showSellPrice = true;
   settings = {
     add: {
       confirmCreate: true,
@@ -396,6 +398,10 @@ export class CongNoComponent implements OnInit {
     return qtyReturn === 0 ? ' ' : qtyReturn;
   }
 
+  getTotalByItem(item: Cart) {
+    return (item.qty - (item.qtyReturn ?? 0)) * item.price;
+  }
+
   /**
    * Tổng tiền 1 order
    * @param order
@@ -422,7 +428,7 @@ export class CongNoComponent implements OnInit {
     orders.forEach((o: Order) => {
       total += this.calaulatorOrderPrice(o);
     });
-    return this.currencyPipe.transform(total, '', '', '1.0-0') + ' VNĐ';
+    return total;
   }
 
   tongHopCongNo() {
@@ -464,17 +470,11 @@ export class CongNoComponent implements OnInit {
       congNo.masterTotal = 0;
       congNo.customer = Object.assign({}, c);
       cnbs.forEach((orders: Order[], index: number) => {
-        const order = orders.shift();
-        if (order) {
-          const masterOrder = order.master;
-          if (masterOrder.customer.key === c.key) {
-            const congNoBySchool = new CongNoBySchool();
-            congNoBySchool.school = Object.assign({}, masterOrder.school);
-            congNoBySchool.total = this.calaulatorOrderPrice(masterOrder);
-            congNo.masterTotal += congNoBySchool.total;
-            congNo.schools.push(congNoBySchool);
-          }
-        }
+        const congNoBySchool = new CongNoBySchool();
+        congNoBySchool.school = Object.assign({}, orders[0].school);
+        congNoBySchool.total = this.tongTienByOrders(orders);
+        congNo.masterTotal += congNoBySchool.total;
+        congNo.schools.push(congNoBySchool);
       });
       this.congNoByCustomer.push(congNo);
     });
