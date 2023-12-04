@@ -206,7 +206,7 @@ export class CongNoComponent implements OnInit {
     this.orderFilter = orders;
     this.source.load(this.orderFilter);
     // Lấy order cho 7 ngày gần nhất
-    const date = this.modelService.getLast7Days();
+    const date = this.modelService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
@@ -372,7 +372,7 @@ export class CongNoComponent implements OnInit {
 
   resetFilter() {
     this.modelService.filterStartDate = null;
-    const date = this.modelService.getLast7Days();
+    const date = this.modelService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.selectKH = '';
