@@ -26,6 +26,7 @@ export class OrderComponent implements OnInit {
   categories: Category[] = [];
   productTypes: ProductType[] = [];
   products: Product[] = [];
+  allCustomers: Customer[] = [];
   customers: Customer[] = [];
   employees: Employee[] = [];
   panelOpenState = false;
@@ -155,7 +156,7 @@ export class OrderComponent implements OnInit {
 
   getAllCustomer() {
     if (this.customerService.cacheCustomers) {
-      this.customers = this.customerService.cacheCustomers;
+      this.customers = this.allCustomers = this.customerService.cacheCustomers;
     } else {
       this.customerService.getAll().snapshotChanges().pipe(
         map(changes =>
@@ -164,7 +165,7 @@ export class OrderComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
-        this.customers = this.customerService.cacheCustomers = all;
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
       });
     }
   }
@@ -242,6 +243,12 @@ export class OrderComponent implements OnInit {
 
   chonTruong(o) {
     this.order.school = o;
+    this.customers = this.allCustomers.filter((c: Customer) => c.key === o.owner);
+    if (this.customers.length === 0) {
+      this.customers = Object.assign({}, this.allCustomers);
+    } else {
+      this.selectKH = this.customers[0].key;
+    }
     this.checkButtonTaoDonHang();
   }
 

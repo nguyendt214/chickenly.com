@@ -402,6 +402,10 @@ export class CongNoComponent implements OnInit {
     return (item.qty - (item.qtyReturn ?? 0)) * item.price;
   }
 
+  getTotalReturnByItem(item: Cart) {
+    return (item.qtyReturn > 0) ? item.qtyReturn : '';
+  }
+
   /**
    * Tổng tiền 1 order
    * @param order
