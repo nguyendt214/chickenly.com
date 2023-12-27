@@ -11,8 +11,8 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { CartDialog } from '../order/cart-dialog/cart-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UtilService } from '../../../main/util.service';
-import { BepDialog } from '../order/don-hang-cho-bep-dialog/bep-dialog.component';
 import { CategoryService } from '../../../main/category.service';
+import { ExportCsvService } from '../../../main/exportCsv.service';
 
 @Component({
   selector: 'ngx-smart-table-cong-no',
@@ -178,6 +178,7 @@ export class CongNoComponent implements OnInit {
     private schoolService: SchoolService,
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
+    private exportCsvService: ExportCsvService,
   ) {
     this.getAllCustomer();
     this.getAllSchools();
@@ -196,6 +197,17 @@ export class CongNoComponent implements OnInit {
         this.preparePageData(all);
       });
     }
+
+    // this.generateExcel();
+  }
+
+  generateExcel() {
+    const data: any[] = [
+      {name: 'John', age: 30},
+      {name: 'Jane', age: 25},
+      {name: 'Bob', age: 40},
+    ];
+    this.exportCsvService.exportToExcel(data, 'my-data');
   }
 
   preparePageData(orders: Order[]) {
@@ -367,7 +379,9 @@ export class CongNoComponent implements OnInit {
     }
     this.source.load(this.orderFilter);
     // Cong no
-    this.tongHopCongNo();
+    setTimeout(() => {
+      this.tongHopCongNo();
+    });
   }
 
   resetFilter() {
@@ -474,11 +488,13 @@ export class CongNoComponent implements OnInit {
       congNo.masterTotal = 0;
       congNo.customer = Object.assign({}, c);
       cnbs.forEach((orders: Order[], index: number) => {
-        const congNoBySchool = new CongNoBySchool();
-        congNoBySchool.school = Object.assign({}, orders[0].school);
-        congNoBySchool.total = this.tongTienByOrders(orders);
-        congNo.masterTotal += congNoBySchool.total;
-        congNo.schools.push(congNoBySchool);
+        if (orders[0].customer.key === c.key) {
+          const congNoBySchool = new CongNoBySchool();
+          congNoBySchool.school = Object.assign({}, orders[0].school);
+          congNoBySchool.total = this.tongTienByOrders(orders);
+          congNo.masterTotal += congNoBySchool.total;
+          congNo.schools.push(congNoBySchool);
+        }
       });
       this.congNoByCustomer.push(congNo);
     });

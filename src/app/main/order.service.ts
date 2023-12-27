@@ -62,6 +62,7 @@ export class OrderService {
   public filterEndDate: any;
   modelRef: AngularFireList<Order>;
   cacheOrder: any;
+  orderClone: Order;
 
   constructor(
     private db: AngularFireDatabase,

@@ -153,7 +153,11 @@ export class OrderListComponent implements OnInit {
       custom: [
         {
           name: 'tra-hang',
-          title: '<span class="custom-action">Trả hàng</span>',
+          title: '<span class="custom-action">SỬA ĐƠN</span>',
+        },
+        {
+          name: 'clone',
+          title: '<span class="custom-action">COPY</span>',
         },
       ],
       columnTitle: '',
@@ -297,6 +301,9 @@ export class OrderListComponent implements OnInit {
   onCustom(event) {
     if (event.action === 'tra-hang') {
       this.utilService.gotoPage('pages/chicken/order/edit/' + event.data.key);
+    } else if (event.action === 'clone') {
+      this.modelService.orderClone = event.data;
+      this.utilService.gotoPage('pages/chicken/order');
     }
   }
 

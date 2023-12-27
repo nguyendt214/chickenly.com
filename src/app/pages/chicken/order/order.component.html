@@ -8,7 +8,7 @@
           <mat-form-field>
             <mat-label>Chọn ngày</mat-label>
             <input matInput [matDatepicker]="picker" (dateChange)="createDateChooice('change', $event)"
-                   (click)="picker.open()" [ngModel]="today">
+                   (click)="picker.open()" [ngModel]="tomorrow">
             <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
             <mat-datepicker #picker disabled="false"></mat-datepicker>
           </mat-form-field>
