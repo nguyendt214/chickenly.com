@@ -56,6 +56,46 @@
         </section>
       </div>
     </div>
+
+    <!-- Tổng hợp -->
+    <div class="tong-hop">
+      <div class="order-master"
+           *ngIf="modelService?.filterStartDate?.toString() && modelService?.filterEndDate?.toString()">
+        <span>Tổng hợp từ ngày: </span> <b>{{ modelService.filterStartDate | date : 'dd/MM/YYYY' }}
+        - {{ modelService.filterEndDate | date : 'dd/MM/YYYY' }}</b>
+        <span class="text-right tong-hop-tien">{{ tongTienByOrder(tongHopOrder) }}</span>
+      </div>
+      <div class="order-tong-hop">
+        <div class="ktable">
+          <table class="table table-bordered">
+            <thead>
+            <tr>
+              <th scope="col" class="text-center align-middle" colspan="2">Sản Phẩm</th>
+              <th scope="col" class="text-center align-middle">Đơn vị tính</th>
+              <th scope="col" class="text-center align-middle">Số Lượng Giao</th>
+              <th scope="col" class="text-center align-middle">Số Lượng Trả</th>
+              <th scope="col" class="text-center align-middle" *ngIf="showSellPrice">Giá bán</th>
+              <th scope="col" class="text-center align-middle" *ngIf="showSellPrice">Tổng</th>
+            </tr>
+            </thead>
+            <tbody *ngFor="let item of tongHopOrder?.sItem | keyvalue; let idx = index;">
+            <tr *ngFor="let sp of item.value; let spIdx = index;" class="k-no-border-top">
+              <th scope="row" [attr.rowspan]="item?.value?.length" class="align-middle text-center"
+                  *ngIf="spIdx === 0">
+                {{ sp?.product?.category?.name }}
+              </th>
+              <th class=" align-middle">{{ sp?.product?.name }}</th>
+              <th class="text-center align-middle">{{ sp?.product?.productType?.name }}</th>
+              <th class="text-center align-middle">{{ sp?.qty }}</th>
+              <th class="text-center align-middle">{{ getTotalReturnByItem(sp) }}</th>
+              <th class=" align-middle" *ngIf="showSellPrice">{{ sp?.price | currency : '' : '' : '1.0-0' }}</th>
+              <th class=" align-middle" *ngIf="showSellPrice">{{ getTotalByItem(sp) | currency : '' : '' : '1.0-0' }}</th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
     <!--    CÔNG NỢ THEO ĐỊA ĐIỂM-->
     <h6 class="text-center cn-title">CÔNG NỢ THEO ĐỊA ĐIỂM</h6>
     <div class="cong-no">

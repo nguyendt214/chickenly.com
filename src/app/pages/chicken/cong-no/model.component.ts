@@ -166,7 +166,7 @@ export class CongNoComponent implements OnInit {
   };
 
   source: LocalDataSource = new LocalDataSource();
-
+  tongHopOrder: Order;
   constructor(
     private service: SmartTableData,
     public modelService: OrderService,
@@ -431,6 +431,9 @@ export class CongNoComponent implements OnInit {
 
   calaulatorOrderPrice(o: Order) {
     let total = 0;
+    if (!o) {
+      return 0;
+    }
     o.item.forEach((item: Cart) => {
       total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
     });
@@ -478,6 +481,8 @@ export class CongNoComponent implements OnInit {
     // Cong No Tong theo Khach Hang
     // this.hoaDonTongByCustomer(this.orderByCustomer);
     this.congNoTheoKhachHang();
+    this.tongHopOrder = this.hoaDonTongBySchool(this.orderFilter);
+    console.log(this.tongHopOrder);
   }
 
   congNoTheoKhachHang() {

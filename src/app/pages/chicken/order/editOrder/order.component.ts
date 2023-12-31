@@ -77,7 +77,7 @@ export class OrderEdit2Component implements OnInit {
         this.selectKH = this.order?.customer?.key ?? '';
         this.selectSchool = this.order?.school?.key ?? '';
         this.selectEmployee = this.order?.employee?.key ?? '';
-        this.today = new Date(this.order.date);
+        this.today = new Date(this.order?.date ?? '');
         this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
         this.order = Object.assign({}, this.order);
         this.checkButtonTaoDonHang();

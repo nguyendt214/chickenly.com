@@ -303,6 +303,7 @@ export class OrderListComponent implements OnInit {
       this.utilService.gotoPage('pages/chicken/order/edit/' + event.data.key);
     } else if (event.action === 'clone') {
       this.modelService.orderClone = event.data;
+      console.log(this.modelService.orderClone);
       this.utilService.gotoPage('pages/chicken/order');
     }
   }

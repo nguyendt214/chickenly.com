@@ -70,8 +70,17 @@ export class OrderComponent implements OnInit {
       this.selectKH = this.order.customer.key;
       this.selectSchool = this.order.school.key;
       this.selectEmployee = this.order.employee.key;
-      this.order.date = this.tomorrow.toString();
+      this.tomorrow = new Date(this.order.date ?? '');
+      delete this.order.key;
+      this.order.note = '';
+      this.order.updated = this.order.date;
       this.orderService.orderClone = null;
+      this.order.item.forEach((item: Cart) => {
+        item.qtyReturn = 0;
+        item.product.note = '';
+      });
+      this.checkButtonTaoDonHang();
+      console.log(this.order);
     }
   }
 
