@@ -1,4 +1,4 @@
-<nb-card class="col-md-12 col-lg-12 col-xxxl-12 tao-don-hang disable-dbl-tap-zoom">
+<nb-card class="col-md-12 col-lg-12 col-xxxl-12 tao-don-hang disable-dbl-tap-zoom mobile-padding">
   <nb-card-body class="top-padding">
     <!--        CONTENT-->
     <div class="col-md-12 col-lg-12 col-xxxl-12">
@@ -15,7 +15,7 @@
         </nb-card-body>
       </nb-card>
     </div>
-    <div class="col-md-12 col-lg-12 col-xxxl-12" *ngIf="order.date">
+    <div class="col-md-12 col-lg-12 col-xxxl-12 mobile-padding" *ngIf="order?.date">
       <div class="kselect">
         <h5>Ngày ra đơn: {{ order?.date | date: 'dd/MM/yyyy'}}</h5>
         <div class="example-form-fields">

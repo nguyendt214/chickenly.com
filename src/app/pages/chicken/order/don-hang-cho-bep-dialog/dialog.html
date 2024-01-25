@@ -1,7 +1,9 @@
 <div class="in-don-hang in-bep">
+  <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN</button>
+  <button nbButton (click)="onNoClick()" class="d-print-none btn-indonhang ml-2">THOÁT</button>
   <h1 class="text-center">BẾP - HÀNG HÓA CHO NGÀY: {{dateStr}}</h1>
   <div class="ktable">
-    <table class="table table-bordered">
+    <table class="table table-bordered mobile-zoom">
       <thead>
       <tr>
         <th scope="col" class="text-center align-middle">STT</th>
@@ -19,6 +21,4 @@
     </table>
   </div>
   <h4 class="text-right">Tổng cơm: {{ comQty }}</h4>
-  <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN</button>
-  <button nbButton (click)="onNoClick()" class="d-print-none btn-indonhang ml-2">THOÁT</button>
 </div>

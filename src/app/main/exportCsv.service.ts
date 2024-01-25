@@ -2,7 +2,7 @@ import { Injectable } from "@angular/core";
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { DatePipe } from '@angular/common';
-import { Cart } from './order.service';
+import { Cart, Order } from './order.service';
 
 @Injectable()
 export class ExportCsvService {
@@ -80,6 +80,18 @@ export class ExportCsvService {
     });
   }
 
+  exportCongNoTong1(data: any, fileName: string) {
+    const workbook = new ExcelJS.Workbook();
+    let worksheet = workbook.addWorksheet(data?.sheetName ?? 'Công nợ');
+    this.prepareCongNoTong1(worksheet, data);
+
+    // Generate Excel file
+    workbook.xlsx.writeBuffer().then((buffer: any) => {
+      const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      saveAs(blob, `${fileName}.xlsx`);
+    });
+  }
+
   prepareCongNoTong(ws, data) {
     ws.mergeCells('A1:C1');
     ws.getCell('A1').value = data.date.start + ' - ' + data.date.end;
@@ -124,6 +136,59 @@ export class ExportCsvService {
     ws.getColumn(3).alignment = {horizontal: 'center'};
     ws.getColumn(4).alignment = {horizontal: 'center'};
     ws.getColumn(5).alignment = {horizontal: 'center'};
+    return ws;
+  }
+
+  prepareCongNoTong1(ws, data) {
+    // Header
+    // ws.getCell('A1').value = 'NGÀY';
+    // ws.getCell('B1').value = 'KHÁCH HÀNG';
+    // ws.getCell('C1').value = 'ĐỊA ĐIỂM';
+    // ws.getCell('D1').value = 'TỔNG TIỀN';
+    // this.setFontHeader(ws, ['A1', 'B1', 'C1', 'D1'])
+    // // ROWs
+    // data.order.forEach((o: Order) => {
+    //   let total = 0;
+    //   o.item.forEach((item: Cart) => {
+    //     total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
+    //   });
+    //   ws.addRow([
+    //     o.date,
+    //     o.customer.name,
+    //     o.school.name,
+    //     total
+    //   ]);
+    // });
+    const rows = [];
+    data.order.forEach((o: Order) => {
+      let total = 0;
+      o.item.forEach((item: Cart) => {
+        total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
+      });
+      rows.push([
+        this.datePipe.transform(new Date(o.date), 'dd/MM/YYYY'),
+        o.customer.name,
+        o.school.name,
+        total
+      ]);
+    });
+    ws.addTable({
+      name: 'CongNoTheoDanhSach',
+      ref: 'A1',
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: 'NGÀY', filterButton: true},
+        {name: 'KHÁCH HÀNG', filterButton: true},
+        {name: 'ĐỊA ĐIỂM', filterButton: true},
+        {name: 'TỔNG TIỀN', filterButton: false},
+      ],
+      rows: rows,
+    });
     return ws;
   }
 

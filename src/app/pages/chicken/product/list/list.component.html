@@ -3,7 +3,7 @@
     <ng2-smart-table #table [settings]="settings" [source]="source"
                      (delete)="onDeleteConfirm($event)"
                      (edit)="editProduct($event)"
-                     (userRowSelect)="editProduct($event)">
+                     (userRowSelect)="editProduct($event)" class="d-none2 mobile-zoom">
     </ng2-smart-table>
   </nb-card-body>
 </nb-card>

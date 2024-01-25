@@ -1,4 +1,8 @@
 <div class="in-don-hang">
+
+  <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN HÀNG</button>
+  <button nbButton (click)="onNoClick()" class="d-print-none btn-indonhang ml-2">THOÁT</button>
+
   <h1 class="text-center">PHIẾU GIAO NHẬN HÀNG HÓA</h1>
   <h5 class="text-right">Ngày giao hàng: {{ orderDate }}</h5>
   <div class="dvgh">
@@ -22,7 +26,7 @@
     <strong>Liên hệ người nhận:</strong> ........
   </div>
   <div class="ktable">
-    <table class="table table-bordered">
+    <table class="table table-bordered mobile-zoom">
       <thead>
       <tr>
         <th scope="col" class="text-center align-middle">STT</th>
@@ -64,7 +68,4 @@
     <div class="kban text-left text-bold">Ngày nhận</div>
     <div class="knhan text-right text-bold">Ngày trả</div>
   </div>
-
-  <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN HÀNG</button>
-  <button nbButton (click)="onNoClick()" class="d-print-none btn-indonhang ml-2">THOÁT</button>
 </div>

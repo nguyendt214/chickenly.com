@@ -67,7 +67,7 @@
       </div>
       <div class="order-tong-hop">
         <div class="ktable">
-          <table class="table table-bordered">
+          <table class="table table-bordered mobile-zoom">
             <thead>
             <tr>
               <th scope="col" class="text-center align-middle" colspan="2">Sản Phẩm</th>
@@ -115,7 +115,7 @@
             <mat-card *ngFor="let order of item; index as i;">
               <div class="cong-not-date-title">Ngày: {{ order.date | date : 'dd/MM/YYYY' }}</div>
               <div class="ktable">
-                <table class="table table-bordered">
+                <table class="table table-bordered mobile-zoom">
                   <thead>
                   <tr>
                     <th scope="col" class="text-center align-middle" colspan="2">Sản Phẩm</th>
@@ -160,7 +160,7 @@
               </div>
               <div class="order-tong-hop" *ngFor="let order of item; index as i;" [ngClass]="{ 'd-none': i >= 1}">
                 <div class="ktable">
-                  <table class="table table-bordered">
+                  <table class="table table-bordered mobile-zoom">
                     <thead>
                     <tr>
                       <th scope="col" class="text-center align-middle" colspan="2">Sản Phẩm</th>
@@ -223,7 +223,7 @@
             </div>
             <mat-card>
               <div class="ktable">
-                <table class="table table-bordered">
+                <table class="table table-bordered mobile-zoom">
                   <thead>
                   <tr>
                     <th scope="col" class="text-center align-middle">STT</th>
@@ -265,10 +265,13 @@
                      (editConfirm)="onEditConfirm($event)"
                      (deleteConfirm)="onDeleteConfirm($event)"
                      (userRowSelect)="printOrder($event)"
-                     (custom)="onCustom($event)" class="d-none2">
+                     (custom)="onCustom($event)" class="d-none2 mobile-zoom">
     </ng2-smart-table>
     <div class="indonchobep d-none">
       <div class="text-right">Tổng đơn hàng: <b>{{ source?.count() }}</b></div>
+    </div>
+    <div class="text-right">
+      <button nbButton (click)="exportCongNoTong1()" class="d-print-none btn-indonhang">XUẤT EXCEL</button>
     </div>
   </nb-card-body>
 </nb-card>

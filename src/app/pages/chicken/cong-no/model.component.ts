@@ -479,6 +479,8 @@ export class CongNoComponent implements OnInit {
 
     this.congNoTheoKhachHang();
     this.tongHopOrder = this.hoaDonTongBySchool(this.orderFilter);
+
+    // this.exportCongNoTong1();
   }
 
   congNoTheoKhachHang() {
@@ -558,6 +560,28 @@ export class CongNoComponent implements OnInit {
       '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
 
     this.exportCsvService.exportCongNoTong(dataExport, fileName);
+  }
+
+  exportCongNoTong1() {
+    const dataExport = {
+      order: this.orderFilter,
+      sheetName: 'Tổng hợp',
+      date: {
+        start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
+        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY')
+      }
+    };
+    let fileName = 'tongHop1';
+    if(this.oFilter.customer) {
+      fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
+    }
+    if(this.oFilter.school) {
+      fileName += '-' + this.oFilter.school.name.replace(' ', '-');
+    }
+    fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
+      '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
+
+    this.exportCsvService.exportCongNoTong1(dataExport, fileName);
   }
 
 }

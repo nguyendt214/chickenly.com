@@ -30,86 +30,107 @@
   @include ngx-pace-theme();
 
   @include nb-overrides();
-};
+}
+
+;
 .table-bordered {
   border: 2px solid #000;
+
   tbody {
     border-top-width: 2px !important;
     border-color: #000;
   }
+
   tr, th {
     border: 2px solid #000 !important;
   }
+
   .k-no-border-top {
     th {
       border-top: 0;
     }
   }
 }
+
 .mat-expansion-panel-header {
   user-select: none;
 }
+
 @media print {
   .ng2-smart-titles {
     display: none !important;
   }
 }
+
 .in-don-hang {
   padding: 0 20px;
+
   .dvgh {
     font-size: 18px;
     padding-bottom: 10px;
   }
+
   .dia-chi {
     font-size: 18px;
     padding-bottom: 10px;
   }
+
   .kmst {
     font-size: 18px;
     padding-bottom: 10px;
   }
+
   .kdcgh {
     font-size: 18px;
     padding-bottom: 10px;
+
     span {
       font-size: 22px;
     }
   }
+
   .khsd {
     font-size: 18px;
     padding-bottom: 10px;
   }
+
   .klh {
     font-size: 18px;
     padding-bottom: 10px;
   }
- .ksign {
-   justify-content: space-around;
-   padding-top: 20px;
-   padding-bottom: 20px;
-   margin: auto 0;
-   font-size: 20px;
-   .knhan {
-     font-weight: bold;
-     width: 40%;
-     text-transform: uppercase;
-   }
-   .kban {
-     font-weight: bold;
-     text-transform: uppercase;
-   }
- }
-  .kreturn {
+
+  .ksign {
     justify-content: space-around;
-    padding-top: 60px;
+    padding-top: 20px;
     padding-bottom: 20px;
     margin: auto 0;
-    font-size: 16px;
+    font-size: 20px;
+
     .knhan {
       font-weight: bold;
       width: 40%;
       text-transform: uppercase;
     }
+
+    .kban {
+      font-weight: bold;
+      text-transform: uppercase;
+    }
+  }
+
+  .kreturn {
+    justify-content: space-around;
+    padding-top: 50px;
+    padding-bottom: 50px;
+    margin: auto 0;
+    font-size: 16px;
+
+    .knhan {
+      font-weight: bold;
+      width: 40%;
+      text-transform: uppercase;
+    }
+
     .kban {
       font-weight: bold;
       text-transform: uppercase;
@@ -119,49 +140,61 @@
 
 .tao-don-hang {
   padding: 0;
+
   nb-card-body {
     padding: 0;
+
     nb-stepper {
       .header {
         display: none;
       }
     }
+
     .step-content {
       padding: 10px 0;
     }
   }
+
   .mat-mdc-form-field-infix {
     width: 230px;
   }
+
   .mat-mdc-form-field {
     padding: 0 10px;
   }
+
   .mat-expansion-panel-header-title {
     &:hover {
       color: red;
     }
   }
+
   .mat-expanded {
     .mat-expansion-panel-header-title {
       color: red;
     }
   }
 }
+
 .btn-indonhang {
-  margin-bottom: 10px;
+  margin-top: 10px;
   color: chocolate !important;
 }
+
 .indonchobep {
   padding: 10px 0 0;
+
   button {
     border: 1px solid grey;
   }
 }
+
 .in-bep {
   .big-text {
     font-size: 30px;
   }
 }
+
 .list-order {
   tr {
     &:hover {
@@ -175,51 +208,66 @@ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
   text-align: center;
   min-width: 70px;
 }
+
 .ng2-smart-actions {
   height: 100% !important;
+
   .custom-action {
     &:hover {
       color: red;
     }
   }
 }
+
 .top-padding {
   padding-top: 20px !important;
   padding-bottom: 20px !important;
 }
+
 .cdk-overlay-container {
   z-index: 1200 !important;
 }
+
 .disable-dbl-tap-zoom {
   touch-action: manipulation;
 }
+
 * {
   touch-action: manipulation;
 }
+
 .reset-filter {
   margin-bottom: 10px;
+
   button {
     border: 1px solid grey;
   }
 }
+
 .tra-hang-note {
   width: 100%;
 }
+
 .mat-mdc-dialog-container {
   max-height: 94vh !important;
 }
+
 .cdk-overlay-pane {
   max-width: 94vw !important;
 }
+
 .padding-right-10 {
   padding-right: 10px;
 }
+
 button:focus {
   outline: 0px;
 }
+
 .mat-expansion-panel-header.mat-expanded {
   font-size: 16px;
 }
+
 .cong-no {
   .cong-not-date-title {
     font-size: 16px;
@@ -227,37 +275,46 @@ button:focus {
     padding: 0 0 10px;
     color: brown;
   }
+
   mat-card {
     box-shadow: none;
   }
+
   .order-master {
     padding-top: 10px;
     padding-bottom: 10px;
     color: blue;
     font-size: 18px;
   }
+
   .total {
     font-weight: 700;
     color: blue;
     font-size: 16px;
   }
+
   .cn-title {
     color: chocolate;
   }
+
   .cn-kh {
     margin-top: 30px;
   }
 }
+
 .edit-order-item {
   mat-form-field {
     margin-right: 10px;
   }
+
   .qui-cach-sp {
     width: 50%;
+
     .mat-mdc-text-field-wrapper {
       background-color: white;
     }
   }
+
   .success {
     margin-right: 16px;
   }
@@ -266,5 +323,31 @@ button:focus {
 .custom-action {
   label {
     margin-bottom: 0;
+  }
+}
+
+@media screen and (max-width: 400px) {
+  .mobile-zoom {
+    zoom: 0.5;
+  }
+  nb-layout-column,
+  nb-card-body {
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+  }
+  .cong-no {
+    .order-master {
+      font-size: 12px;
+    }
+  }
+  .mat-mdc-form-field {
+    width: 100%;
+    padding-right: 0;
+  }
+  .mobile-padding {
+    padding: {
+      left: 0;
+      right: 0;
+    }
   }
 }
