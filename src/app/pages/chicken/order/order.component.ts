@@ -26,6 +26,7 @@ export class OrderComponent implements OnInit {
   categories: Category[] = [];
   productTypes: ProductType[] = [];
   products: Product[] = [];
+  allCustomers: Customer[] = [];
   customers: Customer[] = [];
   employees: Employee[] = [];
   panelOpenState = false;
@@ -34,6 +35,7 @@ export class OrderComponent implements OnInit {
   thirdForm: UntypedFormGroup;
   enableTaoDonHang = false;
   today = new Date();
+  tomorrow = new Date(this.today);
   toaConfig = {};
   selectKH = '';
   selectSchool = '';
@@ -53,6 +55,7 @@ export class OrderComponent implements OnInit {
     private utilService: UtilService,
     private toastrService: NbToastrService,
   ) {
+    this.tomorrow.setDate(this.tomorrow.getDate() + 1);
     this.getAllProductTypes();
     this.getAllCategories();
     this.getAllCustomer();
@@ -60,8 +63,24 @@ export class OrderComponent implements OnInit {
     this.getAllProducts();
     this.getAllSchools();
     this.order.item = [];
-    this.order.date = this.today.toString();
+    this.order.date = this.tomorrow.toString();
     this.toastrConfig();
+    if (this.orderService.orderClone) {
+      this.order = Object.assign({}, this.orderService.orderClone);
+      this.selectKH = this.order.customer.key;
+      this.selectSchool = this.order.school.key;
+      this.selectEmployee = this.order.employee.key;
+      this.tomorrow = new Date(this.order.date ?? '');
+      delete this.order.key;
+      this.order.note = '';
+      this.order.updated = this.order.date;
+      this.orderService.orderClone = null;
+      this.order.item.forEach((item: Cart) => {
+        item.qtyReturn = 0;
+        item.product.note = '';
+      });
+      this.checkButtonTaoDonHang();
+    }
   }
 
   ngOnInit() {
@@ -155,7 +174,7 @@ export class OrderComponent implements OnInit {
 
   getAllCustomer() {
     if (this.customerService.cacheCustomers) {
-      this.customers = this.customerService.cacheCustomers;
+      this.customers = this.allCustomers = this.customerService.cacheCustomers;
     } else {
       this.customerService.getAll().snapshotChanges().pipe(
         map(changes =>
@@ -164,7 +183,7 @@ export class OrderComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
-        this.customers = this.customerService.cacheCustomers = all;
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
       });
     }
   }
@@ -242,6 +261,13 @@ export class OrderComponent implements OnInit {
 
   chonTruong(o) {
     this.order.school = o;
+    this.customers = this.allCustomers.filter((c: Customer) => c.key === o.owner);
+    if (this.customers.length === 0) {
+      this.customers = Object.assign({}, this.allCustomers);
+    } else {
+      this.order.customer = this.customers[0];
+      this.selectKH = this.customers[0].key;
+    }
     this.checkButtonTaoDonHang();
   }
 
@@ -264,6 +290,7 @@ export class OrderComponent implements OnInit {
     this.enableTaoDonHang = !!this.order.customer && !!this.order.school
       && (this.order.item.length > 0);
   }
+
   createNewOrder(order: any) {
     this.order = order;
     this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');

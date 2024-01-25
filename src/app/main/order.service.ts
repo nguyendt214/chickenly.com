@@ -46,6 +46,7 @@ export class CongNoByCustomer {
   masterTotal?: number;
   note?: string;
 }
+
 export class CongNoBySchool {
   school?: School;
   total?: number;
@@ -61,6 +62,7 @@ export class OrderService {
   public filterEndDate: any;
   modelRef: AngularFireList<Order>;
   cacheOrder: any;
+  orderClone: Order;
 
   constructor(
     private db: AngularFireDatabase,
@@ -132,5 +134,37 @@ export class OrderService {
       this.filterEndDate = new Date();
     }
     return [this.filterStartDate, this.filterEndDate];
+  }
+
+  getLastWeek() {
+    if (!this.filterStartDate) {
+      const d = new Date();
+      // set to Monday of this week
+      d.setDate(d.getDate() - (d.getDay() + 6) % 7);
+
+      // set to previous Monday
+      d.setDate(d.getDate() - 7);
+      this.filterStartDate = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+      this.filterEndDate = new Date(d.getFullYear(), d.getMonth(), d.getDate() + 6);
+    }
+    return [new Date(this.filterStartDate.setHours(0, 0, 0, 0)),
+      new Date(this.filterEndDate.setHours(0, 0, 0, 0))];
+  }
+
+  getCurrentWeek() {
+    if (!this.filterStartDate) {
+      const today = new Date();
+      const day = today.getDay(); // 👉️ get day of week
+
+      // 👇️ day of month - day of week (-6 if Sunday), otherwise +1
+      const diff = today.getDate() - day + (day === 0 ? -6 : 1);
+
+      this.filterStartDate = new Date(today.setDate(diff));
+      this.filterEndDate = new Date(
+        today.setDate(today.getDate() - today.getDay() + 6),
+      );
+    }
+    return [new Date(this.filterStartDate.setHours(0, 0, 0, 0)),
+      new Date(this.filterEndDate.setHours(0, 0, 0, 0))];
   }
 }

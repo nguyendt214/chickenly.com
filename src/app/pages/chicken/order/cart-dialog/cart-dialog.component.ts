@@ -7,7 +7,7 @@ import { ProductType, ProductTypeService } from '../../../../main/product-type.s
 import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableData } from '../../../../@core/data/smart-table';
 import { CustomerService } from '../../../../main/customer.service';
-import { CurrencyPipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { map } from 'rxjs/operators';
 
 export interface DialogData {
@@ -29,6 +29,7 @@ export class CartDialog implements OnInit {
 
   constructor(
     public dialogRef: MatDialogRef<CartDialog>,
+    private datePipe: DatePipe,
     @Inject(MAT_DIALOG_DATA) public data: DialogData,
   ) {
   }
@@ -40,7 +41,7 @@ export class CartDialog implements OnInit {
 
   ngOnInit() {
     this.order = this.data.order;
-    this.orderDate = (new Date(this.order?.date ?? '')).toLocaleDateString();
+    this.orderDate = this.datePipe.transform(new Date(this.order.date), 'dd/MM/YYYY');
   }
 
   printOrder() {

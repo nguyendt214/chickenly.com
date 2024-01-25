@@ -153,7 +153,11 @@ export class OrderListComponent implements OnInit {
       custom: [
         {
           name: 'tra-hang',
-          title: '<span class="custom-action">Trả hàng</span>',
+          title: '<span class="custom-action">SỬA ĐƠN</span>',
+        },
+        {
+          name: 'clone',
+          title: '<span class="custom-action">COPY</span>',
         },
       ],
       columnTitle: '',
@@ -178,10 +182,12 @@ export class OrderListComponent implements OnInit {
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
   ) {
+
+    this.getAllCustomer();
+    this.getAllSchools();
+    this.getAllEmployee();
     if (this.modelService.cacheOrder) {
-      this.all = this.modelService.cacheOrder;
-      this.orderFilter = this.modelService.cacheOrder;
-      this.source.load(this.orderFilter);
+      this.preparePageData(this.modelService.cacheOrder);
     } else {
       this.modelService.getAll().snapshotChanges().pipe(
         map(changes =>
@@ -191,18 +197,20 @@ export class OrderListComponent implements OnInit {
         ),
       ).subscribe(all => {
         this.modelService.cacheOrder = all;
-        this.all = all;
-        this.orderFilter = all;
-        this.source.load(this.orderFilter);
+        this.preparePageData(all);
       });
     }
+  }
 
-    this.getAllCustomer();
-    this.getAllSchools();
-    this.getAllEmployee();
-
-    // Lấy order cho 7 ngày gần nhất
-    const date = this.modelService.getLast7Days();
+  preparePageData(orders: Order[]) {
+    orders.forEach((o: Order) => {
+      o.sItem = this.utilService.groupItemBy(o.item, 'categoryKey');
+    });
+    this.all = orders;
+    this.orderFilter = orders;
+    this.source.load(this.orderFilter);
+    // Lấy order cho từ T2-T7 của tuần này
+    const date = this.modelService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
@@ -293,6 +301,9 @@ export class OrderListComponent implements OnInit {
   onCustom(event) {
     if (event.action === 'tra-hang') {
       this.utilService.gotoPage('pages/chicken/order/edit/' + event.data.key);
+    } else if (event.action === 'clone') {
+      this.modelService.orderClone = event.data;
+      this.utilService.gotoPage('pages/chicken/order');
     }
   }
 
@@ -396,7 +407,7 @@ export class OrderListComponent implements OnInit {
 
   resetFilter() {
     this.modelService.filterStartDate = null;
-    const date = this.modelService.getLast7Days();
+    const date = this.modelService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.selectKH = '';
@@ -409,6 +420,16 @@ export class OrderListComponent implements OnInit {
       school: null,
       employee: null,
     };
+    this.globalFilter();
+  }
+
+  prevWeek() {
+    this.modelService.filterStartDate = null;
+    const date = this.modelService.getLastWeek();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
     this.globalFilter();
   }
 

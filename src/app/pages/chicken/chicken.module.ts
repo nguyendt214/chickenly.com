@@ -31,6 +31,8 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatCheckboxModule } from '@angular/material/checkbox';
+import { ExportCsvService } from '../../main/exportCsv.service';
 
 @NgModule({
   imports: [
@@ -65,6 +67,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     MatButtonModule,
     MatDividerModule,
     MatTooltipModule,
+    MatCheckboxModule,
     CdkAccordionModule,
     MatExpansionModule,
     MatDialogModule,
@@ -78,6 +81,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
     {provide: MAT_DATE_LOCALE, useValue: 'vi-VN'},
     CurrencyPipe,
     {provide: LOCALE_ID, useValue: 'en-US'},
+    ExportCsvService,
   ],
 })
 export class ChickenModule {

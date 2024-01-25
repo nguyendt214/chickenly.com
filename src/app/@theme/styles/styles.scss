@@ -209,7 +209,7 @@ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
   max-height: 94vh !important;
 }
 .cdk-overlay-pane {
-  max-width: 96vw !important;
+  max-width: 94vw !important;
 }
 .padding-right-10 {
   padding-right: 10px;
@@ -260,5 +260,11 @@ button:focus {
   }
   .success {
     margin-right: 16px;
+  }
+}
+
+.custom-action {
+  label {
+    margin-bottom: 0;
   }
 }

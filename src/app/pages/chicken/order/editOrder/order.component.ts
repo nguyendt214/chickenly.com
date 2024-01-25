@@ -27,6 +27,7 @@ export class OrderEdit2Component implements OnInit {
   categories: Category[] = [];
   productTypes: ProductType[] = [];
   products: Product[] = [];
+  allCustomers: Customer[] = [];
   customers: Customer[] = [];
   employees: Employee[] = [];
   panelOpenState = false;
@@ -76,7 +77,7 @@ export class OrderEdit2Component implements OnInit {
         this.selectKH = this.order?.customer?.key ?? '';
         this.selectSchool = this.order?.school?.key ?? '';
         this.selectEmployee = this.order?.employee?.key ?? '';
-        this.today = new Date(this.order.date);
+        this.today = new Date(this.order?.date ?? '');
         this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
         this.order = Object.assign({}, this.order);
         this.checkButtonTaoDonHang();
@@ -172,7 +173,7 @@ export class OrderEdit2Component implements OnInit {
 
   getAllCustomer() {
     if (this.customerService.cacheCustomers) {
-      this.customers = this.customerService.cacheCustomers;
+      this.customers = this.allCustomers = this.customerService.cacheCustomers;
     } else {
       this.customerService.getAll().snapshotChanges().pipe(
         map(changes =>
@@ -181,7 +182,7 @@ export class OrderEdit2Component implements OnInit {
           ),
         ),
       ).subscribe(all => {
-        this.customers = this.customerService.cacheCustomers = all;
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
       });
     }
   }
@@ -259,6 +260,13 @@ export class OrderEdit2Component implements OnInit {
 
   chonTruong(o) {
     this.order.school = o;
+    this.order.school = o;
+    this.customers = this.allCustomers.filter((c: Customer) => c.key === o.owner);
+    if (this.customers.length === 0) {
+      this.customers = Object.assign({}, this.allCustomers);
+    } else {
+      this.selectKH = this.customers[0].key;
+    }
     this.checkButtonTaoDonHang();
   }
 

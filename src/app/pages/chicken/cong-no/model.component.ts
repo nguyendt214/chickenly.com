@@ -11,8 +11,8 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { CartDialog } from '../order/cart-dialog/cart-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { UtilService } from '../../../main/util.service';
-import { BepDialog } from '../order/don-hang-cho-bep-dialog/bep-dialog.component';
 import { CategoryService } from '../../../main/category.service';
+import { ExportCsvService } from '../../../main/exportCsv.service';
 
 @Component({
   selector: 'ngx-smart-table-cong-no',
@@ -38,6 +38,8 @@ export class CongNoComponent implements OnInit {
   orderByEmployee = [];
   congNoByCustomer: CongNoByCustomer[] = [];
   isSameDay = false;
+  showOrder = false;
+  showSellPrice = true;
   settings = {
     add: {
       confirmCreate: true,
@@ -164,7 +166,7 @@ export class CongNoComponent implements OnInit {
   };
 
   source: LocalDataSource = new LocalDataSource();
-
+  tongHopOrder: Order;
   constructor(
     private service: SmartTableData,
     public modelService: OrderService,
@@ -176,7 +178,11 @@ export class CongNoComponent implements OnInit {
     private schoolService: SchoolService,
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
+    private exportCsvService: ExportCsvService,
   ) {
+    this.getAllCustomer();
+    this.getAllSchools();
+    this.getAllEmployee();
     if (this.modelService.cacheOrder) {
       this.preparePageData(this.modelService.cacheOrder);
     } else {
@@ -191,10 +197,15 @@ export class CongNoComponent implements OnInit {
         this.preparePageData(all);
       });
     }
+  }
 
-    this.getAllCustomer();
-    this.getAllSchools();
-    this.getAllEmployee();
+  generateExcel() {
+    const data: any[] = [
+      {name: 'John', age: 30},
+      {name: 'Jane', age: 25},
+      {name: 'Bob', age: 40},
+    ];
+    this.exportCsvService.exportToExcel(data, 'my-data');
   }
 
   preparePageData(orders: Order[]) {
@@ -205,7 +216,7 @@ export class CongNoComponent implements OnInit {
     this.orderFilter = orders;
     this.source.load(this.orderFilter);
     // Lấy order cho 7 ngày gần nhất
-    const date = this.modelService.getLast7Days();
+    const date = this.modelService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
@@ -366,12 +377,14 @@ export class CongNoComponent implements OnInit {
     }
     this.source.load(this.orderFilter);
     // Cong no
-    this.tongHopCongNo();
+    setTimeout(() => {
+      this.tongHopCongNo();
+    });
   }
 
   resetFilter() {
     this.modelService.filterStartDate = null;
-    const date = this.modelService.getLast7Days();
+    const date = this.modelService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.selectKH = '';
@@ -388,13 +401,21 @@ export class CongNoComponent implements OnInit {
   }
 
   getReturnByProductKey(order: Order, productKey: string) {
-    let qtyReturn: any = '';
+    let qtyReturn: number = 0;
     order.item.forEach((c: Cart) => {
       if (c.product.key === productKey) {
         qtyReturn = c.qtyReturn;
       }
     });
     return qtyReturn === 0 ? ' ' : qtyReturn;
+  }
+
+  getTotalByItem(item: Cart) {
+    return (item.qty - this.getQtyReturn(item.qtyReturn)) * item.price;
+  }
+
+  getTotalReturnByItem(item: Cart) {
+    return (item.qtyReturn > 0) ? item.qtyReturn : '';
   }
 
   /**
@@ -408,8 +429,11 @@ export class CongNoComponent implements OnInit {
 
   calaulatorOrderPrice(o: Order) {
     let total = 0;
+    if (!o) {
+      return 0;
+    }
     o.item.forEach((item: Cart) => {
-      total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
+      total += (item.qty - this.getQtyReturn(item.qtyReturn)) * item.price;
     });
     return total;
   }
@@ -423,7 +447,7 @@ export class CongNoComponent implements OnInit {
     orders.forEach((o: Order) => {
       total += this.calaulatorOrderPrice(o);
     });
-    return this.currencyPipe.transform(total, '', '', '1.0-0') + ' VNĐ';
+    return total;
   }
 
   tongHopCongNo() {
@@ -452,53 +476,35 @@ export class CongNoComponent implements OnInit {
         order.master = this.hoaDonTongBySchool(_orders);
       });
     });
-    // Cong No Tong theo Khach Hang
-    this.hoaDonTongByCustomer(this.orderByCustomer);
+
+    this.congNoTheoKhachHang();
+    this.tongHopOrder = this.hoaDonTongBySchool(this.orderFilter);
   }
 
-  hoaDonTongByCustomer(orders: Order[]) {
-    orders.forEach((customer: any) => {
-      customer.forEach((order: Order, idx) => {
-        if (idx === 0) {
-          const groupBySchool = this.utilService.groupItemBy(customer, 'school.key');
-          const congNo = new CongNoByCustomer();
-          congNo.schools = [];
-          congNo.masterTotal = 0;
-          const schoolKeys = [];
-          Object.entries(groupBySchool).forEach(([key, value], index) => {
-            const _orders: Order[] = Object.values(value);
-            _orders.forEach((o: Order, _idx: number) => {
-              if (_idx === 0) {
-                // Thêm trường mới
-                schoolKeys.push(key);
-                const congNoBySchool = new CongNoBySchool();
-                congNoBySchool.total = 0;
-                congNoBySchool.school = o.school;
-                // Tính tổng tiền
-                o.item.forEach((cart: Cart) => {
-                  congNoBySchool.total += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
-                });
-                congNo.customer = o.customer;
-                congNo.masterTotal += congNoBySchool.total;
-                congNo.schools.push(congNoBySchool);
-              } else {
-                // Đã có trong công nợ, tìm trường và cộng dồn total
-                congNo.schools.forEach((cnbs: CongNoBySchool) => {
-                  // Tính tổng tiền
-                  o.item.forEach((cart: Cart) => {
-                    cnbs.total += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
-                    congNo.masterTotal += cart.price * (cart.qty - (cart.qtyReturn ?? 0));
-                  });
-                });
-              }
-            });
-          });
-          this.congNoByCustomer.push(congNo);
+  congNoTheoKhachHang() {
+    this.customers.forEach((c: Customer) => {
+      const cnbs = JSON.parse(JSON.stringify(this.orderBySchool));
+      const congNo = new CongNoByCustomer();
+      congNo.schools = [];
+      congNo.masterTotal = 0;
+      congNo.customer = Object.assign({}, c);
+      cnbs.forEach((orders: Order[], index: number) => {
+        if (orders[0].customer.key === c.key) {
+          const congNoBySchool = new CongNoBySchool();
+          congNoBySchool.school = Object.assign({}, orders[0].school);
+          congNoBySchool.total = this.tongTienByOrders(orders);
+          congNo.masterTotal += congNoBySchool.total;
+          congNo.schools.push(congNoBySchool);
         }
       });
+      this.congNoByCustomer.push(congNo);
     });
   }
 
+  /**
+   * Công nợ theo từng trường
+   * @param orders
+   */
   hoaDonTongBySchool(orders: Order[]) {
     const order = new Order();
     order.item = [];
@@ -509,11 +515,11 @@ export class CongNoComponent implements OnInit {
           order.item.forEach((item: Cart) => {
             if (item.product.key === c.product.key) {
               item.qty += c.qty;
-              item.qtyReturn += c.qtyReturn ?? 0;
+              item.qtyReturn += this.getQtyReturn(c.qtyReturn);
             }
           });
         } else {
-          order.item.push(new Cart(c.qty, c.price, c.product, c.product.categoryKey, (c.qtyReturn ?? 0)));
+          order.item.push(new Cart(c.qty, c.price, c.product, c.product.categoryKey, this.getQtyReturn(c.qtyReturn)));
           order.customer = o.customer;
           order.school = o.school;
           order.employee = o.employee;
@@ -522,6 +528,36 @@ export class CongNoComponent implements OnInit {
     });
     order.sItem = this.utilService.groupItemBy(order.item, 'categoryKey');
     return order;
+  }
+
+  getQtyReturn(qtyReturn: any) {
+    if (qtyReturn === '' || qtyReturn === ' ') {
+      return 0;
+    }
+    return qtyReturn;
+  }
+
+  exportCongNoTong() {
+    const dataExport = {
+      order: this.tongHopOrder,
+      totalPrice: this.tongTienByOrder(this.tongHopOrder),
+      sheetName: 'Tổng hợp',
+      date: {
+        start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
+        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY')
+      }
+    };
+    let fileName = 'tongHop';
+    if(this.oFilter.customer) {
+      fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
+    }
+    if(this.oFilter.school) {
+      fileName += '-' + this.oFilter.school.name.replace(' ', '-');
+    }
+    fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
+      '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
+
+    this.exportCsvService.exportCongNoTong(dataExport, fileName);
   }
 
 }

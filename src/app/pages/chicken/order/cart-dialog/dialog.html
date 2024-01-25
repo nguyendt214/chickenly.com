@@ -6,7 +6,7 @@
     <span>Nhà Phân Phối Chế Biến Thực Phẩm Nguyễn Đỉnh</span>
   </div>
   <div class="dia-chi">
-    Đ/C: Số 41 Gia Quất, Tổ 1 Phường Thượng Thanh, Quận Long Biên, Thành Phố Hà Nội
+    Đ/C: Số 48 Gia Quất, Tổ 1 Phường Thượng Thanh, Quận Long Biên, Thành Phố Hà Nội
   </div>
   <div class="kmst">
     MST : 01N8006168
@@ -41,11 +41,11 @@
         <th scope="row" [attr.rowspan]="item?.value?.length" class="align-middle text-center" *ngIf="spIdx === 0">
           {{ sp?.product?.category?.name }}
         </th>
-        <th>{{ sp?.product?.name }}</th>
-        <th class="text-center">{{ sp?.product?.productType?.name }}</th>
-        <th class="text-center">{{ sp?.qty }}</th>
-        <th class="text-center">{{ getReturnByProductKey(sp?.product?.key) }}</th>
-        <th class="text-left">{{ sp?.product?.note }}</th>
+        <th class=" align-middle">{{ sp?.product?.name }}</th>
+        <th class="text-center align-middle ">{{ sp?.product?.productType?.name }}</th>
+        <th class="text-center align-middle">{{ sp?.qty }}</th>
+        <th class="text-center align-middle">{{ getReturnByProductKey(sp?.product?.key) }}</th>
+        <th class="text-left align-middle">{{ sp?.product?.note }}</th>
       </tr>
       </tbody>
       <tbody *ngIf="order?.note?.length">
@@ -66,4 +66,5 @@
   </div>
 
   <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN HÀNG</button>
+  <button nbButton (click)="onNoClick()" class="d-print-none btn-indonhang ml-2">THOÁT</button>
 </div>

@@ -79,6 +79,14 @@ export class EmployeeComponent implements OnInit {
   }
 
   ngOnInit() {
+    // console.log(full.join(' '));
+    // const cutFirst = full.slice(0, 8);
+    // const cutLast = full.slice(-4);
+    // const reverseA = full.reverse();
+    // console.log(reverseA.join(' '));
+    // this.perms(cutLast).forEach(item => {
+    //   console.log(cutFirst.join(' ') + ' ' + item.join(' '));
+    // });
   }
 
   onCreateConfirm(e: any) {
@@ -121,5 +129,21 @@ export class EmployeeComponent implements OnInit {
       'Tiếp tục nào!!!',
       `Tạo ĐƠN HÀNG THÀNH CÔNG`,
       this.toaConfig);
+  }
+
+  perms(xs) {
+    if (!xs.length) return [[]];
+    return xs.flatMap(x => {
+      // get permutations of xs without x, then prepend x to each
+      return this.perms(xs.filter(v => v !== x)).map(vs => [x, ...vs]);
+    });
+    // or this duplicate-safe way, suggested by @M.Charbonnier in the comments
+    // return xs.flatMap((x, i) => {
+    //   return perms(xs.filter((v, j) => i!==j)).map(vs => [x, ...vs]);
+    // });
+    // or @user3658510's variant
+    // return xs.flatMap((x, i) => {
+    //   return perms([...xs.slice(0,i),...xs.slice(i+1)]).map(vs => [x,...vs]);
+    // });
   }
 }
