@@ -1,0 +1,68 @@
+<h1 id="title" class="title">Đăng Nhập Để Sử Dụng</h1>
+
+<nb-alert *ngIf="showMessages.error && errors?.length && !submitted" outline="danger" role="alert">
+  <p class="alert-title"><b>Oh snap!</b></p>
+  <ul class="alert-message-list">
+    <li *ngFor="let error of errors" class="alert-message">Sai tên đăng nhập hoặc mật khẩu, liên hệ o919 191 161</li>
+  </ul>
+</nb-alert>
+
+<nb-alert *ngIf="showMessages.success && messages?.length && !submitted" outline="success" role="alert">
+  <p class="alert-title"><b>Hooray!</b></p>
+  <ul class="alert-message-list">
+    <li *ngFor="let message of messages" class="alert-message">{{ message }}</li>
+  </ul>
+</nb-alert>
+
+<form (ngSubmit)="login()" #form="ngForm" aria-labelledby="title">
+
+  <div class="form-control-group">
+    <label class="label" for="input-username">Tên Đăng Nhập:</label>
+    <input nbInput
+           fullWidth
+           [(ngModel)]="user.username"
+           #username="ngModel"
+           name="username"
+           id="input-username"
+           placeholder="Tên Đăng Nhập"
+           autofocus
+           [status]="username.dirty ? (username.invalid  ? 'danger' : 'success') : 'basic'"
+           [required]="true"
+           [attr.aria-invalid]="username.invalid && username.touched ? true : null">
+    <ng-container *ngIf="username.invalid && username.touched">
+      <p class="caption status-danger" *ngIf="username.errors?.required">
+        Bắt buộc!
+      </p>
+    </ng-container>
+  </div>
+
+  <div class="form-control-group">
+    <label class="label" for="input-password">Mật Khẩu:</label>
+    <input nbInput
+           fullWidth
+           [(ngModel)]="user.password"
+           #password="ngModel"
+           name="password"
+           type="password"
+           id="input-password"
+           placeholder="Password"
+           [status]="password.dirty ? (password.invalid  ? 'danger' : 'success') : 'basic'"
+           [required]="getConfigValue('forms.validation.password.required')"
+           [minlength]="getConfigValue('forms.validation.password.minLength')"
+           [maxlength]="getConfigValue('forms.validation.password.maxLength')"
+           [attr.aria-invalid]="password.invalid && password.touched ? true : null">
+    <ng-container *ngIf="password.invalid && password.touched ">
+      <p class="caption status-danger" *ngIf="password.errors?.required">
+        Bắt buộc!
+      </p>
+    </ng-container>
+  </div>
+  <button nbButton
+          fullWidth
+          status="success"
+          [disabled]="submitted || !form.valid"
+          [class.btn-pulse]="submitted"
+          class="mt-4">
+    Đăng Nhập
+  </button>
+</form>

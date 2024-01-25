@@ -1,6 +1,6 @@
 import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { NbAuthModule, NbDummyAuthStrategy } from '@nebular/auth';
+import { NbAuthJWTInterceptor, NbAuthModule, NbDummyAuthStrategy, NbPasswordAuthStrategy } from '@nebular/auth';
 import { NbSecurityModule, NbRoleProvider } from '@nebular/security';
 import { of as observableOf } from 'rxjs';
 
@@ -52,6 +52,8 @@ import { StatsProgressBarService } from './mock/stats-progress-bar.service';
 import { VisitorsAnalyticsService } from './mock/visitors-analytics.service';
 import { SecurityCamerasService } from './mock/security-cameras.service';
 import { MockDataModule } from './mock/mock-data.module';
+import { HTTP_INTERCEPTORS } from '@angular/common/http';
+import { fakeBackendProvider } from './mock/fakeBackend';
 
 const socialLinks = [
   {
@@ -106,17 +108,30 @@ export const NB_CORE_PROVIDERS = [
   ...NbAuthModule.forRoot({
 
     strategies: [
-      NbDummyAuthStrategy.setup({
-        name: 'email',
-        delay: 3000,
+      NbPasswordAuthStrategy.setup({
+        name: 'username',
+        baseEndpoint: '',
+        login: {
+          endpoint: '/users/authenticate',
+          method: 'post',
+          requireValidToken: false,
+          redirect: {
+            success: '/pages/chicken/order-list',
+            failure: null, // stay on the same page
+          },
+        }
       }),
     ],
     forms: {
       login: {
-        socialLinks: socialLinks,
-      },
-      register: {
-        socialLinks: socialLinks,
+        redirectDelay: 0, // delay before redirect after a successful login, while success message is shown to the user
+        strategy: 'username',  // strategy id key.
+        rememberMe: true,   // whether to show or not the `rememberMe` checkbox
+        showMessages: {     // show/not show success/error messages
+          success: true,
+          error: true,
+        },
+        socialLinks: socialLinks, // social links at the bottom of a page
       },
     },
   }).providers,
@@ -143,6 +158,7 @@ export const NB_CORE_PROVIDERS = [
   PlayerService,
   SeoService,
   StateService,
+  fakeBackendProvider,
 ];
 
 @NgModule({

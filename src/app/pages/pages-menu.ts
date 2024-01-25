@@ -28,12 +28,12 @@ export const MENU_ITEMS: NbMenuItem[] = [
   },
   {
     title: 'SẢN PHẨM',
-    icon: 'heart-outline',
+    icon: 'activity-outline',
     link: '/pages/chicken/product',
   },
   {
     title: 'NHÓM SẢN PHẨM',
-    icon: 'heart-outline',
+    icon: 'shopping-bag-outline',
     link: '/pages/chicken/category',
   },
   {

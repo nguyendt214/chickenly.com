@@ -5,11 +5,21 @@ import { PagesComponent } from './pages.component';
 import { DashboardComponent } from './dashboard/dashboard.component';
 import { ECommerceComponent } from './e-commerce/e-commerce.component';
 import { NotFoundComponent } from './miscellaneous/not-found/not-found.component';
+import { SignInComponent } from './chicken/sign-in/sign-in.component';
+import { SignOutComponent } from './chicken/sign-out/sign-out.component';
 
 const routes: Routes = [{
   path: '',
   component: PagesComponent,
   children: [
+    {
+      path: 'login',
+      component: SignInComponent,
+    },
+    {
+      path: 'logout',
+      component: SignOutComponent,
+    },
     {
       path: 'dashboard',
       component: ECommerceComponent,
@@ -75,7 +85,7 @@ const routes: Routes = [{
     },
     {
       path: '',
-      redirectTo: 'chicken/order-list',
+      redirectTo: 'login',
       pathMatch: 'full',
     },
     {

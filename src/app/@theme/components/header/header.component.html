@@ -1,6 +1,6 @@
 <div class="header-container d-print-none">
   <div class="logo-container">
-    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle" id="humberger-menu">
+    <a (click)="toggleSidebar()" href="#" class="sidebar-toggle" id="humberger-menu" *ngIf="isLogged">
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
     <a class="logo" href="#" (click)="navigateHome()">CHICKEN LY</a>

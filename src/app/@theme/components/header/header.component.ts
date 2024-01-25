@@ -5,6 +5,7 @@ import { UserData } from '../../../@core/data/users';
 import { LayoutService } from '../../../@core/utils';
 import { map, takeUntil } from 'rxjs/operators';
 import { Subject } from 'rxjs';
+import { AuthService } from '../../../main/auth.service';
 
 @Component({
   selector: 'ngx-header',
@@ -38,14 +39,18 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   currentTheme = 'dark';
 
-  userMenu = [ { title: 'Profile' }, { title: 'Log out' } ];
+  userMenu = [{title: 'Profile'}, {title: 'Log out'}];
+  isLogged = false;
 
   constructor(private sidebarService: NbSidebarService,
               private menuService: NbMenuService,
               private themeService: NbThemeService,
               private userService: UserData,
               private layoutService: LayoutService,
-              private breakpointService: NbMediaBreakpointsService) {
+              private breakpointService: NbMediaBreakpointsService,
+              private authService: AuthService,
+  ) {
+    this.isLogged = this.authService.isLogged();
   }
 
   ngOnInit() {
@@ -55,7 +60,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
       .pipe(takeUntil(this.destroy$))
       .subscribe((users: any) => this.user = users.nick);
 
-    const { xl } = this.breakpointService.getBreakpointsMap();
+    const {xl} = this.breakpointService.getBreakpointsMap();
     this.themeService.onMediaQueryChange()
       .pipe(
         map(([, currentBreakpoint]) => currentBreakpoint.width < xl),
@@ -65,7 +70,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
     this.themeService.onThemeChange()
       .pipe(
-        map(({ name }) => name),
+        map(({name}) => name),
         takeUntil(this.destroy$),
       )
       .subscribe(themeName => this.currentTheme = themeName);

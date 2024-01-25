@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 
 import { MENU_ITEMS } from './pages-menu';
+import { AuthService } from '../main/auth.service';
 
 @Component({
   selector: 'ngx-pages',
@@ -13,8 +14,11 @@ import { MENU_ITEMS } from './pages-menu';
   `,
 })
 export class PagesComponent {
-
-  menu = MENU_ITEMS;
+  isLogged = false;
+  constructor(
+    private authService: AuthService
+  ) { }
+  menu = this.authService.isLogged() ? MENU_ITEMS : [];
 
   menuCick() {
     const kmenuSidebar = document.getElementById('kmenu-sidebar');

@@ -18,6 +18,9 @@ import { EditOrderComponent } from './order/edit/order.component';
 import { CongNoComponent } from './cong-no/model.component';
 import { OrderItemDialog } from './product/order-dialog/order-item-dialog.component';
 import { OrderEdit2Component } from './order/editOrder/order.component';
+import { SignInComponent } from './sign-in/sign-in.component';
+import { SignOutComponent } from './sign-out/sign-out.component';
+import { AuthGuard } from '../../main/guard/auth.guard';
 
 const routes: Routes = [{
   path: '',
@@ -26,50 +29,61 @@ const routes: Routes = [{
     {
       path: 'order',
       component: OrderComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'order/:orderId',
       component: EditOrderComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'order/edit/:orderId',
       component: OrderEdit2Component,
+      canActivate: [AuthGuard]
     },
     {
       path: 'order-list',
       component: OrderListComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'cong-no',
       component: CongNoComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'customer',
       component: CustomerComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'school',
       component: SchoolComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'category',
       component: CategoryComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'product-type',
       component: ProductTypeComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'product',
       component: ProductComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: 'employee',
       component: EmployeeComponent,
+      canActivate: [AuthGuard]
     },
     {
       path: '',
-      redirectTo: 'customer',
+      redirectTo: 'cong-no',
       pathMatch: 'full',
     },
     {
@@ -102,4 +116,6 @@ export const routedComponents = [
   OrderItemDialog,
   CartDialog,
   BepDialog,
+  SignInComponent,
+  SignOutComponent,
 ];

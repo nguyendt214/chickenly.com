@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import { AuthService } from '../../../main/auth.service';
 
 @Component({
   selector: 'ngx-one-column-layout',
@@ -9,7 +10,7 @@ import { Component } from '@angular/core';
         <ngx-header></ngx-header>
       </nb-layout-header>
 
-      <nb-sidebar class="menu-sidebar" tag="menu-sidebar" responsive id="kmenu-sidebar">
+      <nb-sidebar class="menu-sidebar" tag="menu-sidebar" responsive id="kmenu-sidebar" *ngIf="isLogged">
         <ng-content select="nb-menu"></ng-content>
       </nb-sidebar>
 
@@ -23,4 +24,12 @@ import { Component } from '@angular/core';
     </nb-layout>
   `,
 })
-export class OneColumnLayoutComponent {}
+export class OneColumnLayoutComponent {
+  isLogged = false;
+  constructor(
+    private authService: AuthService
+  ) {
+    this.isLogged = this.authService.isLogged();
+  }
+
+}
