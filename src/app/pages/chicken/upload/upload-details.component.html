@@ -1,0 +1,7 @@
+<div class="img-detail">
+  <img [src]="fileUpload.url" class="kimg" (click)="showImage(fileUpload)" alt="Không tìm thấy ảnh" />
+  <button (click)="deleteFileUpload(fileUpload)" *ngIf="allowDelete"
+          class="btn btn-danger btn-sm" style="float: right">
+    Delete
+  </button>
+</div>

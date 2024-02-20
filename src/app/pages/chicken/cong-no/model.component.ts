@@ -167,6 +167,7 @@ export class CongNoComponent implements OnInit {
 
   source: LocalDataSource = new LocalDataSource();
   tongHopOrder: Order;
+
   constructor(
     private service: SmartTableData,
     public modelService: OrderService,
@@ -197,15 +198,6 @@ export class CongNoComponent implements OnInit {
         this.preparePageData(all);
       });
     }
-  }
-
-  generateExcel() {
-    const data: any[] = [
-      {name: 'John', age: 30},
-      {name: 'Jane', age: 25},
-      {name: 'Bob', age: 40},
-    ];
-    this.exportCsvService.exportToExcel(data, 'my-data');
   }
 
   preparePageData(orders: Order[]) {
@@ -546,14 +538,14 @@ export class CongNoComponent implements OnInit {
       sheetName: 'Tổng hợp',
       date: {
         start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
-        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY')
-      }
+        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY'),
+      },
     };
     let fileName = 'tongHop';
-    if(this.oFilter.customer) {
+    if (this.oFilter.customer) {
       fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
     }
-    if(this.oFilter.school) {
+    if (this.oFilter.school) {
       fileName += '-' + this.oFilter.school.name.replace(' ', '-');
     }
     fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
@@ -568,14 +560,14 @@ export class CongNoComponent implements OnInit {
       sheetName: 'Tổng hợp',
       date: {
         start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
-        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY')
-      }
+        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY'),
+      },
     };
     let fileName = 'tongHop1';
-    if(this.oFilter.customer) {
+    if (this.oFilter.customer) {
       fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
     }
-    if(this.oFilter.school) {
+    if (this.oFilter.school) {
       fileName += '-' + this.oFilter.school.name.replace(' ', '-');
     }
     fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +

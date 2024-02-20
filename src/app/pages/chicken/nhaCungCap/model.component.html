@@ -1,0 +1,13 @@
+<nb-card>
+  <nb-card-header>
+    Danh Sách Khách Hàng ( <b>{{ source?.count() }}</b> )
+  </nb-card-header>
+
+  <nb-card-body>
+    <ng2-smart-table [settings]="settings" [source]="source"
+                     (createConfirm)="onCreateConfirm($event)"
+                     (editConfirm)="onEditConfirm($event)"
+                     (deleteConfirm)="onDeleteConfirm($event)" class="mobile-zoom">
+    </ng2-smart-table>
+  </nb-card-body>
+</nb-card>

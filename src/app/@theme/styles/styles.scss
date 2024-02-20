@@ -179,6 +179,8 @@
 .btn-indonhang {
   margin-top: 10px;
   color: chocolate !important;
+  float: right;
+  margin-left: 10px;
 }
 
 .indonchobep {
@@ -323,6 +325,32 @@ button:focus {
 .custom-action {
   label {
     margin-bottom: 0;
+  }
+}
+.kimg {
+  max-width: 400px;
+}
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.35;
+}
+.img-detail {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  button {
+    margin-left: 10px;
+  }
+  img {
+    cursor: pointer;
+  }
+}
+.img-popin {
+  img {
+    width: 100%;
   }
 }
 

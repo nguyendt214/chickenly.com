@@ -1,0 +1,104 @@
+<nb-card>
+  <nb-card-header>THÊM THU CHI</nb-card-header>
+  <nb-card-body>
+    <form>
+      <div class="form-group">
+        <label for="ctSelectType" class="label">LOẠI</label>
+        <div class="clearfix"></div>
+        <nb-select [(selected)]="thuChiType" id="ctSelectType">
+          <nb-option value="{{ tcType.key }}" *ngFor="let tcType of thuChiTypes">{{ tcType.name }}</nb-option>
+        </nb-select>
+      </div>
+      <div class="form-group">
+        <label class="label">Ngày</label>
+        <div class="clearfix"></div>
+        <mat-form-field>
+          <mat-label>Chọn ngày</mat-label>
+          <input matInput [matDatepicker]="picker" (dateChange)="createDateChooice('change', $event)"
+                 (click)="picker.open()" [(ngModel)]="today" [ngModelOptions]="{standalone: true}">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker disabled="false"></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label for="ctNhaCungCap" class="label">NHÀ CUNG CẤP</label>
+        <div class="clearfix"></div>
+        <nb-select [(selected)]="nhaCungCap" id="ctNhaCungCap">
+          <nb-option value="{{ nhacc.key }}" *ngFor="let nhacc of nhaCungCaps">{{ nhacc.name }}</nb-option>
+        </nb-select>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1" class="label">Tên</label>
+        <input type="text" nbInput fullWidth id="exampleInputPassword1" placeholder="Tên"
+               (keyup)="updateThuChi($event, 'name')">
+      </div>
+      <div class="form-group">
+        <label for="price" class="label">Số tiền</label>
+        <input type="number" nbInput fullWidth id="price" placeholder="Số tiền"
+               (keyup)="updateThuChi($event, 'price')">
+      </div>
+      <div class="form-group">
+        <label for="note" class="label">Ghi Chú</label>
+        <div class="clearfix"></div>
+        <textarea nbInput placeholder="Ghi Chú" id="note" (keyup)="updateThuChi($event, 'note')"></textarea>
+      </div>
+
+      <div class="thu-chi mb-5">
+        <div class="form-group">
+          <label class="label">TẢI FILES</label>
+        </div>
+        <label>
+          <input
+            type="file"
+            accept="image/*"
+            class="text-nowrap text-truncate"
+            (change)="selectFile($event)"
+          />
+        </label>
+
+        <button
+          class="btn btn-success btn-sm d-none"
+          [disabled]="!selectedFiles"
+          (click)="upload()"
+        >
+          TẢI LÊN
+        </button>
+
+        <div *ngIf="currentFileUpload && percentage !== 100" class="progress mt-2 mb-3">
+          <div
+            class="progress-bar progress-bar-info"
+            role="progressbar"
+            attr.aria-valuenow="{{ percentage }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [ngStyle]="{ width: percentage + '%' }"
+          >
+            {{ percentage }}%
+          </div>
+        </div>
+        <div class="file-upload">
+          <ul
+            class="list-group list-group-flush"
+            *ngFor="let file of fileUploadsNew"
+          >
+            <li class="list-group-item">
+              <app-upload-details [fileUpload]='file' (deleteFile)="deleteFile($event)"></app-upload-details>
+            </li>
+          </ul>
+        </div>
+
+      </div>
+      <button type="submit" nbButton status="danger" (click)="addItem()">THÊM THU CHI</button>
+    </form>
+  </nb-card-body>
+</nb-card>
+<nb-card>
+  <nb-card-body>
+    <ng2-smart-table [settings]="settings" [source]="source"
+                     (createConfirm)="onCreateConfirm($event)"
+                     (editConfirm)="onEditConfirm($event)"
+                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none2 mobile-zoom"
+                     (custom)="onCustom($event)">
+    </ng2-smart-table>
+  </nb-card-body>
+</nb-card>

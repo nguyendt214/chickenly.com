@@ -1,0 +1,59 @@
+<nb-card>
+  <nb-card-header>DANH SÁCH THU CHI ( <b>{{ source?.count() }}</b> )</nb-card-header>
+  <div class="comeback text-left mb-3 ml-3">
+    <button nbButton status="success" (click)="themMoi()">THÊM THU CHI</button>
+  </div>
+  <nb-card-body class="list-order cong-no">
+    <div class="order-date-filter">
+      <div class="col-md-12 col-lg-12 col-xxxl-12">
+        <mat-form-field>
+          <mat-label>LỌC THEO NGÀY</mat-label>
+          <mat-date-range-input [rangePicker]="picker" (click)="picker.open()">
+            <input matStartDate placeholder="Ngày Bắt Đầu" #dateRangeStart [ngModel]="startDate">
+            <input matEndDate placeholder="Ngày Cuối"
+                   #dateRangeEnd [ngModel]="endDate"
+                   (dateChange)="filterByDate(dateRangeStart, dateRangeEnd)">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        <div class="example-form-fields">
+          <!--           LOẠI -->
+          <mat-form-field class="padding-right-10">
+            <mat-label>LOẠI</mat-label>
+            <mat-select [(ngModel)]="selectThuChiType">
+              <mat-option value="" (click)="filterByThuChiType(null)">Chọn Loại</mat-option>
+              <mat-option *ngFor="let o of thuChiTypes" [value]="o.key" (click)="filterByThuChiType(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!--            Nhà Cung Cấp-->
+          <mat-form-field class="padding-right-10">
+            <mat-label>NHÀ CUNG CẤP</mat-label>
+            <mat-select [(ngModel)]="selectNhaCungCap">
+              <mat-option value="" (click)="filterNhaCungCap(null)">Chọn Địa Điểm</mat-option>
+              <mat-option *ngFor="let o of nhaCungCaps" [value]="o.key" (click)="filterNhaCungCap(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div (click)="resetFilter()" class="reset-filter">
+          <button mat-button (click)="resetFilter()">LỌC MẶC ĐỊNH</button>
+        </div>
+      </div>
+    </div>
+  </nb-card-body>
+</nb-card>
+<nb-card>
+  <nb-card-body>
+    <ng2-smart-table [settings]="settings" [source]="source"
+                     (createConfirm)="onCreateConfirm($event)"
+                     (editConfirm)="onEditConfirm($event)"
+                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none2 mobile-zoom"
+                     (custom)="onCustom($event)">
+    </ng2-smart-table>
+  </nb-card-body>
+</nb-card>
+

@@ -1,0 +1,59 @@
+import { Injectable } from '@angular/core';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
+import { NhaCungCap } from './nhaCungCap.service';
+
+export class ThuChiType {
+  key?: any;
+  name?: string;
+  address?: string;
+  phone?: string;
+  note?: string;
+  customerKey?: any;
+  owner?: any;
+  disable?: boolean;
+  url?: string;
+}
+
+@Injectable({
+  providedIn: 'root',
+})
+export class ThuChiTypeService {
+  private dbPath = '/ThuChiType';
+  cacheThuChiType: any;
+  modelRef: AngularFireList<ThuChiType>;
+
+  constructor(private db: AngularFireDatabase) {
+    this.modelRef = db.list(this.dbPath);
+  }
+
+  getAll(): AngularFireList<ThuChiType> {
+    return this.modelRef;
+  }
+
+  create(o: ThuChiType): any {
+    return this.modelRef.push(o);
+  }
+
+  update(key: string, value: any): Promise<void> {
+    return this.modelRef.update(key, value);
+  }
+
+  delete(key: string): Promise<void> {
+    return this.modelRef.remove(key);
+  }
+
+  deleteAll(): Promise<void> {
+    return this.modelRef.remove();
+  }
+
+  getThuChiTypeByKey(o: ThuChiType[], key: string) {
+    if (o) {
+      const temp = o.filter((c: ThuChiType) => c.key === key);
+      if (temp?.length) {
+        const cus: ThuChiType = temp.shift();
+        return cus;
+      }
+    }
+    return;
+  }
+}

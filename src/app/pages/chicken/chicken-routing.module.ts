@@ -21,6 +21,13 @@ import { OrderEdit2Component } from './order/editOrder/order.component';
 import { SignInComponent } from './sign-in/sign-in.component';
 import { SignOutComponent } from './sign-out/sign-out.component';
 import { AuthGuard } from '../../main/guard/auth.guard';
+import { ThuChiComponent } from './thuChi/model.component';
+import { ThuChiTypeComponent } from './thuChiType/model.component';
+import { UploadDetailsComponent } from './upload/upload-details.component';
+import { NhaCungCapComponent } from './nhaCungCap/model.component';
+import { ThuChiAddComponent } from './thuChi/add/model.component';
+import { ThuChiEditComponent } from './thuChi/edit/model.component';
+import { ImagePopinDialog } from './upload/popin/popin';
 
 const routes: Routes = [{
   path: '',
@@ -29,57 +36,82 @@ const routes: Routes = [{
     {
       path: 'order',
       component: OrderComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'order/:orderId',
       component: EditOrderComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'order/edit/:orderId',
       component: OrderEdit2Component,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'order-list',
       component: OrderListComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'cong-no',
       component: CongNoComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'customer',
       component: CustomerComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'nha-cung-cap',
+      component: NhaCungCapComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: 'school',
       component: SchoolComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'category',
       component: CategoryComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'product-type',
       component: ProductTypeComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'product',
       component: ProductComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
     },
     {
       path: 'employee',
       component: EmployeeComponent,
-      canActivate: [AuthGuard]
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'thu-chi',
+      component: ThuChiComponent,
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'thu-chi/add',
+      component: ThuChiAddComponent,
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'thu-chi/edit/:thuChiId',
+      component: ThuChiEditComponent,
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'thu-chi-type',
+      component: ThuChiTypeComponent,
+      canActivate: [AuthGuard],
     },
     {
       path: '',
@@ -118,4 +150,11 @@ export const routedComponents = [
   BepDialog,
   SignInComponent,
   SignOutComponent,
+  ThuChiComponent,
+  ThuChiTypeComponent,
+  UploadDetailsComponent,
+  NhaCungCapComponent,
+  ThuChiAddComponent,
+  ThuChiEditComponent,
+  ImagePopinDialog,
 ];

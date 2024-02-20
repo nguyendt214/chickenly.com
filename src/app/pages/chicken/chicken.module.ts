@@ -2,10 +2,10 @@ import { LOCALE_ID, NgModule } from '@angular/core';
 import {
   NbAccordionModule,
   NbButtonModule,
-  NbCardModule, NbDatepickerModule,
+  NbCardModule, NbCheckboxModule, NbDatepickerModule,
   NbIconModule,
   NbInputModule, NbListModule,
-  NbRouteTabsetModule, NbStepperModule,
+  NbRouteTabsetModule, NbSelectModule, NbStepperModule,
   NbTabsetModule,
   NbTreeGridModule, NbUserModule,
 } from '@nebular/theme';
@@ -52,6 +52,8 @@ import { ExportCsvService } from '../../main/exportCsv.service';
     NbAccordionModule,
     NbUserModule,
     NbDatepickerModule,
+    NbSelectModule,
+    NbCheckboxModule,
     NbDateFnsDateModule.forRoot({
       parseOptions: {locale: vi},
       formatOptions: {locale: vi},

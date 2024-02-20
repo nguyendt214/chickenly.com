@@ -1,0 +1,63 @@
+<nb-card>
+  <nb-card-header>CHI TIẾT THU CHI</nb-card-header>
+  <div class="comeback text-center mb-3">
+    <button nbButton status="success" (click)="quayLai()">Quay lại</button>
+  </div>
+  <nb-card-body>
+    <form>
+      <div class="form-group">
+        <label for="ctSelectType" class="label">LOẠI</label>
+        <div class="clearfix"></div>
+        <nb-select [(selected)]="thuChiType" id="ctSelectType" [disabled]="true">
+          <nb-option value="{{ tcType.key }}" *ngFor="let tcType of thuChiTypes">{{ tcType.name }}</nb-option>
+        </nb-select>
+      </div>
+      <div class="form-group">
+        <label class="label">Ngày</label>
+        <div class="clearfix"></div>
+        <mat-form-field>
+          <mat-label>Chọn ngày</mat-label>
+          <input matInput [matDatepicker]="picker"
+                 (click)="picker.open()" [(ngModel)]="thuChiDate" [ngModelOptions]="{standalone: true}"
+                 [disabled]="true">
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker [disabled]="true"></mat-datepicker>
+        </mat-form-field>
+      </div>
+      <div class="form-group">
+        <label for="ctNhaCungCap" class="label">NHÀ CUNG CẤP</label>
+        <div class="clearfix"></div>
+        <nb-select [(selected)]="nhaCungCap" id="ctNhaCungCap" [disabled]="true">
+          <nb-option value="{{ nhacc.key }}" *ngFor="let nhacc of nhaCungCaps">{{ nhacc.name }}</nb-option>
+        </nb-select>
+      </div>
+      <div class="form-group">
+        <label for="exampleInputPassword1" class="label">Tên</label>
+        <input type="text" nbInput fullWidth id="exampleInputPassword1" placeholder="Tên" disabled
+               [value]="thuChi.name">
+      </div>
+      <div class="form-group">
+        <label for="price" class="label">Số tiền ( VNĐ )</label>
+        <input type="text" nbInput fullWidth id="price" placeholder="Số tiền" disabled [disabled]="true"
+               [value]="thuChi.price | currency : '' : '' : '1.0-0'">
+      </div>
+      <div class="form-group">
+        <label for="note" class="label">Ghi Chú</label>
+        <div class="clearfix"></div>
+        <textarea nbInput placeholder="Ghi Chú" id="note" disabled [value]="thuChi.note"></textarea>
+      </div>
+
+      <div class="thu-chi mb-5">
+        <div class="file-upload">
+          <ul class="list-group list-group-flush"
+              *ngFor="let file of fileUploads">
+            <li class="list-group-item" *ngIf="showFile(file)">
+              <app-upload-details [fileUpload]='file' [allowDelete]="false"
+                                  (showImg)="showImage($event)"></app-upload-details>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </form>
+  </nb-card-body>
+</nb-card>
