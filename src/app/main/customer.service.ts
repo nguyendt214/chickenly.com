@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { map } from 'rxjs/operators';
+import { Product } from './product.service';
 
 export class Customer {
   key?: any;
@@ -9,6 +10,7 @@ export class Customer {
   phone?: string;
   note?: string;
   disable?: boolean;
+  products?: Array<string>;
 }
 
 @Injectable({

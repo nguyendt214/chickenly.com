@@ -105,15 +105,15 @@ export class ProductListComponent implements OnInit, OnChanges {
         editable: true,
         filter: false,
       },
-      customNote: {
-        title: 'Ghi Chú',
-        type: 'string',
-        valuePrepareFunction: (cell, row) => {
-          return row.customNote ?? row.product.note;
-        },
-        editable: true,
-        filter: false,
-      },
+      // customNote: {
+      //   title: 'Ghi Chú',
+      //   type: 'string',
+      //   valuePrepareFunction: (cell, row) => {
+      //     return row.customNote ?? row.product.note;
+      //   },
+      //   editable: true,
+      //   filter: false,
+      // },
     },
     hideSubHeader: false,
     mode: 'external',

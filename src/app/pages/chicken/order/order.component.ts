@@ -25,6 +25,7 @@ export class OrderComponent implements OnInit {
   allSchools: School[] = [];
   categories: Category[] = [];
   productTypes: ProductType[] = [];
+  allProducts: Product[] = [];
   products: Product[] = [];
   topProducts: Product[] = [];
   allCustomers: Customer[] = [];
@@ -147,7 +148,7 @@ export class OrderComponent implements OnInit {
 
   getAllProducts() {
     if (this.productService.cacheProducts) {
-      this.products = this.productService.cacheProducts;
+      this.products = this.allProducts = this.productService.cacheProducts;
       this.prepareProducts();
 
     } else {
@@ -158,7 +159,7 @@ export class OrderComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
-        this.products = this.productService.cacheProducts = all;
+        this.products = this.allProducts = this.productService.cacheProducts = all;
         this.prepareProducts();
       });
     }
@@ -262,6 +263,10 @@ export class OrderComponent implements OnInit {
     this.schools = this.allSchools.filter((s: School) => s.owner === o.key);
     this.selectSchool = '';
     this.order.school = null;
+    // Lọc sản phẩm theo khách hàng
+    this.products = this.allProducts.filter((p: Product)=> o.products.includes(p.key));
+    this.topProducts = this.products.filter((p: Product) => p.topProduct);
+    this.products = this.productService.groupProductByCategory(this.products);
   }
 
   chonTruong(o) {

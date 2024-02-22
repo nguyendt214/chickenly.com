@@ -54,9 +54,9 @@
         <!--              Sản phẩm-->
         <div class="clearfix"></div>
 
-        <div class="top-product">
+        <div class="top-product" *ngIf="topProducts?.length">
           <h3>SẢN PHẨM BÁN CHẠY</h3>
-          <div class="list-product mb-3" *ngIf="topProducts?.length">
+          <div class="list-product mb-3">
             <mat-card *ngFor="let o of topProducts; trackBy: trackByFn; index as i;" (click)="addToCart(o);">
               <div class="qty-in-cart" *ngIf="itemInCart(o)">{{ itemInCart(o) }}</div>
               <mat-card-header>

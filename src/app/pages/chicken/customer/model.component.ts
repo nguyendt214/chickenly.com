@@ -6,6 +6,9 @@ import { MainService } from '../../../main/main.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
+import { Category, CategoryService } from '../../../main/category.service';
+import { ProductType, ProductTypeService } from '../../../main/product-type.service';
+import { Product, ProductService } from '../../../main/product.service';
 
 @Component({
   selector: 'ngx-smart-table-customer',
@@ -14,6 +17,11 @@ import { MatDialog } from '@angular/material/dialog';
 })
 export class CustomerComponent implements OnInit {
   all?: Customer[] = [];
+  allCustomers?: Customer[] = [];
+  categories: Category[] = [];
+  productTypes: ProductType[] = [];
+  products: Product[] = [];
+  currenCustomerKey: string;
   settings = {
     add: {
       confirmCreate: true,
@@ -62,7 +70,20 @@ export class CustomerComponent implements OnInit {
     private mainService: MainService,
     private modelService: CustomerService,
     private dialog: MatDialog,
+    private categoryService: CategoryService,
+    private productTypeService: ProductTypeService,
+    private productService: ProductService,
   ) {
+  }
+
+  ngOnInit() {
+    this.getAllProductTypes();
+    this.getAllCategories();
+    this.getAllProducts();
+    this.initPageData();
+  }
+
+  initPageData() {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -70,12 +91,75 @@ export class CustomerComponent implements OnInit {
         ),
       ),
     ).subscribe(all => {
-      this.all = all;
+      this.all = this.allCustomers = all;
       this.source.load(this.all);
     });
+
   }
 
-  ngOnInit() {
+  getAllCategories() {
+    if (this.categoryService.cacheCategory) {
+      this.categories = this.categoryService.cacheCategory;
+    } else {
+      this.categoryService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.categories = all;
+        this.categoryService.cacheCategory = all;
+      });
+    }
+  }
+
+  getAllProductTypes() {
+    if (this.productTypeService.cacheProductTypes) {
+      this.productTypes = this.productTypeService.cacheProductTypes;
+    } else {
+      this.productTypeService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.productTypes = this.productTypeService.cacheProductTypes = all;
+      });
+    }
+  }
+
+  getAllProducts() {
+    if (this.productService.cacheProducts) {
+      this.products = this.productService.cacheProducts;
+      this.prepareProducts();
+
+    } else {
+      this.productService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.products = this.productService.cacheProducts = all;
+        this.prepareProducts();
+      });
+    }
+  }
+
+
+  prepareProducts() {
+    // Category
+    this.products.forEach((p: Product) => {
+      p.category = this.categories.find((c: Category) => c.key === p.categoryKey);
+    });
+    // Product Type
+    this.products.forEach((p: Product) => {
+      p.productType = this.productTypes.find((pt: ProductType) => pt.key === p.productTypeKey);
+    });
+    this.products = this.productService.sortByCategory(this.products);
   }
 
   onCreateConfirm(e: any) {
@@ -100,5 +184,32 @@ export class CustomerComponent implements OnInit {
     } else {
       e.confirm.reject();
     }
+  }
+
+  userHasProduct(c: Customer, p: Product) {
+    return c.products && c.products.includes(p.key);
+  }
+
+  updateCustomerProduct(c: Customer, p: Product, checked: boolean) {
+    c.products = c.products ?? [];
+    if (checked) {
+      c.products.push(p.key);
+    } else {
+      c.products = c.products.filter((val: string) => val !== p.key);
+    }
+    c.products = [...new Set(c.products)];
+    this.modelService.update(c.key, c);
+  }
+
+  setCurrentCustomer(c: Customer) {
+    this.currenCustomerKey = c.key;
+  }
+
+  initFirstData() {
+    this.allCustomers.forEach((c: Customer) => {
+      this.products.forEach((p: Product) => {
+        this.updateCustomerProduct(c, p, true);
+      });
+    });
   }
 }

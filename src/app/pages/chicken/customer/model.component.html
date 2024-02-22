@@ -2,7 +2,6 @@
   <nb-card-header>
     Danh Sách Khách Hàng ( <b>{{ source?.count() }}</b> )
   </nb-card-header>
-
   <nb-card-body>
     <ng2-smart-table [settings]="settings" [source]="source"
                      (createConfirm)="onCreateConfirm($event)"
@@ -10,4 +9,45 @@
                      (deleteConfirm)="onDeleteConfirm($event)" class="mobile-zoom">
     </ng2-smart-table>
   </nb-card-body>
+  <div class="customer-product pt-4">
+    <h4 class="text-center">KHÁCH HÀNG VÀ SẢN PHẨM</h4>
+    <mat-accordion>
+      <mat-expansion-panel *ngFor="let c of allCustomers; let index = index;"
+                           [expanded]="c.key === currenCustomerKey" (opened)="setCurrentCustomer(c)">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            {{ c.name }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <nb-card-body>
+          <div class="table-responsive">
+            <table class="table">
+              <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">TÊN</th>
+                <th scope="col">NHÓM</th>
+                <th scope="col">QUI CÁCH</th>
+                <th scope="col">GIÁ BÁN</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let product of products">
+                <th scope="row">
+                  <mat-checkbox class="example-margin" [checked]="userHasProduct(c, product)"
+                                (change)="updateCustomerProduct(c, product, $event.checked)"></mat-checkbox>
+                </th>
+                <td>{{ product.name }}</td>
+                <td>{{ product.category.name }}</td>
+                <td>{{ product.productType.name }}</td>
+                <td>{{ product.price | currency : '' : '' : '1.0-0' }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </nb-card-body>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+  </div>
 </nb-card>
