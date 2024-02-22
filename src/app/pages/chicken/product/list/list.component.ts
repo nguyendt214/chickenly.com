@@ -28,6 +28,11 @@ export class ProductListComponent implements OnInit, OnChanges {
   productTypes?: ProductType[] = [];
   all?: Product[] = [];
   allProducts?: Product[] = [];
+  tongHop = {
+    tongCom: 0,
+    tongTien: 0,
+    tongSP: 0
+  };
   settings = {
     actions: {
       add: false,
@@ -118,6 +123,7 @@ export class ProductListComponent implements OnInit, OnChanges {
   };
   source: LocalDataSource = new LocalDataSource();
   @ViewChild('table') table: Ng2SmartTableComponent;
+
   constructor(
     private service: SmartTableData,
     private modelService: ProductService,
@@ -245,7 +251,22 @@ export class ProductListComponent implements OnInit, OnChanges {
     if (this.order.item && this.order.item.length) {
       this.order = this.orderService.sortCartByCategory(this.order);
       this.source.load(this.order.item);
+      this.tongHopCart();
     }
+  }
+
+  tongHopCart() {
+    this.tongHop.tongTien = 0;
+    this.tongHop.tongCom = 0;
+    this.tongHop.tongSP = this.order.item.length;
+    this.order.item.forEach((cart: Cart) => {
+      this.tongHop.tongTien += cart.price * cart.qty;
+      if (cart.categoryKey === this.categoryService.comKey) {
+        this.tongHop.tongCom += cart.qty;
+        this.tongHop.tongSP--;
+      }
+    });
+    this.tongHop.tongSP++;
   }
 
   editPopup(event) {
@@ -269,6 +290,7 @@ export class ProductListComponent implements OnInit, OnChanges {
       }
     });
   }
+
   editProduct(event) {
     this.editPopup(event);
     // this.table.grid.getSelectedRows().forEach((row) => {

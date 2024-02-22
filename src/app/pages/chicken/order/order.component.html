@@ -53,6 +53,19 @@
 
         <!--              Sản phẩm-->
         <div class="clearfix"></div>
+
+        <div class="top-product">
+          <h3>SẢN PHẨM BÁN CHẠY</h3>
+          <div class="list-product mb-3" *ngIf="topProducts?.length">
+            <mat-card *ngFor="let o of topProducts; trackBy: trackByFn; index as i;" (click)="addToCart(o);">
+              <div class="qty-in-cart" *ngIf="itemInCart(o)">{{ itemInCart(o) }}</div>
+              <mat-card-header>
+                <mat-card-title>{{ o?.name }} ({{ o?.price | currency : '' : '' : '1.0-0' }}-{{ o?.productType?.name }})</mat-card-title>
+              </mat-card-header>
+            </mat-card>
+          </div>
+        </div>
+
         <mat-accordion>
           <mat-expansion-panel *ngFor="let category of products | keyvalue; let index = index;"
                                [expanded]="index === 0">

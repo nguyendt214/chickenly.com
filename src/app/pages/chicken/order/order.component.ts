@@ -26,6 +26,7 @@ export class OrderComponent implements OnInit {
   categories: Category[] = [];
   productTypes: ProductType[] = [];
   products: Product[] = [];
+  topProducts: Product[] = [];
   allCustomers: Customer[] = [];
   customers: Customer[] = [];
   employees: Employee[] = [];
@@ -90,7 +91,7 @@ export class OrderComponent implements OnInit {
     this.toaConfig = {
       status: 'success',
       destroyByClick: true,
-      duration: 3000,
+      duration: 2000,
       hasIcon: true,
       position: 'bottom-right',
       preventDuplicates: true,
@@ -102,6 +103,9 @@ export class OrderComponent implements OnInit {
       'Tiếp tục nào!!!',
       `Tạo ĐƠN HÀNG THÀNH CÔNG`,
       this.toaConfig);
+    if (this.orderService.orderClone) {
+      this.utilService.gotoPage('pages/chicken/order-list');
+    }
   }
 
   createDateChooice(t: string, e: any) {
@@ -169,6 +173,7 @@ export class OrderComponent implements OnInit {
     this.products.forEach((p: Product) => {
       p.productType = this.productTypes.find((pt: ProductType) => pt.key === p.productTypeKey);
     });
+    this.topProducts = this.products.filter((p: Product) => p.topProduct);
     this.products = this.productService.groupProductByCategory(this.products);
   }
 

@@ -17,6 +17,7 @@ export class Product {
   disable?: boolean;
   cartPrice?: number;
   cartQty?: number;
+  topProduct?: boolean;
 }
 
 @Injectable({
@@ -71,5 +72,8 @@ export class ProductService {
     p.priceStock = +p.priceStock;
     p.name = p.name.trim();
     return p;
+  }
+  sortByCategory(products: Product[]) {
+    return products.sort((a, b) => b.category.name.localeCompare(a.category.name));
   }
 }

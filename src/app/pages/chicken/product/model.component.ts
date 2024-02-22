@@ -17,6 +17,7 @@ export class ProductComponent implements OnInit {
   categories?: Category[] = [];
   productTypes?: ProductType[] = [];
   all?: Product[] = [];
+  allProducts?: Product[] = [];
   settings = {
     add: {
       confirmCreate: true,
@@ -99,7 +100,14 @@ export class ProductComponent implements OnInit {
     private customerService: CustomerService,
     private categoryService: CategoryService,
     private productTypeService: ProductTypeService,
-  ) {
+  ) { }
+
+  ngOnInit() {
+    this.getAllCategories();
+    this.getAllProductType();
+    this.getAllProducts();
+  }
+  getAllProducts() {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -108,13 +116,13 @@ export class ProductComponent implements OnInit {
       ),
     ).subscribe(all => {
       this.all = all;
+      this.all.forEach((product: Product) => {
+        product.category = this.categories.find((c: Category) => c.key === product.categoryKey);
+        product.productType = this.productTypes.find((pt: ProductType) => pt.key === product.productTypeKey);
+      });
       this.source.load(this.all);
+      this.allProducts = this.modelService.sortByCategory(this.all);
     });
-  }
-
-  ngOnInit() {
-    this.getAllCategories();
-    this.getAllProductType();
   }
 
   onCreateConfirm(e: any) {
@@ -197,6 +205,11 @@ export class ProductComponent implements OnInit {
       });
     });
     this.settings = Object.assign({}, this.settings);
+  }
+
+  updateTopProduct(p: Product, event: boolean) {
+    p.topProduct = event;
+    this.modelService.update(p.key, p);
   }
 
 }

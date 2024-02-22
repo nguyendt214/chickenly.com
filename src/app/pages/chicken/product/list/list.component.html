@@ -6,4 +6,11 @@
                      (userRowSelect)="editProduct($event)" class="d-none2 mobile-zoom">
     </ng2-smart-table>
   </nb-card-body>
+  <div class="tong-hop mt-3 mb-3">
+    <div class="row">
+      <div class="col">TỔNG CƠM: <strong>{{ tongHop.tongCom }}</strong></div>
+      <div class="col">TỔNG SỐ SP: <strong>{{ tongHop.tongSP }}</strong></div>
+      <div class="col">TỔNG TIỀN: <strong>{{ tongHop.tongTien | currency : '' : '' : '1.0-0' }} VNĐ</strong></div>
+    </div>
+  </div>
 </nb-card>
