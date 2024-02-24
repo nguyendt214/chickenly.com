@@ -1,17 +1,14 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { FileUpload } from './upload.service';
-import { NhaCungCap } from './nhaCungCap.service';
 import { Observable } from 'rxjs';
+import { Customer } from './customer.service';
 
 export class ThuChi {
   key?: any;
   name?: string;
-  address?: string;
-  phone?: string;
   note?: string;
   thuChiTypeKey?: string;
-  owner?: any;
   disable?: boolean;
   url?: string;
   date?: string;
@@ -19,6 +16,12 @@ export class ThuChi {
   fileKeys?: Array<string>;
   price?: number;
   nhaCungCapKey?: string;
+  soLuong?: string;
+  trangThaiTT?: number;
+  trangThaiLabel?: string;
+  customerKey?: string;
+  customer?: Customer | null;
+  orders?: Array<string>;
 }
 @Injectable({
   providedIn: 'root',

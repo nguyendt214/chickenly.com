@@ -19,9 +19,6 @@ let users: any[] = [
   }, {
     username: 'nhung',
     password: 'nhung123'
-  }, {
-    username: 'tram',
-    password: 'tram123'
   }
 ];
 
@@ -58,7 +55,7 @@ export class FakeBackendInterceptor implements HttpInterceptor {
       const { username, password } = body;
       const user = users.find(x => x.username == username.trim() && x.password == password.trim());
       if (!user) return error('Username or password is incorrect');
-      localStorage.setItem('user', user);
+      localStorage.setItem('user-1', JSON.stringify(user));
       location.reload();
       return ok({
         ...basicDetails(user),

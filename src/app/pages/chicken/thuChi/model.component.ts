@@ -10,9 +10,9 @@ import { NbToastrService } from '@nebular/theme';
 import { NhaCungCap, NhaCungCapService } from '../../../main/nhaCungCap.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { UtilService } from '../../../main/util.service';
-import { Order } from '../../../main/order.service';
-import { Customer } from '../../../main/customer.service';
-import { School } from '../../../main/school.service';
+import { Customer, CustomerService } from '../../../main/customer.service';
+import { ImagePopinDialog } from '../upload/popin/popin';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'ngx-smart-table-school',
@@ -30,6 +30,20 @@ export class ThuChiComponent implements OnInit {
   fileUploadsNew: any[] = [];
   fileNames: string[] = [];
   thuChiFilter?: ThuChi[] = [];
+  tongThu?: ThuChi[] = [];
+  tongChi?: ThuChi[] = [];
+  tongThuFilter?: ThuChi[] = [];
+  tongChiFilter?: ThuChi[] = [];
+  price = {
+    tienDaThu: 0,
+    tienChuaThu: 0,
+    chi: 0
+  };
+  priceFilter = {
+    tienDaThu: 0,
+    tienChuaThu: 0,
+    chi: 0
+  };
   settings = {
     add: {
       confirmCreate: true,
@@ -161,6 +175,8 @@ export class ThuChiComponent implements OnInit {
   selectThuChiType = '';
   selectNhaCungCap = '';
   isSameDay = false;
+  allCustomers: Customer[] = [];
+  customers: Customer[] = [];
 
   constructor(
     private service: SmartTableData,
@@ -172,12 +188,57 @@ export class ThuChiComponent implements OnInit {
     private datePipe: DatePipe,
     private currencyPipe: CurrencyPipe,
     private utilService: UtilService,
+    private customerService: CustomerService,
+    private dialog: MatDialog,
   ) {
     this.getAllThuChiType();
     this.getAllNhaCungCap();
     this.getAllUploadFiles();
+    this.getAllCustomer();
     this.getAll();
     this.initThuChi();
+  }
+
+  preparePageData(all: ThuChi[]) {
+    this.thuChiFilter = all;
+    this.source.load(this.all);
+    const date = this.modelService.getCurrentMonth();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    this.filterByDate(this.startDate, this.endDate);
+    this.prepareThuChi();
+  }
+
+  prepareThuChi() {
+    this.tongThu = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey === 'thu');
+    this.tongChi = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey !== 'thu');
+    this.tongThu.forEach((tc: ThuChi) => {
+      if (tc.trangThaiTT === 1) {
+        this.price.tienChuaThu += +tc.price;
+      } else if (tc.trangThaiTT === 2) {
+        this.price.tienDaThu += +tc.price;
+      }
+    });
+    this.tongChi.forEach((tc: ThuChi) => {
+      this.price.chi += +tc.price;
+    });
+  }
+
+  prepareThuChiFilter() {
+    this.tongThuFilter = this.thuChiFilter.filter((tc: ThuChi) => tc.thuChiTypeKey === 'thu');
+    this.tongChiFilter = this.thuChiFilter.filter((tc: ThuChi) => tc.thuChiTypeKey !== 'thu');
+    this.tongThuFilter.forEach((tc: ThuChi) => {
+      if (tc.trangThaiTT === 1) {
+        this.priceFilter.tienChuaThu += +tc.price;
+      } else if (tc.trangThaiTT === 2) {
+        this.priceFilter.tienDaThu += +tc.price;
+      }
+    });
+    this.tongChiFilter.forEach((tc: ThuChi) => {
+      this.priceFilter.chi += +tc.price;
+    });
   }
 
   initThuChi() {
@@ -197,13 +258,35 @@ export class ThuChiComponent implements OnInit {
         ),
       ).subscribe(all => {
         this.all = this.modelService.cacheThuChi = all;
+        this.mapCustomer();
         this.preparePageData(this.all);
       });
     } else {
       this.all = this.modelService.cacheThuChi;
+      this.mapCustomer();
       this.preparePageData(this.all);
     }
 
+  }
+
+  mapCustomer() {
+    this.all.forEach((tc: ThuChi) => {
+      if (tc.thuChiTypeKey === 'thu') {
+        let c: any = this.customers.filter((cus: Customer) => cus.key === tc.customerKey);
+        if (c.length) {
+          c = c.shift();
+          tc.customer = c;
+        }
+      }
+      this.mapTrangThaiThanhToan(tc);
+    });
+  }
+  mapTrangThaiThanhToan(tc: ThuChi) {
+    let t: any = this.thuChiTypeService.thanhToanTypes.filter((tt: any) => tt.key === tc.trangThaiTT);
+    if (t.length) {
+      t = t.shift();
+      tc.trangThaiLabel = t.name;
+    }
   }
 
   getAllThuChiType() {
@@ -274,13 +357,16 @@ export class ThuChiComponent implements OnInit {
       .catch(() => e.confirm.reject());
   }
 
-  onDeleteConfirm(e): void {
+  onDeleteConfirm(key: string): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.modelService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
-        .catch(() => e.confirm.reject());
-    } else {
-      e.confirm.reject();
+      this.modelService.delete(key)
+        .then(() => {
+          setTimeout(() => {
+            window.location.reload();
+          }, 1000);
+        })
+        .catch(() => {
+        });
     }
   }
 
@@ -388,17 +474,7 @@ export class ThuChiComponent implements OnInit {
       this.thuChiFilter = this.thuChiFilter.filter((o: ThuChi) => o.nhaCungCapKey === this.oFilter.nhaCungCap.key);
     }
     this.source.load(this.thuChiFilter);
-  }
-
-  preparePageData(all: ThuChi[]) {
-    this.thuChiFilter = all;
-    this.source.load(this.all);
-    const date = this.modelService.getCurrentMonth();
-    this.startDate = date[0];
-    this.endDate = date[1];
-    this.oFilter.startDate = this.startDate;
-    this.oFilter.endDate = this.endDate;
-    this.filterByDate(this.startDate, this.endDate);
+    this.prepareThuChiFilter();
   }
 
   filterByThuChiType(c: ThuChiType) {
@@ -433,8 +509,31 @@ export class ThuChiComponent implements OnInit {
     }
   }
 
-  themMoi() {
-    this.utilService.gotoPage('pages/chicken/thu-chi/add');
+  themMoi(type: string) {
+    this.utilService.gotoPage('pages/chicken/thu-chi/add/' + type);
+  }
+
+  getAllCustomer() {
+    if (this.customerService.cacheCustomers) {
+      this.customers = this.allCustomers = this.customerService.cacheCustomers;
+    } else {
+      this.customerService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
+      });
+    }
+  }
+
+  showImage(imgSrc) {
+    this.dialog.open(ImagePopinDialog, {
+      width: '100%',
+      data: {imgSrc: imgSrc + '&sz=w500'},
+    });
   }
 
 }

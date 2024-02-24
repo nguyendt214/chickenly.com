@@ -1,7 +1,8 @@
 <nb-card>
   <nb-card-header>DANH SÁCH THU CHI ( <b>{{ source?.count() }}</b> )</nb-card-header>
   <div class="comeback text-left mb-3 ml-3">
-    <button nbButton status="success" (click)="themMoi()">THÊM THU CHI</button>
+    <button nbButton status="danger" (click)="themMoi('chi')" class="add-chi">THÊM CHI</button>
+    <button nbButton status="success" (click)="themMoi('thu')">THÊM THU</button>
   </div>
   <nb-card-body class="list-order cong-no">
     <div class="order-date-filter">
@@ -17,28 +18,28 @@
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-date-range-picker #picker></mat-date-range-picker>
         </mat-form-field>
-        <div class="example-form-fields">
-          <!--           LOẠI -->
-          <mat-form-field class="padding-right-10">
-            <mat-label>LOẠI</mat-label>
-            <mat-select [(ngModel)]="selectThuChiType">
-              <mat-option value="" (click)="filterByThuChiType(null)">Chọn Loại</mat-option>
-              <mat-option *ngFor="let o of thuChiTypes" [value]="o.key" (click)="filterByThuChiType(o)">
-                {{o.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-          <!--            Nhà Cung Cấp-->
-          <mat-form-field class="padding-right-10">
-            <mat-label>NHÀ CUNG CẤP</mat-label>
-            <mat-select [(ngModel)]="selectNhaCungCap">
-              <mat-option value="" (click)="filterNhaCungCap(null)">Chọn Địa Điểm</mat-option>
-              <mat-option *ngFor="let o of nhaCungCaps" [value]="o.key" (click)="filterNhaCungCap(o)">
-                {{o.name}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
-        </div>
+        <!--        <div class="example-form-fields">-->
+        <!--          &lt;!&ndash;           LOẠI &ndash;&gt;-->
+        <!--          <mat-form-field class="padding-right-10">-->
+        <!--            <mat-label>LOẠI</mat-label>-->
+        <!--            <mat-select [(ngModel)]="selectThuChiType">-->
+        <!--              <mat-option value="" (click)="filterByThuChiType(null)">Chọn Loại</mat-option>-->
+        <!--              <mat-option *ngFor="let o of thuChiTypes" [value]="o.key" (click)="filterByThuChiType(o)">-->
+        <!--                {{o.name}}-->
+        <!--              </mat-option>-->
+        <!--            </mat-select>-->
+        <!--          </mat-form-field>-->
+        <!--          &lt;!&ndash;            Nhà Cung Cấp&ndash;&gt;-->
+        <!--          <mat-form-field class="padding-right-10">-->
+        <!--            <mat-label>NHÀ CUNG CẤP</mat-label>-->
+        <!--            <mat-select [(ngModel)]="selectNhaCungCap">-->
+        <!--              <mat-option value="" (click)="filterNhaCungCap(null)">Chọn Địa Điểm</mat-option>-->
+        <!--              <mat-option *ngFor="let o of nhaCungCaps" [value]="o.key" (click)="filterNhaCungCap(o)">-->
+        <!--                {{o.name}}-->
+        <!--              </mat-option>-->
+        <!--            </mat-select>-->
+        <!--          </mat-form-field>-->
+        <!--        </div>-->
         <div (click)="resetFilter()" class="reset-filter">
           <button mat-button (click)="resetFilter()">LỌC MẶC ĐỊNH</button>
         </div>
@@ -47,13 +48,115 @@
   </nb-card-body>
 </nb-card>
 <nb-card>
-  <nb-card-body>
-    <ng2-smart-table [settings]="settings" [source]="source"
-                     (createConfirm)="onCreateConfirm($event)"
-                     (editConfirm)="onEditConfirm($event)"
-                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none2 mobile-zoom"
-                     (custom)="onCustom($event)">
-    </ng2-smart-table>
+  <nb-card-body class="thu-chi">
+    <div class="row">
+      <div class="col-sm">
+        <p>Tổng thu: <strong>{{ price.tienDaThu | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+        <p>Tổng chưa thu: <strong>{{ price.tienChuaThu | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+        <p>Tổng chi: <strong>{{ price.chi | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+      </div>
+      <div class="col-sm">
+        <p>Công ty còn: <strong>{{ price.tienDaThu - price.chi | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+      </div>
+    </div>
+    <h4 class="text-center">Chi Tiết Thu Chi. Từ {{ oFilter.startDate | date : 'dd/MM/YYYY' }}
+      - {{ oFilter.endDate | date : 'dd/MM/YYYY' }}</h4>
+    <mat-accordion class="mb-5">
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            THU
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <nb-card-body>
+          <div class="table-responsive">
+            <p>Tổng thu: <strong>{{ priceFilter.tienDaThu | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+            <p>Tổng chưa thu: <strong>{{ priceFilter.tienChuaThu | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+            <table class="table">
+              <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">NGÀY</th>
+                <th scope="col">KHOẢN THU</th>
+                <th scope="col">ĐỐI TÁC</th>
+                <th scope="col">SỐ TIỀN</th>
+                <th scope="col">ẢNH</th>
+                <th scope="col">Trạng Thái</th>
+                <th scope="col">GHI CHÚ</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let tc of tongThuFilter">
+                <td (click)="onDeleteConfirm(tc.key)" class="delete">XÓA</td>
+                <td>{{ tc.date | date : 'dd/MM/YYYY' }}</td>
+                <td>{{ tc?.name }}</td>
+                <td>{{ tc?.customer?.name }}</td>
+                <td>{{ tc.price | currency : '' : '' : '1.0-0' }}</td>
+                <td>
+                  <div *ngIf="tc?.url">
+                    <img [src]="tc?.url" alt="" (click)="showImage(tc.url)"/>
+                  </div>
+                </td>
+                <td>{{ tc.trangThaiLabel }}</td>
+                <td>{{ tc.note }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </nb-card-body>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+    <mat-divider class="mt-3 mb-3"></mat-divider>
+    <mat-accordion>
+      <mat-expansion-panel [expanded]="true">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            CHI
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        <nb-card-body>
+          <div class="table-responsive">
+            <p>Tổng chi: <strong>{{ priceFilter.chi | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+            <table class="table">
+              <thead>
+              <tr>
+                <th scope="col"></th>
+                <th scope="col">NGÀY</th>
+                <th scope="col">KHOẢN CHI</th>
+                <th scope="col">SỐ LƯỢNG</th>
+                <th scope="col">SỐ TIỀN</th>
+                <th scope="col">ẢNH</th>
+                <th scope="col">GHI CHÚ</th>
+              </tr>
+              </thead>
+              <tbody>
+              <tr *ngFor="let tc of tongChiFilter">
+                <td (click)="onDeleteConfirm(tc.key)" class="delete">XÓA</td>
+                <td>{{ tc.date | date : 'dd/MM/YYYY' }}</td>
+                <td>{{ tc.name }}</td>
+                <td>{{ tc.soLuong }}</td>
+                <td>{{ tc.price | currency : '' : '' : '1.0-0' }}</td>
+                <td>
+                  <div *ngIf="tc?.url">
+                    <img [src]="tc?.url" alt="" (click)="showImage(tc.url)"/>
+                  </div>
+                </td>
+                <td>{{ tc.note }}</td>
+              </tr>
+              </tbody>
+            </table>
+          </div>
+        </nb-card-body>
+
+      </mat-expansion-panel>
+    </mat-accordion>
+    <!--    <ng2-smart-table [settings]="settings" [source]="source"-->
+    <!--                     (createConfirm)="onCreateConfirm($event)"-->
+    <!--                     (editConfirm)="onEditConfirm($event)"-->
+    <!--                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none2 mobile-zoom"-->
+    <!--                     (custom)="onCustom($event)">-->
+    <!--    </ng2-smart-table>-->
   </nb-card-body>
 </nb-card>
 

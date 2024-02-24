@@ -167,6 +167,7 @@ export class CongNoComponent implements OnInit {
 
   source: LocalDataSource = new LocalDataSource();
   tongHopOrder: Order;
+  thuCongNo = true;
 
   constructor(
     private service: SmartTableData,
@@ -374,6 +375,16 @@ export class CongNoComponent implements OnInit {
     });
   }
 
+  getPreviousWeek(previous: number) {
+    const date = this.modelService.getLastWeek(previous);
+    this.thuCongNo = true;
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    this.globalFilter();
+  }
+
   resetFilter() {
     this.modelService.filterStartDate = null;
     const date = this.modelService.getCurrentWeek();
@@ -415,11 +426,11 @@ export class CongNoComponent implements OnInit {
    * @param order
    */
   tongTienByOrder(order: Order) {
-    const total = this.calaulatorOrderPrice(order);
+    const total = this.calculatorOrderPrice(order);
     return this.currencyPipe.transform(total, '', '', '1.0-0') + ' VNĐ';
   }
 
-  calaulatorOrderPrice(o: Order) {
+  calculatorOrderPrice(o: Order) {
     let total = 0;
     if (!o) {
       return 0;
@@ -437,7 +448,7 @@ export class CongNoComponent implements OnInit {
   tongTienByOrders(orders: Order[]) {
     let total = 0;
     orders.forEach((o: Order) => {
-      total += this.calaulatorOrderPrice(o);
+      total += this.calculatorOrderPrice(o);
     });
     return total;
   }
@@ -502,7 +513,9 @@ export class CongNoComponent implements OnInit {
   hoaDonTongBySchool(orders: Order[]) {
     const order = new Order();
     order.item = [];
+    order.orderKeys = [];
     orders.forEach((o: Order) => {
+      order.orderKeys.push(o.key);
       o.item.forEach((c: Cart) => {
         const exists = order.item.filter((item: Cart) => item.product.key === c.product.key).length;
         if (exists) {
@@ -574,6 +587,17 @@ export class CongNoComponent implements OnInit {
       '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
 
     this.exportCsvService.exportCongNoTong1(dataExport, fileName);
+  }
+
+  truyThuCongNo() {
+    const dataCongNo = {
+      order: this.tongHopOrder,
+      totalPrice: this.calculatorOrderPrice(this.tongHopOrder),
+      time: 'Từ ' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd/MM/YYYY') +
+        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
+    };
+    this.modelService.truyThuCongNo = dataCongNo;
+    this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
   }
 
 }

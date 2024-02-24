@@ -188,7 +188,7 @@ export class EditOrderComponent implements OnInit {
         this.orderService.cacheOrder = null;
         setTimeout(() => {
           this.utilService.gotoPage('pages/chicken/order-list');
-        }, 3000);
+        }, 2000);
       },
     );
   }

@@ -10,6 +10,9 @@ import { NbToastrService } from '@nebular/theme';
 import { NhaCungCap, NhaCungCapService } from '../../../../main/nhaCungCap.service';
 import { CurrencyPipe, DatePipe } from '@angular/common';
 import { UtilService } from '../../../../main/util.service';
+import { ActivatedRoute, Router } from '@angular/router';
+import { Customer, CustomerService } from '../../../../main/customer.service';
+import { Order, OrderService } from '../../../../main/order.service';
 
 @Component({
   selector: 'ngx-smart-thuchi-add',
@@ -22,135 +25,24 @@ export class ThuChiAddComponent implements OnInit {
   thuChiTypes: ThuChiType[];
   nhaCungCaps: NhaCungCap[];
   nhaCungCap: string;
+  selectKH: '';
   thuChiType: string;
   fileUploads: any[] = [];
   fileUploadsNew: any[] = [];
   fileNames: string[] = [];
-  settings = {
-    add: {
-      confirmCreate: true,
-      addButtonContent: '<i class="nb-plus"></i>',
-      createButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-    },
-    edit: {
-      confirmSave: true,
-      editButtonContent: '<i class="nb-edit"></i>',
-      saveButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-    },
-    delete: {
-      deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: true,
-    },
-    columns: {
-      date: {
-        title: 'NGÀY',
-        type: 'string',
-        valuePrepareFunction: (c, row) => {
-          return this.datePipe.transform(new Date(c), 'dd/MM/YYYY');
-        },
-        sort: true,
-        sortDirection: 'desc',
-        compareFunction: (direction: any, c1: string, c2: string) => {
-          const first = (new Date(c1)).getTime();
-          const second = (new Date(c2)).getTime();
-          if (first < second) {
-            return -1 * direction;
-          }
-          if (first > second) {
-            return direction;
-          }
-          return 0;
-        },
-        filter: false,
-      },
-      thuChiTypeKey: {
-        title: 'LOẠI',
-        valuePrepareFunction: (cell) => {
-          const c: ThuChiType = this.thuChiTypeService.getThuChiTypeByKey(this.thuChiTypes, cell);
-          return c ? c.name : '';
-        },
-        editor: {
-          type: 'list',
-          config: {
-            list: [],
-          },
-        },
-        sort: false,
-        sortDirection: 'asc',
-        compareFunction: (direction: any, c1: string, c2: string) => {
-          if (c1 < c2) {
-            return -1 * direction;
-          }
-          if (c1 > c2) {
-            return direction;
-          }
-          return 0;
-        },
-      },
-      nhaCungCapKey: {
-        title: 'NHÀ CUNG CẤP',
-        valuePrepareFunction: (cell) => {
-          const c: NhaCungCap = this.nhaCungCapService.getNhaCungCapByKey(this.nhaCungCaps, cell);
-          return c ? c.name : '';
-        },
-        editor: {
-          type: 'list',
-          config: {
-            list: [],
-          },
-        },
-        sort: false,
-        sortDirection: 'asc',
-        compareFunction: (direction: any, c1: string, c2: string) => {
-          if (c1 < c2) {
-            return -1 * direction;
-          }
-          if (c1 > c2) {
-            return direction;
-          }
-          return 0;
-        },
-      },
-      name: {
-        title: 'Tên',
-        type: 'string',
-      },
-      price: {
-        title: '(VNĐ)',
-        valuePrepareFunction: (cell, row) => {
-          return this.currencyPipe.transform(cell, '', '', '1.0-0');
-        },
-      },
-      note: {
-        title: 'Ghi Chú',
-      },
-    },
-    pager: {
-      perPage: 50,
-    },
-    actions: {
-      edit: false,
-      add: false,
-      delete: true,
-      custom: [
-        {
-          name: 'sua-thu-chi',
-          title: '<span class="custom-action">CHI TIẾT</span>',
-        },
-      ],
-      columnTitle: '',
-    },
-  };
-
-  source: LocalDataSource = new LocalDataSource();
+  allCustomers: Customer[] = [];
+  customers: Customer[] = [];
+  thanhToanTypes = this.thuChiTypeService.thanhToanTypes;
+  tttt = 1;
+  khoanThu: string = '';
+  soTien: number;
 
   selectedFiles: FileList;
   currentFileUpload: FileUpload;
   percentage: number;
 
   today = new Date();
+  isChi = false;
 
   constructor(
     private service: SmartTableData,
@@ -162,17 +54,35 @@ export class ThuChiAddComponent implements OnInit {
     private datePipe: DatePipe,
     private currencyPipe: CurrencyPipe,
     private utilService: UtilService,
+    private activatedRoute: ActivatedRoute,
+    private router: Router,
+    private customerService: CustomerService,
+    private orderService: OrderService,
   ) {
+    this.thuChiType = this.activatedRoute.snapshot.paramMap.get('type');
+    this.isChi = this.thuChiType === 'chi';
     this.getAllThuChiType();
-    this.getAllNhaCungCap();
-    this.getAllUploadFiles();
+    // this.getAllNhaCungCap();
+    // this.getAllUploadFiles();
+    if (!this.isChi) {
+      this.getAllCustomer();
+    }
     this.getAll();
+    // Check if truy thu cong no
+    if (this.orderService.truyThuCongNo) {
+      const congNo = this.orderService.truyThuCongNo;
+      this.selectKH = congNo.order.customer.key;
+      this.tttt = 2;
+      this.khoanThu = 'Công nợ: ' + congNo.order.school.name + ' ' + congNo.time;
+      this.soTien = congNo.totalPrice;
+      this.thuChi.price = this.soTien;
+    }
   }
 
   initThuChi() {
     this.thuChi.date = this.today.toString();
     this.thuChi.fileKeys = [];
-    this.thuChi.thuChiTypeKey = '';
+    this.thuChi.thuChiTypeKey = this.thuChiType;
     this.thuChi.nhaCungCapKey = '';
   }
 
@@ -186,33 +96,17 @@ export class ThuChiAddComponent implements OnInit {
         ),
       ).subscribe(all => {
         this.all = this.modelService.cacheThuChi = all;
-        this.source.load(this.all);
         this.initThuChi();
       });
     } else {
       this.all = this.modelService.cacheThuChi;
-      this.source.load(this.all);
       this.initThuChi();
     }
 
   }
 
   getAllThuChiType() {
-    if (!this.thuChiTypeService.cacheThuChiType) {
-      this.thuChiTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.thuChiTypes = this.thuChiTypeService.cacheThuChiType = all;
-        this.thuChiType = this.thuChiTypes[0].key;
-      });
-    } else {
-      this.thuChiTypes = this.thuChiTypeService.cacheThuChiType;
-      this.thuChiType = this.thuChiTypes[0].key;
-    }
+    this.thuChiTypes = this.thuChiTypeService.thuChiType;
   }
 
   getAllUploadFiles() {
@@ -245,6 +139,22 @@ export class ThuChiAddComponent implements OnInit {
     } else {
       this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps;
       this.nhaCungCap = this.nhaCungCaps[0].key;
+    }
+  }
+
+  getAllCustomer() {
+    if (this.customerService.cacheCustomers) {
+      this.customers = this.allCustomers = this.customerService.cacheCustomers;
+    } else {
+      this.customerService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
+      });
     }
   }
 
@@ -318,11 +228,31 @@ export class ThuChiAddComponent implements OnInit {
 
   addItem() {
     this.thuChi.thuChiTypeKey = <string>this.thuChiType;
-    this.thuChi.nhaCungCapKey = <string>this.nhaCungCap;
+    if (!this.isChi) {
+      this.thuChi.customerKey = this.selectKH;
+    }
+    if (this.thuChi.url) {
+      this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
+    }
+    this.thuChi.trangThaiTT = this.tttt;
+    // Update order thành đã thu công nợ
+    if (this.orderService.truyThuCongNo) {
+      const orderKeys = this.orderService.truyThuCongNo.order.orderKeys ?? [];
+      orderKeys.forEach((k: any) => {
+        let o: any = this.orderService.cacheOrder.filter((order: Order) => order.key === k);
+        if (o.length) {
+          o = o.shift();
+          o.paid = true;
+          // Update order
+          this.orderService.update(k, o);
+        }
+      });
+    }
     this.modelService.create(this.thuChi).then(
       () => {
+        this.modelService.cacheThuChi = null;
         setTimeout(() => {
-          window.location.reload();
+          this.router.navigate(['pages/chicken/thu-chi']);
         });
       },
     );

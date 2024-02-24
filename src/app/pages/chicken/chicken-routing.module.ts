@@ -99,7 +99,7 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
-      path: 'thu-chi/add',
+      path: 'thu-chi/add/:type',
       component: ThuChiAddComponent,
       canActivate: [AuthGuard],
     },

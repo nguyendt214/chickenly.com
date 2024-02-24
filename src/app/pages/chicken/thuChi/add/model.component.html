@@ -1,14 +1,15 @@
 <nb-card>
-  <nb-card-header>THÊM THU CHI</nb-card-header>
+  <nb-card-header *ngIf="isChi">THÊM CHI</nb-card-header>
+  <nb-card-header *ngIf="!isChi">THÊM THU</nb-card-header>
   <nb-card-body>
     <form>
-      <div class="form-group">
-        <label for="ctSelectType" class="label">LOẠI</label>
-        <div class="clearfix"></div>
-        <nb-select [(selected)]="thuChiType" id="ctSelectType">
-          <nb-option value="{{ tcType.key }}" *ngFor="let tcType of thuChiTypes">{{ tcType.name }}</nb-option>
-        </nb-select>
-      </div>
+<!--      <div class="form-group">-->
+<!--        <label for="ctSelectType" class="label">LOẠI</label>-->
+<!--        <div class="clearfix"></div>-->
+<!--        <nb-select [(selected)]="thuChiType" id="ctSelectType">-->
+<!--          <nb-option value="{{ tcType.key }}" *ngFor="let tcType of thuChiTypes">{{ tcType.name }}</nb-option>-->
+<!--        </nb-select>-->
+<!--      </div>-->
       <div class="form-group">
         <label class="label">Ngày</label>
         <div class="clearfix"></div>
@@ -20,27 +21,50 @@
           <mat-datepicker #picker disabled="false"></mat-datepicker>
         </mat-form-field>
       </div>
-      <div class="form-group">
-        <label for="ctNhaCungCap" class="label">NHÀ CUNG CẤP</label>
+
+      <div class="form-group" *ngIf="isChi">
+        <label for="exampleInputPassword1" class="label">Khoản chi</label>
+        <input type="text" nbInput fullWidth id="exampleInputPassword1" placeholder="Khoản chi"
+               (keyup)="updateThuChi($event, 'name')">
+      </div>
+      <div class="form-group" *ngIf="!isChi">
+        <label for="exampleInputThu" class="label">Khoản THU</label>
+        <input type="text" nbInput fullWidth id="exampleInputThu" placeholder="Khoản THU"
+               (keyup)="updateThuChi($event, 'name')" [value]="khoanThu">
+      </div>
+      <div class="form-group" *ngIf="isChi">
+        <label for="exampleInputSL" class="label">Số Lượng</label>
+        <input type="text" nbInput fullWidth id="exampleInputSL" placeholder="Số Lượng"
+               (keyup)="updateThuChi($event, 'soLuong')">
+      </div>
+      <div class="form-group" *ngIf="!isChi">
+        <label for="ctNhaCungCap" class="label">Thu từ ĐỐI TÁC</label>
         <div class="clearfix"></div>
-        <nb-select [(selected)]="nhaCungCap" id="ctNhaCungCap">
-          <nb-option value="{{ nhacc.key }}" *ngFor="let nhacc of nhaCungCaps">{{ nhacc.name }}</nb-option>
+        <nb-select [(selected)]="selectKH" id="ctNhaCungCap">
+          <nb-option [value]="customer.key" *ngFor="let customer of allCustomers">{{ customer.name }}</nb-option>
+        </nb-select>
+      </div>
+      <div class="form-group" *ngIf="!isChi">
+        <label for="ctNhaCungCap" class="label">Trạng Thái Thanh Toán</label>
+        <div class="clearfix"></div>
+        <nb-select [(selected)]="tttt" id="trangThaiThanhToan">
+          <nb-option [value]="tt.key" *ngFor="let tt of thanhToanTypes">{{ tt.name }}</nb-option>
         </nb-select>
       </div>
       <div class="form-group">
-        <label for="exampleInputPassword1" class="label">Tên</label>
-        <input type="text" nbInput fullWidth id="exampleInputPassword1" placeholder="Tên"
-               (keyup)="updateThuChi($event, 'name')">
+        <label for="exampleInputIMG" class="label">ẢNH GIAO DỊCH</label>
+        <input type="text" nbInput fullWidth id="exampleInputIMG" placeholder="URL ảnh ( google driver, ... )"
+               (keyup)="updateThuChi($event, 'url')">
       </div>
       <div class="form-group">
         <label for="price" class="label">Số tiền</label>
         <input type="number" nbInput fullWidth id="price" placeholder="Số tiền"
-               (keyup)="updateThuChi($event, 'price')">
+               (keyup)="updateThuChi($event, 'price')" [value]="soTien">
       </div>
       <div class="form-group">
         <label for="note" class="label">Ghi Chú</label>
         <div class="clearfix"></div>
-        <textarea nbInput placeholder="Ghi Chú" id="note" (keyup)="updateThuChi($event, 'note')"></textarea>
+        <textarea cols="60" nbInput placeholder="Ghi Chú" id="note" (keyup)="updateThuChi($event, 'note')"></textarea>
       </div>
 
       <div class="thu-chi mb-5">
@@ -88,17 +112,8 @@
         </div>
 
       </div>
-      <button type="submit" nbButton status="danger" (click)="addItem()">THÊM THU CHI</button>
+      <button type="submit" nbButton status="danger" (click)="addItem()" *ngIf="isChi">THÊM CHI</button>
+      <button type="submit" nbButton status="danger" (click)="addItem()" *ngIf="!isChi">THÊM THU</button>
     </form>
-  </nb-card-body>
-</nb-card>
-<nb-card>
-  <nb-card-body>
-    <ng2-smart-table [settings]="settings" [source]="source"
-                     (createConfirm)="onCreateConfirm($event)"
-                     (editConfirm)="onEditConfirm($event)"
-                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none2 mobile-zoom"
-                     (custom)="onCustom($event)">
-    </ng2-smart-table>
   </nb-card-body>
 </nb-card>

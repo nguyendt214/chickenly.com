@@ -38,6 +38,7 @@ export class ThuChiEditComponent implements OnInit {
   today = new Date();
   thuChiId: string;
   thuChiDate = new Date();
+  isChi = false;
 
   constructor(
     private service: SmartTableData,
@@ -68,27 +69,14 @@ export class ThuChiEditComponent implements OnInit {
   getThuChi() {
     this.modelService.getThuChiByKey(this.thuChiId)
       .subscribe(thuChi => {
+        this.isChi = thuChi.thuChiTypeKey === 'chi';
         this.thuChi = thuChi;
         this.initThuChi();
       });
   }
 
   getAllThuChiType() {
-    if (!this.thuChiTypeService.cacheThuChiType) {
-      this.thuChiTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.thuChiTypes = this.thuChiTypeService.cacheThuChiType = all;
-        this.thuChiType = this.thuChiTypes[0].key;
-      });
-    } else {
-      this.thuChiTypes = this.thuChiTypeService.cacheThuChiType;
-      this.thuChiType = this.thuChiTypes[0].key;
-    }
+    this.thuChiTypes = this.thuChiTypeService.thuChiType;
   }
 
   getAllUploadFiles() {

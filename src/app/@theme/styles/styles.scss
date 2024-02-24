@@ -272,6 +272,7 @@ button:focus {
 
 .cong-no {
   .cong-not-date-title {
+    display: flex;
     font-size: 16px;
     font-weight: bold;
     padding: 0 0 10px;
@@ -350,8 +351,30 @@ button:focus {
 }
 .img-popin {
   img {
-    width: 100%;
+    width: auto;
   }
+}
+.add-chi {
+  margin-right: 10px !important;
+}
+.delete {
+  &:hover {
+    font-weight: bold;
+    cursor: pointer;
+  }
+}
+.thu-chi {
+  img {
+    max-width: 50px;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+.da-thu-cn {
+  font-weight: bold;
+  color: green;
+  padding-left: 10px;
 }
 
 @media screen and (max-width: 699px) {

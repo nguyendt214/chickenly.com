@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase } from '@angular/fire/compat/database';
 import { Router } from '@angular/router';
 
 @Injectable({
@@ -10,6 +9,7 @@ export class UtilService {
     private router: Router,
   ) {
   }
+  googleDriveURL = 'https://drive.google.com/thumbnail?id=';
 
   gotoPage(path: string) {
     this.router.navigate([path]);
@@ -34,5 +34,10 @@ export class UtilService {
   getDateFromString(dateString: string) {
     const date = dateString.split('/');
     return new Date(date[1] + '/' + date[0] + '/' + date[2]);
+  }
+
+  getImageURLFromGoogleDrive(url: string) {
+    const id = url.split("/d/")[1];
+    return this.googleDriveURL + id.split("/")[0];
   }
 }

@@ -12,6 +12,6 @@ export class AuthService {
   }
 
   isLogged() {
-    return localStorage.getItem('user') !== null;
+    return localStorage.getItem('user-1') !== null;
   }
 }

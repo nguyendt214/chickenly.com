@@ -21,6 +21,26 @@ export class ThuChiTypeService {
   private dbPath = '/ThuChiType';
   cacheThuChiType: any;
   modelRef: AngularFireList<ThuChiType>;
+  thuChiType = [
+    {
+      key: 1,
+      name: 'THU'
+    },
+    {
+      key: 2,
+      name: 'CHI'
+    }
+  ];
+  thanhToanTypes = [
+    {
+      key: 1,
+      name: 'Chưa Thanh Toán'
+    },
+    {
+      key: 2,
+      name: 'Đã Thanh Toán'
+    }
+  ];
 
   constructor(private db: AngularFireDatabase) {
     this.modelRef = db.list(this.dbPath);
