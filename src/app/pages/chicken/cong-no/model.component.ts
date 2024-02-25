@@ -40,6 +40,8 @@ export class CongNoComponent implements OnInit {
   isSameDay = false;
   showOrder = false;
   showSellPrice = true;
+  showAllCongNo = false;
+  numberCongNo = 1000;
   settings = {
     add: {
       confirmCreate: true,
@@ -185,10 +187,15 @@ export class CongNoComponent implements OnInit {
     this.getAllCustomer();
     this.getAllSchools();
     this.getAllEmployee();
-    if (this.modelService.cacheOrder) {
+    this.getCongNo(false);
+  }
+
+  getCongNo(force: boolean = false) {
+    const number = this.showAllCongNo ? 0 : this.numberCongNo;
+    if (this.modelService.cacheOrder && !force) {
       this.preparePageData(this.modelService.cacheOrder);
     } else {
-      this.modelService.getAll().snapshotChanges().pipe(
+      this.modelService.getAll(number).snapshotChanges().pipe(
         map(changes =>
           changes.map(c =>
             ({key: c.payload.key, ...c.payload.val()}),
@@ -482,7 +489,7 @@ export class CongNoComponent implements OnInit {
 
     this.congNoTheoKhachHang();
     this.tongHopOrder = this.hoaDonTongBySchool(this.orderFilter);
-
+    console.log(this.tongHopOrder);
     // this.exportCongNoTong1();
   }
 

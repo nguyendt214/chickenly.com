@@ -376,7 +376,9 @@ button:focus {
   color: green;
   padding-left: 10px;
 }
-
+.clearfix {
+  clear: both;
+}
 @media screen and (max-width: 699px) {
   .mobile-zoom {
     zoom: 0.5;

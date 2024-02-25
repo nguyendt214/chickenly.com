@@ -167,6 +167,7 @@ export class ProductListComponent implements OnInit, OnChanges {
         e.confirm.resolve();
       }
     });
+    this.tongHopCart();
   }
 
   onDeleteConfirm(e): void {

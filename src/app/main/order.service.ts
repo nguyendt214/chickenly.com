@@ -74,8 +74,13 @@ export class OrderService {
     this.modelRef = db.list(this.dbPath);
   }
 
-  getAll(): AngularFireList<Order> {
-    return this.modelRef;
+  getAll(number?: number): AngularFireList<Order> {
+    if (number) {
+      return this.db.list(this.dbPath, ref =>
+        ref.limitToLast(number));
+    } else {
+      return this.modelRef;
+    }
   }
 
   create(o: Order): any {

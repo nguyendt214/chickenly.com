@@ -32,6 +32,8 @@ export class OrderListComponent implements OnInit {
   selectKH = '';
   selectSchool = '';
   selectEmployee = '';
+  showAllOrder = false;
+  numberOrder = 1000;
   settings = {
     add: {
       confirmCreate: true,
@@ -186,10 +188,15 @@ export class OrderListComponent implements OnInit {
     this.getAllCustomer();
     this.getAllSchools();
     this.getAllEmployee();
-    if (this.modelService.cacheOrder) {
+    this.getAllOrders(false);
+  }
+
+  getAllOrders(force: boolean = false) {
+    const number = this.showAllOrder ? 0 : this.numberOrder;
+    if (this.modelService.cacheOrder && !force) {
       this.preparePageData(this.modelService.cacheOrder);
     } else {
-      this.modelService.getAll().snapshotChanges().pipe(
+      this.modelService.getAll(number).snapshotChanges().pipe(
         map(changes =>
           changes.map(c =>
             ({key: c.payload.key, ...c.payload.val()}),
