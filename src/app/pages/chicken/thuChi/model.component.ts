@@ -508,6 +508,9 @@ export class ThuChiComponent implements OnInit {
       this.utilService.gotoPage('pages/chicken/thu-chi/edit/' + event.data.key);
     }
   }
+  suaKhoanThu(key) {
+    this.utilService.gotoPage('pages/chicken/thu-chi/edit/' + key);
+  }
 
   themMoi(type: string) {
     this.utilService.gotoPage('pages/chicken/thu-chi/add/' + type);

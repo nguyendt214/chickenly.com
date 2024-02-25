@@ -22,6 +22,10 @@
         </mat-form-field>
       </div>
 
+      <div *ngIf="isChi">
+        <mat-checkbox class="example-margin kcheckbox-label" (click)="ungTraLuongClick($event.checked)">Trả/ Ứng Lương?</mat-checkbox>
+      </div>
+
       <div class="form-group" *ngIf="isChi">
         <label for="exampleInputPassword1" class="label">Khoản chi</label>
         <input type="text" nbInput fullWidth id="exampleInputPassword1" placeholder="Khoản chi"
@@ -45,7 +49,7 @@
         </nb-select>
       </div>
       <div class="form-group" *ngIf="!isChi">
-        <label for="ctNhaCungCap" class="label">Trạng Thái Thanh Toán</label>
+        <label for="trangThaiThanhToan" class="label">Trạng Thái Thanh Toán</label>
         <div class="clearfix"></div>
         <nb-select [(selected)]="tttt" id="trangThaiThanhToan">
           <nb-option [value]="tt.key" *ngFor="let tt of thanhToanTypes">{{ tt.name }}</nb-option>

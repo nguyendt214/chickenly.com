@@ -51,16 +51,16 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'twitter-outline',
     link: '/pages/chicken/thu-chi',
   },
-  {
-    title: 'LOẠI THU CHI',
-    icon: 'heart-outline',
-    link: '/pages/chicken/thu-chi-type',
-  },
-  {
-    title: 'NHÀ CUNG CẤP',
-    icon: 'person-done',
-    link: '/pages/chicken/nha-cung-cap',
-  },
+  // {
+  //   title: 'LOẠI THU CHI',
+  //   icon: 'heart-outline',
+  //   link: '/pages/chicken/thu-chi-type',
+  // },
+  // {
+  //   title: 'NHÀ CUNG CẤP',
+  //   icon: 'person-done',
+  //   link: '/pages/chicken/nha-cung-cap',
+  // },
   // {
   //   title: 'FEATURES',
   //   group: true,

@@ -12,6 +12,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ImagePopinDialog } from '../../upload/popin/popin';
+import { UtilService } from '../../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-thuchi-edit',
@@ -39,6 +40,7 @@ export class ThuChiEditComponent implements OnInit {
   thuChiId: string;
   thuChiDate = new Date();
   isChi = false;
+  thanhToanTypes = this.thuChiTypeService.thanhToanTypes;
 
   constructor(
     private service: SmartTableData,
@@ -52,6 +54,7 @@ export class ThuChiEditComponent implements OnInit {
     private activatedRoute: ActivatedRoute,
     private dialog: MatDialog,
     private router: Router,
+    private utilService: UtilService,
   ) {
     this.thuChiId = this.activatedRoute.snapshot.paramMap.get('thuChiId');
     this.getAllThuChiType();
@@ -64,6 +67,7 @@ export class ThuChiEditComponent implements OnInit {
     this.thuChiDate = new Date(this.thuChi.date);
     this.thuChiType = this.thuChi.thuChiTypeKey;
     this.nhaCungCap = this.thuChi.nhaCungCapKey;
+    this.thuChi.note = this.thuChi.note ?? '';
   }
 
   getThuChi() {
@@ -132,8 +136,16 @@ export class ThuChiEditComponent implements OnInit {
       data: {imgSrc: imgSrc},
     });
   }
+
   quayLai() {
     this.router.navigate(['pages/chicken/thu-chi']);
+  }
+
+  submitThuChi() {
+    this.modelService.update(this.thuChiId, this.thuChi)
+      .then(() => {
+        this.utilService.gotoPage('pages/chicken/thu-chi');
+      });
   }
 
 }

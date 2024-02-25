@@ -76,6 +76,7 @@
               <thead>
               <tr>
                 <th scope="col"></th>
+                <th scope="col"></th>
                 <th scope="col">NGÀY</th>
                 <th scope="col">KHOẢN THU</th>
                 <th scope="col">ĐỐI TÁC</th>
@@ -88,6 +89,7 @@
               <tbody>
               <tr *ngFor="let tc of tongThuFilter">
                 <td (click)="onDeleteConfirm(tc.key)" class="delete">XÓA</td>
+                <td (click)="suaKhoanThu(tc.key)" class="delete">SỬA</td>
                 <td>{{ tc.date | date : 'dd/MM/YYYY' }}</td>
                 <td>{{ tc?.name }}</td>
                 <td>{{ tc?.customer?.name }}</td>
@@ -127,6 +129,7 @@
                 <th scope="col">SỐ LƯỢNG</th>
                 <th scope="col">SỐ TIỀN</th>
                 <th scope="col">ẢNH</th>
+                <th scope="col">TT-Lương?</th>
                 <th scope="col">GHI CHÚ</th>
               </tr>
               </thead>
@@ -142,6 +145,8 @@
                     <img [src]="tc?.url" alt="" (click)="showImage(tc.url)"/>
                   </div>
                 </td>
+                <td class="text-left" *ngIf="tc.ttLuong">YES</td>
+                <td class="text-left" *ngIf="!tc.ttLuong">NO</td>
                 <td>{{ tc.note }}</td>
               </tr>
               </tbody>

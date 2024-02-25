@@ -22,7 +22,9 @@ export class ThuChi {
   customerKey?: string;
   customer?: Customer | null;
   orders?: Array<string>;
+  ttLuong?: boolean | null;
 }
+
 @Injectable({
   providedIn: 'root',
 })

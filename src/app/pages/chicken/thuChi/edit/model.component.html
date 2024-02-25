@@ -30,17 +30,26 @@
       </div>
       <div class="form-group" *ngIf="thuChi?.url">
         <label class="label">Ảnh Giao Dịch</label>
-        <img src="{{ thuChi?.url }}"/>
+        <img *ngIf="thuChi?.url" src="{{ thuChi?.url }}"/>
+        <input *ngIf="!thuChi?.url" type="text" nbInput fullWidth id="exampleInputIMG" placeholder="URL ảnh ( google driver, ... )"
+               (keyup)="updateThuChi($event, 'url')">
       </div>
       <div class="form-group">
         <label for="price" class="label">Số tiền ( VNĐ )</label>
         <input type="text" nbInput fullWidth id="price" placeholder="Số tiền" disabled [disabled]="true"
                [value]="thuChi.price | currency : '' : '' : '1.0-0'">
       </div>
-      <div class="form-group" *ngIf="thuChi?.note">
+      <div class="form-group" *ngIf="!isChi">
+        <label for="trangThaiThanhToan" class="label">Trạng Thái Thanh Toán</label>
+        <div class="clearfix"></div>
+        <nb-select [(selected)]="thuChi.trangThaiTT" id="trangThaiThanhToan">
+          <nb-option [value]="tt.key" *ngFor="let tt of thanhToanTypes">{{ tt.name }}</nb-option>
+        </nb-select>
+      </div>
+      <div class="form-group">
         <label for="note" class="label">Ghi Chú</label>
         <div class="clearfix"></div>
-        <textarea nbInput placeholder="Ghi Chú" id="note" disabled [value]="thuChi?.note"></textarea>
+        <textarea nbInput placeholder="Ghi Chú" id="note" [value]="thuChi?.note" (keyup)="updateThuChi($event, 'note')"></textarea>
       </div>
 
       <div class="thu-chi mb-5">
@@ -54,6 +63,8 @@
           </ul>
         </div>
       </div>
+      <button type="submit" nbButton status="danger" (click)="submitThuChi()" *ngIf="isChi">THÊM CHI</button>
+      <button type="submit" nbButton status="danger" (click)="submitThuChi()" *ngIf="!isChi">SỬA KHOẢN THU</button>
     </form>
   </nb-card-body>
 </nb-card>

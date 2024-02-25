@@ -40,6 +40,7 @@ export class ThuChiAddComponent implements OnInit {
   selectedFiles: FileList;
   currentFileUpload: FileUpload;
   percentage: number;
+  traLuong = false;
 
   today = new Date();
   isChi = false;
@@ -84,6 +85,7 @@ export class ThuChiAddComponent implements OnInit {
     this.thuChi.fileKeys = [];
     this.thuChi.thuChiTypeKey = this.thuChiType;
     this.thuChi.nhaCungCapKey = '';
+    this.thuChi.ttLuong = false;
   }
 
   getAll() {
@@ -285,6 +287,9 @@ export class ThuChiAddComponent implements OnInit {
     if (event.action === 'sua-thu-chi') {
       this.utilService.gotoPage('pages/chicken/thu-chi/edit/' + event.data.key);
     }
+  }
+  ungTraLuongClick(checked: boolean) {
+    this.thuChi.ttLuong = checked;
   }
 
 }

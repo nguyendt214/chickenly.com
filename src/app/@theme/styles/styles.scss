@@ -379,6 +379,11 @@ button:focus {
 .clearfix {
   clear: both;
 }
+.kcheckbox-label {
+  label {
+    margin-bottom: 0px;
+  }
+}
 @media screen and (max-width: 699px) {
   .mobile-zoom {
     zoom: 0.5;
