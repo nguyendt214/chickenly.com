@@ -352,6 +352,7 @@ button:focus {
 .img-popin {
   img {
     width: auto;
+    max-width: 300px;
   }
 }
 .add-chi {
@@ -382,6 +383,13 @@ button:focus {
 .kcheckbox-label {
   label {
     margin-bottom: 0px;
+  }
+}
+.file-upload {
+  ul {
+    li {
+      padding: 0;
+    }
   }
 }
 @media screen and (max-width: 699px) {

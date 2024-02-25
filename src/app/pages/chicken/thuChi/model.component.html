@@ -95,8 +95,17 @@
                 <td>{{ tc?.customer?.name }}</td>
                 <td>{{ tc.price | currency : '' : '' : '1.0-0' }}</td>
                 <td>
-                  <div *ngIf="tc?.url">
-                    <img [src]="tc?.url" alt="" (click)="showImage(tc.url)"/>
+                  <div *ngIf="tc?.url" matTooltip="Ấn vào để xem ảnh to">
+                    <img [src]="tc?.url" alt="" (click)="showImage(tc.url, true)"/>
+                  </div>
+                  <div class="file-upload">
+                    <ul class="list-group list-group-flush"
+                        *ngFor="let file of fileUploads">
+                      <li class="list-group-item" *ngIf="showFile(tc, file)">
+                        <app-upload-details [fileUpload]='file' [allowDelete]="false"
+                                            (showImg)="showImage($event)"></app-upload-details>
+                      </li>
+                    </ul>
                   </div>
                 </td>
                 <td>{{ tc.trangThaiLabel }}</td>
@@ -141,8 +150,17 @@
                 <td>{{ tc.soLuong }}</td>
                 <td>{{ tc.price | currency : '' : '' : '1.0-0' }}</td>
                 <td>
-                  <div *ngIf="tc?.url">
-                    <img [src]="tc?.url" alt="" (click)="showImage(tc.url)"/>
+                  <div *ngIf="tc?.url" matTooltip="Ấn vào để xem ảnh to">
+                    <img [src]="tc?.url" alt="" (click)="showImage(tc.url, true)"/>
+                  </div>
+                  <div class="file-upload">
+                    <ul class="list-group list-group-flush"
+                        *ngFor="let file of fileUploads">
+                      <li class="list-group-item" *ngIf="showFile(tc, file)">
+                        <app-upload-details [fileUpload]='file' [allowDelete]="false"
+                                            (showImg)="showImage($event)"></app-upload-details>
+                      </li>
+                    </ul>
                   </div>
                 </td>
                 <td class="text-left" *ngIf="tc.ttLuong">YES</td>

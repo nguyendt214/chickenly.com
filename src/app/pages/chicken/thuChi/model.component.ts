@@ -214,6 +214,7 @@ export class ThuChiComponent implements OnInit {
   prepareThuChi() {
     this.tongThu = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey === 'thu');
     this.tongChi = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey !== 'thu');
+    console.log(this.tongChi);
     this.tongThu.forEach((tc: ThuChi) => {
       if (tc.trangThaiTT === 1) {
         this.price.tienChuaThu += +tc.price;
@@ -281,6 +282,7 @@ export class ThuChiComponent implements OnInit {
       this.mapTrangThaiThanhToan(tc);
     });
   }
+
   mapTrangThaiThanhToan(tc: ThuChi) {
     let t: any = this.thuChiTypeService.thanhToanTypes.filter((tt: any) => tt.key === tc.trangThaiTT);
     if (t.length) {
@@ -508,6 +510,7 @@ export class ThuChiComponent implements OnInit {
       this.utilService.gotoPage('pages/chicken/thu-chi/edit/' + event.data.key);
     }
   }
+
   suaKhoanThu(key) {
     this.utilService.gotoPage('pages/chicken/thu-chi/edit/' + key);
   }
@@ -532,11 +535,19 @@ export class ThuChiComponent implements OnInit {
     }
   }
 
-  showImage(imgSrc) {
+  showImage(imgSrc, googleDrive = false) {
+    const data = googleDrive ? {imgSrc: imgSrc + '&sz=w500'} : {imgSrc: imgSrc};
     this.dialog.open(ImagePopinDialog, {
       width: '100%',
-      data: {imgSrc: imgSrc + '&sz=w500'},
+      data,
     });
+  }
+
+  showFile(thuChi: ThuChi, file: FileUpload) {
+    if (thuChi && thuChi.fileKeys) {
+      return thuChi.fileKeys.includes(file.key);
+    }
+    return false;
   }
 
 }
