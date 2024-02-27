@@ -20,24 +20,25 @@
       </div>
       <div class="form-group">
         <label for="exampleInputPassword1" class="label">KHOẢN CHI</label>
-        <input type="text" nbInput fullWidth id="exampleInputPassword1" placeholder="Tên" disabled
-               [value]="thuChi.name">
+        <input type="text" nbInput fullWidth id="exampleInputPassword1" placeholder="Tên"
+               [value]="thuChi.name" (keyup)="updateThuChi($event, 'name')">
       </div>
       <div class="form-group" *ngIf="isChi">
         <label for="exampleInputSL" class="label">Số Lượng</label>
-        <input type="text" nbInput fullWidth id="exampleInputSL" placeholder="Tên" disabled
-               [value]="thuChi.soLuong">
+        <input type="text" nbInput fullWidth id="exampleInputSL" placeholder="Tên"
+               [value]="thuChi.soLuong" (keyup)="updateThuChi($event, 'soLuong')">
       </div>
-      <div class="form-group" *ngIf="thuChi?.url">
+      <div class="form-group">
         <label class="label">Ảnh Giao Dịch</label>
         <img *ngIf="thuChi?.url" src="{{ thuChi?.url }}"/>
-        <input *ngIf="!thuChi?.url" type="text" nbInput fullWidth id="exampleInputIMG" placeholder="URL ảnh ( google driver, ... )"
-               (keyup)="updateThuChi($event, 'url')">
+        <input type="text" nbInput fullWidth id="exampleInputIMG" placeholder="URL ảnh ( google driver, ... )"
+               (keyup)="updateThuChi($event, 'url')" [value]="thuChi?.url">
       </div>
       <div class="form-group">
         <label for="price" class="label">Số tiền ( VNĐ )</label>
-        <input type="text" nbInput fullWidth id="price" placeholder="Số tiền" disabled [disabled]="true"
-               [value]="thuChi.price | currency : '' : '' : '1.0-0'">
+        <input type="text" nbInput fullWidth id="price" placeholder="Số tiền"
+               [value]="thuChi.price" (keyup)="updateThuChi($event, 'price')">
+        <p>{{ thuChi.price | currency : '' : '' : '1.0-0'}} VNĐ</p>
       </div>
       <div class="form-group" *ngIf="!isChi">
         <label for="trangThaiThanhToan" class="label">Trạng Thái Thanh Toán</label>
@@ -59,6 +60,55 @@
             <li class="list-group-item" *ngIf="showFile(file)">
               <app-upload-details [fileUpload]='file' [allowDelete]="false"
                                   (showImg)="showImage($event)"></app-upload-details>
+            </li>
+          </ul>
+        </div>
+        <div class="form-group">
+          <label class="label">TẢI FILES</label>
+        </div>
+        <div class="container tai-file-drop">
+          <div class="row">
+            <div class="drop-box" corpImgUpload (dropFiles)="onDropFiles($event)">
+              <span class="message">KÉO THẢ ẢNH VÀO ĐÂY</span>
+            </div>
+          </div>
+        </div>
+        <label>
+          <input
+            type="file"
+            accept="image/*"
+            class="text-nowrap text-truncate"
+            (change)="selectFile($event)"
+          />
+        </label>
+
+        <button
+          class="btn btn-success btn-sm d-none"
+          [disabled]="!selectedFiles"
+          (click)="upload()"
+        >
+          TẢI LÊN
+        </button>
+
+        <div *ngIf="currentFileUpload && percentage !== 100" class="progress mt-2 mb-3">
+          <div
+            class="progress-bar progress-bar-info"
+            role="progressbar"
+            attr.aria-valuenow="{{ percentage }}"
+            aria-valuemin="0"
+            aria-valuemax="100"
+            [ngStyle]="{ width: percentage + '%' }"
+          >
+            {{ percentage }}%
+          </div>
+        </div>
+        <div class="file-upload">
+          <ul
+            class="list-group list-group-flush"
+            *ngFor="let file of fileUploadsNew"
+          >
+            <li class="list-group-item">
+              <app-upload-details [fileUpload]='file' (deleteFile)="deleteFile($event)"></app-upload-details>
             </li>
           </ul>
         </div>

@@ -28,6 +28,7 @@ import { NhaCungCapComponent } from './nhaCungCap/model.component';
 import { ThuChiAddComponent } from './thuChi/add/model.component';
 import { ThuChiEditComponent } from './thuChi/edit/model.component';
 import { ImagePopinDialog } from './upload/popin/popin';
+import { ImageUploaderDirective } from '../directives/dragDrop.directive';
 
 const routes: Routes = [{
   path: '',
@@ -157,4 +158,5 @@ export const routedComponents = [
   ThuChiAddComponent,
   ThuChiEditComponent,
   ImagePopinDialog,
+  ImageUploaderDirective,
 ];

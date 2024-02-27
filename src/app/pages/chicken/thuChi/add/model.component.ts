@@ -13,6 +13,8 @@ import { UtilService } from '../../../../main/util.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Customer, CustomerService } from '../../../../main/customer.service';
 import { Order, OrderService } from '../../../../main/order.service';
+import { ImageFile } from '../../../directives/dragDrop.directive';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'ngx-smart-thuchi-add',
@@ -44,6 +46,7 @@ export class ThuChiAddComponent implements OnInit {
 
   today = new Date();
   isChi = false;
+  dropFiles: ImageFile[] = [];
 
   constructor(
     private service: SmartTableData,
@@ -78,6 +81,13 @@ export class ThuChiAddComponent implements OnInit {
       this.soTien = congNo.totalPrice;
       this.thuChi.price = this.soTien;
     }
+  }
+
+  onDropFiles(dropFiles: ImageFile[]): void {
+    this.dropFiles = [...this.dropFiles, ...dropFiles];
+    dropFiles.forEach((file: ImageFile) => {
+      this.upload(file.file);
+    });
   }
 
   initThuChi() {
@@ -192,8 +202,8 @@ export class ThuChiAddComponent implements OnInit {
     this.upload();
   }
 
-  upload(): void {
-    const file = this.selectedFiles.item(0);
+  upload(file: File = null): void {
+    file = file ?? this.selectedFiles.item(0);
     this.fileNames.push(file.name);
     this.selectedFiles = undefined;
 
@@ -237,6 +247,7 @@ export class ThuChiAddComponent implements OnInit {
       this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
     }
     this.thuChi.trangThaiTT = this.tttt;
+    console.log(this.thuChi);
     // Update order thành đã thu công nợ
     if (this.orderService.truyThuCongNo) {
       const orderKeys = this.orderService.truyThuCongNo.order.orderKeys ?? [];

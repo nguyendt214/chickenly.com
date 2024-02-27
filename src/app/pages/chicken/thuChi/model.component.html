@@ -180,6 +180,15 @@
     <!--                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none2 mobile-zoom"-->
     <!--                     (custom)="onCustom($event)">-->
     <!--    </ng2-smart-table>-->
+
+    <div class="file-upload d-none">
+      <ul class="list-group list-group-flush"
+          *ngFor="let file of fileUploads">
+        <li class="list-group-item">
+          <app-upload-details [fileUpload]='file' [allowDelete]="true"></app-upload-details>
+        </li>
+      </ul>
+    </div>
   </nb-card-body>
 </nb-card>
 

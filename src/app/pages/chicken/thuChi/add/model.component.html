@@ -3,13 +3,6 @@
   <nb-card-header *ngIf="!isChi">THÊM THU</nb-card-header>
   <nb-card-body>
     <form>
-<!--      <div class="form-group">-->
-<!--        <label for="ctSelectType" class="label">LOẠI</label>-->
-<!--        <div class="clearfix"></div>-->
-<!--        <nb-select [(selected)]="thuChiType" id="ctSelectType">-->
-<!--          <nb-option value="{{ tcType.key }}" *ngFor="let tcType of thuChiTypes">{{ tcType.name }}</nb-option>-->
-<!--        </nb-select>-->
-<!--      </div>-->
       <div class="form-group">
         <label class="label">Ngày</label>
         <div class="clearfix"></div>
@@ -64,6 +57,7 @@
         <label for="price" class="label">Số tiền</label>
         <input type="number" nbInput fullWidth id="price" placeholder="Số tiền"
                (keyup)="updateThuChi($event, 'price')" [value]="soTien">
+        <p>{{ thuChi.price | currency : '' : '' : '1.0-0'}} VNĐ</p>
       </div>
       <div class="form-group">
         <label for="note" class="label">Ghi Chú</label>
@@ -74,6 +68,13 @@
       <div class="thu-chi mb-5">
         <div class="form-group">
           <label class="label">TẢI FILES</label>
+        </div>
+        <div class="container tai-file-drop">
+          <div class="row">
+            <div class="drop-box" corpImgUpload (dropFiles)="onDropFiles($event)">
+              <span class="message">KÉO THẢ ẢNH VÀO ĐÂY</span>
+            </div>
+          </div>
         </div>
         <label>
           <input

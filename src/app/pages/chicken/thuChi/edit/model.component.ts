@@ -13,6 +13,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { MatDialog } from '@angular/material/dialog';
 import { ImagePopinDialog } from '../../upload/popin/popin';
 import { UtilService } from '../../../../main/util.service';
+import { ImageFile } from '../../../directives/dragDrop.directive';
 
 @Component({
   selector: 'ngx-smart-thuchi-edit',
@@ -41,6 +42,7 @@ export class ThuChiEditComponent implements OnInit {
   thuChiDate = new Date();
   isChi = false;
   thanhToanTypes = this.thuChiTypeService.thanhToanTypes;
+  dropFiles: ImageFile[] = [];
 
   constructor(
     private service: SmartTableData,
@@ -68,6 +70,8 @@ export class ThuChiEditComponent implements OnInit {
     this.thuChiType = this.thuChi.thuChiTypeKey;
     this.nhaCungCap = this.thuChi.nhaCungCapKey;
     this.thuChi.note = this.thuChi.note ?? '';
+    this.thuChi.fileKeys = this.thuChi.fileKeys ?? [];
+    this.thuChi.url = this.thuChi.url ?? '';
   }
 
   getThuChi() {
@@ -146,6 +150,51 @@ export class ThuChiEditComponent implements OnInit {
       .then(() => {
         this.utilService.gotoPage('pages/chicken/thu-chi');
       });
+  }
+
+  onDropFiles(dropFiles: ImageFile[]): void {
+    console.log(dropFiles);
+    this.dropFiles = [...this.dropFiles, ...dropFiles];
+    dropFiles.forEach((file: ImageFile) => {
+      this.upload(file.file);
+    });
+  }
+
+  selectFile(event): void {
+    this.selectedFiles = event.target.files;
+    this.upload();
+  }
+
+  upload(file: File = null): void {
+    file = file ?? this.selectedFiles.item(0);
+    this.fileNames.push(file.name);
+    this.selectedFiles = undefined;
+
+    this.currentFileUpload = new FileUpload(file);
+    this.uploadService.pushFileToStorage(this.currentFileUpload).subscribe(
+      percentage => {
+        this.percentage = Math.round(percentage);
+      },
+      error => {
+      },
+      () => this.getLastUploadFile(),
+    );
+  }
+
+  getLastUploadFile() {
+    this.uploadService.getFiles(1).snapshotChanges().pipe(
+      map(changes =>
+        // store the key
+        changes.map(c => ({key: c.payload.key, ...c.payload.val()})),
+      ),
+    ).subscribe(fileUploads => {
+      fileUploads.forEach((f: FileUpload) => {
+        if (this.fileNames.includes(f.name) && !this.thuChi.fileKeys.includes(f.key)) {
+          this.thuChi.fileKeys.push(f.key);
+          this.fileUploadsNew.push(f);
+        }
+      });
+    });
   }
 
 }
