@@ -47,7 +47,7 @@ export class ThuChiEditComponent implements OnInit {
   dropFiles: ImageFile[] = [];
   wallets: Wallet[];
   wallet: Wallet;
-
+  oldPrice = 0;
   constructor(
     private service: SmartTableData,
     private modelService: ThuChiService,
@@ -79,6 +79,7 @@ export class ThuChiEditComponent implements OnInit {
     this.thuChi.fileKeys = this.thuChi.fileKeys ?? [];
     this.thuChi.url = this.thuChi.url ?? '';
     this.thuChi.paymentType = this.thuChi.paymentType ?? this.paymentTypes[0].key;
+    this.oldPrice = +this.thuChi.price;
   }
 
   getThuChi() {
@@ -186,30 +187,32 @@ export class ThuChiEditComponent implements OnInit {
     if (this.thuChi.walletKey && this.thuChi.paymentType) {
       this.wallet = (this.wallets.filter((w: Wallet) => w.key === this.thuChi.walletKey)).shift();
       console.log(this.wallet);
+      const price = this.oldPrice - this.thuChi.price;
+      console.log('chuan price', this.oldPrice);
       this.wallet.bankTotal = +this.wallet.bankTotal;
       this.wallet.cashTotal = +this.wallet.cashTotal;
       let update = false;
       if (this.thuChi.paymentType === 1) {
         // Bank
         if (this.isChi) {
-          this.wallet.bankTotal -= +this.thuChi.price;
+          this.wallet.bankTotal -= price;
           update = true;
         } else {
           // Thu
           if (this.thuChi.trangThaiTT === 2) {
-            this.wallet.bankTotal += +this.thuChi.price;
+            this.wallet.bankTotal += price;
             update = true;
           }
         }
       } else if (this.thuChi.paymentType === 2) {
         // Cash
         if (this.isChi) {
-          this.wallet.cashTotal -= +this.thuChi.price;
+          this.wallet.cashTotal -= price;
           update = true;
         } else {
           // Thu
           if (this.thuChi.trangThaiTT === 2) {
-            this.wallet.cashTotal += +this.thuChi.price;
+            this.wallet.cashTotal += price;
             update = true;
           }
         }

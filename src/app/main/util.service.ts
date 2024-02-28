@@ -40,4 +40,10 @@ export class UtilService {
     const id = url.split("/d/")[1];
     return this.googleDriveURL + id.split("/")[0];
   }
+
+  sortListByDate(list: Array<any>) {
+    return list.sort((a: any, b: any) => {
+      return +new Date(b.date) - +new Date(a.date);
+    });
+  }
 }

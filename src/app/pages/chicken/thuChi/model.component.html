@@ -154,6 +154,8 @@
                 <th scope="col">SỐ TIỀN</th>
                 <th scope="col">ẢNH</th>
                 <th scope="col">TT-Lương?</th>
+                <th scope="col">VÍ</th>
+                <th scope="col">Hình thức</th>
                 <th scope="col">GHI CHÚ</th>
               </tr>
               </thead>
@@ -181,6 +183,8 @@
                 </td>
                 <td class="text-left" *ngIf="tc.ttLuong">YES</td>
                 <td class="text-left" *ngIf="!tc.ttLuong">NO</td>
+                <td>{{ tc?.wallet?.name }}</td>
+                <td>{{ tc?.paymentTypeLabel }}</td>
                 <td>{{ tc.note }}</td>
               </tr>
               </tbody>

@@ -265,7 +265,7 @@ export class ThuChiComponent implements OnInit {
         all.forEach((tc: ThuChi) => {
           tc.price = +tc.price;
         });
-        all = all.reverse();
+        all = this.utilService.sortListByDate(all);
         this.all = this.modelService.cacheThuChi = all;
         this.mapCustomer();
         this.mapWallet();
