@@ -6,7 +6,7 @@
   </div>
   <nb-card-body>
     <form>
-      <div class="form-group">
+      <div class="form-group mb-0">
         <label class="label">Ngày</label>
         <div class="clearfix"></div>
         <mat-form-field>
@@ -17,6 +17,11 @@
           <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
           <mat-datepicker #picker [disabled]="true"></mat-datepicker>
         </mat-form-field>
+      </div>
+
+      <div *ngIf="isChi">
+        <mat-checkbox class="example-margin kcheckbox-label" (change)="ungTraLuongClick($event.checked)"
+        [checked]="thuChi?.ttLuong">Trả/ Ứng Lương?</mat-checkbox>
       </div>
       <div class="form-group">
         <label for="exampleInputPassword1" class="label">KHOẢN CHI</label>
@@ -29,28 +34,46 @@
                [value]="thuChi.soLuong" (keyup)="updateThuChi($event, 'soLuong')">
       </div>
       <div class="form-group">
-        <label class="label">Ảnh Giao Dịch</label>
-        <img *ngIf="thuChi?.url" src="{{ thuChi?.url }}"/>
-        <input type="text" nbInput fullWidth id="exampleInputIMG" placeholder="URL ảnh ( google driver, ... )"
-               (keyup)="updateThuChi($event, 'url')" [value]="thuChi?.url">
-      </div>
-      <div class="form-group">
         <label for="price" class="label">Số tiền ( VNĐ )</label>
         <input type="text" nbInput fullWidth id="price" placeholder="Số tiền"
                [value]="thuChi.price" (keyup)="updateThuChi($event, 'price')">
-        <p>{{ thuChi.price | currency : '' : '' : '1.0-0'}} VNĐ</p>
+        <p class="pre-price">{{ thuChi.price | currency : '' : '' : '1.0-0'}} VNĐ</p>
+      </div>
+      <div class="form-group">
+        <label for="paymentType" class="label">Hình thức thanh toán</label>
+        <div class="clearfix"></div>
+        <div class="kradio">
+          <mat-radio-group aria-label="Select an option">
+            <mat-radio-button [value]="tt.key" *ngFor="let tt of paymentTypes" [checked]="thuChi.paymentType === tt.key"
+                              (change)="updateThuChi($event, 'paymentType')" [disabled]="true">{{ tt.name }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="wallet" class="label" *ngIf="isChi">Từ tài khoản</label>
+        <label for="wallet" class="label" *ngIf="!isChi">Tới tài khoản</label>
+        <div class="clearfix"></div>
+        <div class="kradio">
+          <mat-radio-group aria-label="Select an option">
+            <mat-radio-button [value]="tt.key" *ngFor="let tt of wallets" [checked]="thuChi.walletKey === tt.key"
+                              (change)="updateThuChi($event, 'walletKey')" [disabled]="true">{{ tt.name }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
       </div>
       <div class="form-group" *ngIf="!isChi">
         <label for="trangThaiThanhToan" class="label">Trạng Thái Thanh Toán</label>
         <div class="clearfix"></div>
-        <nb-select [(selected)]="thuChi.trangThaiTT" id="trangThaiThanhToan">
-          <nb-option [value]="tt.key" *ngFor="let tt of thanhToanTypes">{{ tt.name }}</nb-option>
-        </nb-select>
+        <div class="kradio">
+          <mat-radio-group aria-label="Select an option">
+            <mat-radio-button [value]="tt.key" *ngFor="let tt of thanhToanTypes" [checked]="thuChi.trangThaiTT === tt.key"
+                              (change)="updateThuChi($event, 'trangThaiTT')"  [disabled]="thuChi.trangThaiTT === 2">{{ tt.name }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
       </div>
       <div class="form-group">
         <label for="note" class="label">Ghi Chú</label>
         <div class="clearfix"></div>
-        <textarea nbInput placeholder="Ghi Chú" id="note" [value]="thuChi?.note" (keyup)="updateThuChi($event, 'note')"></textarea>
+        <textarea cols="60" nbInput placeholder="Ghi Chú" id="note" [value]="thuChi?.note" (keyup)="updateThuChi($event, 'note')"></textarea>
       </div>
 
       <div class="thu-chi mb-5">
@@ -113,7 +136,7 @@
           </ul>
         </div>
       </div>
-      <button type="submit" nbButton status="danger" (click)="submitThuChi()" *ngIf="isChi">THÊM CHI</button>
+      <button type="submit" nbButton status="danger" (click)="submitThuChi()" *ngIf="isChi">SỬA KHOẢN CHI</button>
       <button type="submit" nbButton status="danger" (click)="submitThuChi()" *ngIf="!isChi">SỬA KHOẢN THU</button>
     </form>
   </nb-card-body>

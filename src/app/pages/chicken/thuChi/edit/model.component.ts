@@ -14,6 +14,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { ImagePopinDialog } from '../../upload/popin/popin';
 import { UtilService } from '../../../../main/util.service';
 import { ImageFile } from '../../../directives/dragDrop.directive';
+import { Wallet, WalletService } from '../../../../main/wallet.service';
 
 @Component({
   selector: 'ngx-smart-thuchi-edit',
@@ -42,7 +43,10 @@ export class ThuChiEditComponent implements OnInit {
   thuChiDate = new Date();
   isChi = false;
   thanhToanTypes = this.thuChiTypeService.thanhToanTypes;
+  paymentTypes = this.thuChiTypeService.paymentTypes;
   dropFiles: ImageFile[] = [];
+  wallets: Wallet[];
+  wallet: Wallet;
 
   constructor(
     private service: SmartTableData,
@@ -57,11 +61,13 @@ export class ThuChiEditComponent implements OnInit {
     private dialog: MatDialog,
     private router: Router,
     private utilService: UtilService,
+    private walletService: WalletService,
   ) {
     this.thuChiId = this.activatedRoute.snapshot.paramMap.get('thuChiId');
     this.getAllThuChiType();
     this.getAllNhaCungCap();
     this.getAllUploadFiles();
+    this.getAllWallet();
     this.getThuChi();
   }
 
@@ -72,6 +78,7 @@ export class ThuChiEditComponent implements OnInit {
     this.thuChi.note = this.thuChi.note ?? '';
     this.thuChi.fileKeys = this.thuChi.fileKeys ?? [];
     this.thuChi.url = this.thuChi.url ?? '';
+    this.thuChi.paymentType = this.thuChi.paymentType ?? this.paymentTypes[0].key;
   }
 
   getThuChi() {
@@ -81,6 +88,22 @@ export class ThuChiEditComponent implements OnInit {
         this.thuChi = thuChi;
         this.initThuChi();
       });
+  }
+
+  getAllWallet() {
+    if (!this.walletService.cacheWallets) {
+      this.walletService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.wallets = this.walletService.cacheWallets = all;
+      });
+    } else {
+      this.wallets = this.walletService.cacheWallets;
+    }
   }
 
   getAllThuChiType() {
@@ -124,7 +147,10 @@ export class ThuChiEditComponent implements OnInit {
   }
 
   updateThuChi(event, type) {
-    this.thuChi[type] = event.target.value;
+    this.thuChi[type] = event?.target?.value ?? event?.value;
+  }
+  ungTraLuongClick(checked: boolean) {
+    this.thuChi.ttLuong = checked;
   }
 
   showFile(file: FileUpload) {
@@ -146,14 +172,56 @@ export class ThuChiEditComponent implements OnInit {
   }
 
   submitThuChi() {
+    // Update wallet
+    this.updateWallet();
+    this.thuChi.updateAt = (new Date()).toString();
+    this.thuChi.price = +this.thuChi.price;
     this.modelService.update(this.thuChiId, this.thuChi)
       .then(() => {
         this.utilService.gotoPage('pages/chicken/thu-chi');
       });
   }
 
+  updateWallet() {
+    if (this.thuChi.walletKey && this.thuChi.paymentType) {
+      this.wallet = (this.wallets.filter((w: Wallet) => w.key === this.thuChi.walletKey)).shift();
+      console.log(this.wallet);
+      this.wallet.bankTotal = +this.wallet.bankTotal;
+      this.wallet.cashTotal = +this.wallet.cashTotal;
+      let update = false;
+      if (this.thuChi.paymentType === 1) {
+        // Bank
+        if (this.isChi) {
+          this.wallet.bankTotal -= +this.thuChi.price;
+          update = true;
+        } else {
+          // Thu
+          if (this.thuChi.trangThaiTT === 2) {
+            this.wallet.bankTotal += +this.thuChi.price;
+            update = true;
+          }
+        }
+      } else if (this.thuChi.paymentType === 2) {
+        // Cash
+        if (this.isChi) {
+          this.wallet.cashTotal -= +this.thuChi.price;
+          update = true;
+        } else {
+          // Thu
+          if (this.thuChi.trangThaiTT === 2) {
+            this.wallet.cashTotal += +this.thuChi.price;
+            update = true;
+          }
+        }
+      }
+      if (update) {
+        // Call service to update wallet
+        this.walletService.update(this.wallet.key, this.wallet);
+      }
+    }
+  }
+
   onDropFiles(dropFiles: ImageFile[]): void {
-    console.log(dropFiles);
     this.dropFiles = [...this.dropFiles, ...dropFiles];
     dropFiles.forEach((file: ImageFile) => {
       this.upload(file.file);

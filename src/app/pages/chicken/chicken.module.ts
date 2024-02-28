@@ -33,6 +33,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ExportCsvService } from '../../main/exportCsv.service';
+import { MatRadioModule } from '@angular/material/radio';
 
 @NgModule({
   imports: [
@@ -75,6 +76,7 @@ import { ExportCsvService } from '../../main/exportCsv.service';
     MatDialogModule,
     ChickenRoutingModule,
     Ng2SmartTableModule,
+    MatRadioModule,
   ],
   declarations: [
     ...routedComponents,

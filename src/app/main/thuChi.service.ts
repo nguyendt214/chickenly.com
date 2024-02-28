@@ -3,6 +3,7 @@ import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/datab
 import { FileUpload } from './upload.service';
 import { Observable } from 'rxjs';
 import { Customer } from './customer.service';
+import { Wallet } from './wallet.service';
 
 export class ThuChi {
   key?: any;
@@ -12,6 +13,7 @@ export class ThuChi {
   disable?: boolean;
   url?: string;
   date?: string;
+  updateAt?: string;
   files?: FileUpload[];
   fileKeys?: Array<string>;
   price?: number;
@@ -23,6 +25,10 @@ export class ThuChi {
   customer?: Customer | null;
   orders?: Array<string>;
   ttLuong?: boolean | null;
+  paymentType?: number;
+  paymentTypeLabel?: string;
+  walletKey?: string;
+  wallet?: Wallet | null;
 }
 
 @Injectable({

@@ -41,6 +41,16 @@ export class ThuChiTypeService {
       name: 'Đã Thanh Toán'
     }
   ];
+  paymentTypes = [
+    {
+      key: 1,
+      name: 'Chuyển khoản'
+    },
+    {
+      key: 2,
+      name: 'Tiền mặt'
+    }
+  ];
 
   constructor(private db: AngularFireDatabase) {
     this.modelRef = db.list(this.dbPath);

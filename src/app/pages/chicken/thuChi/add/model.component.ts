@@ -15,6 +15,7 @@ import { Customer, CustomerService } from '../../../../main/customer.service';
 import { Order, OrderService } from '../../../../main/order.service';
 import { ImageFile } from '../../../directives/dragDrop.directive';
 import { Observable } from 'rxjs';
+import { Wallet, WalletService } from '../../../../main/wallet.service';
 
 @Component({
   selector: 'ngx-smart-thuchi-add',
@@ -35,7 +36,6 @@ export class ThuChiAddComponent implements OnInit {
   allCustomers: Customer[] = [];
   customers: Customer[] = [];
   thanhToanTypes = this.thuChiTypeService.thanhToanTypes;
-  tttt = 1;
   khoanThu: string = '';
   soTien: number;
 
@@ -47,6 +47,9 @@ export class ThuChiAddComponent implements OnInit {
   today = new Date();
   isChi = false;
   dropFiles: ImageFile[] = [];
+  paymentTypes = this.thuChiTypeService.paymentTypes;
+  wallets: Wallet[];
+  wallet: Wallet;
 
   constructor(
     private service: SmartTableData,
@@ -62,10 +65,12 @@ export class ThuChiAddComponent implements OnInit {
     private router: Router,
     private customerService: CustomerService,
     private orderService: OrderService,
+    private walletService: WalletService,
   ) {
     this.thuChiType = this.activatedRoute.snapshot.paramMap.get('type');
     this.isChi = this.thuChiType === 'chi';
     this.getAllThuChiType();
+    this.getAllWallet();
     // this.getAllNhaCungCap();
     // this.getAllUploadFiles();
     if (!this.isChi) {
@@ -76,10 +81,10 @@ export class ThuChiAddComponent implements OnInit {
     if (this.orderService.truyThuCongNo) {
       const congNo = this.orderService.truyThuCongNo;
       this.selectKH = congNo.order.customer.key;
-      this.tttt = 2;
       this.khoanThu = 'Công nợ: ' + congNo.order.school.name + ' ' + congNo.time;
       this.soTien = congNo.totalPrice;
       this.thuChi.price = this.soTien;
+      this.thuChi.trangThaiTT = 2;
     }
   }
 
@@ -96,6 +101,9 @@ export class ThuChiAddComponent implements OnInit {
     this.thuChi.thuChiTypeKey = this.thuChiType;
     this.thuChi.nhaCungCapKey = '';
     this.thuChi.ttLuong = false;
+    this.thuChi.trangThaiTT = this.isChi ? 2 : 1; // Chưa thanh toán
+    this.thuChi.paymentType = 1; // Chuyển khoản
+    this.thuChi.walletKey = this.walletService.viCtyKey;
   }
 
   getAll() {
@@ -119,6 +127,22 @@ export class ThuChiAddComponent implements OnInit {
 
   getAllThuChiType() {
     this.thuChiTypes = this.thuChiTypeService.thuChiType;
+  }
+
+  getAllWallet() {
+    if (!this.walletService.cacheWallets) {
+      this.walletService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.wallets = this.walletService.cacheWallets = all;
+      });
+    } else {
+      this.wallets = this.walletService.cacheWallets;
+    }
   }
 
   getAllUploadFiles() {
@@ -246,8 +270,12 @@ export class ThuChiAddComponent implements OnInit {
     if (this.thuChi.url) {
       this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
     }
-    this.thuChi.trangThaiTT = this.tttt;
+    this.thuChi.price = +this.thuChi.price;
+
     console.log(this.thuChi);
+    // Update wallet
+    this.updateWallet();
+
     // Update order thành đã thu công nợ
     if (this.orderService.truyThuCongNo) {
       const orderKeys = this.orderService.truyThuCongNo.order.orderKeys ?? [];
@@ -269,6 +297,45 @@ export class ThuChiAddComponent implements OnInit {
         });
       },
     );
+  }
+
+  updateWallet() {
+    if (this.thuChi.walletKey && this.thuChi.paymentType) {
+      this.wallet = (this.wallets.filter((w: Wallet) => w.key === this.thuChi.walletKey)).shift();
+      console.log(this.wallet);
+      this.wallet.bankTotal = +this.wallet.bankTotal;
+      this.wallet.cashTotal = +this.wallet.cashTotal;
+      let update = false;
+      if (this.thuChi.paymentType === 1) {
+        // Bank
+        if (this.isChi) {
+          this.wallet.bankTotal -= +this.thuChi.price;
+          update = true;
+        } else {
+          // Thu
+          if (this.thuChi.trangThaiTT === 2) {
+            this.wallet.bankTotal += +this.thuChi.price;
+            update = true;
+          }
+        }
+      } else if (this.thuChi.paymentType === 2) {
+        // Cash
+        if (this.isChi) {
+          this.wallet.cashTotal -= +this.thuChi.price;
+          update = true;
+        } else {
+          // Thu
+          if (this.thuChi.trangThaiTT === 2) {
+            this.wallet.cashTotal += +this.thuChi.price;
+            update = true;
+          }
+        }
+      }
+      if (update) {
+        // Call service to update wallet
+        this.walletService.update(this.wallet.key, this.wallet);
+      }
+    }
   }
 
   showToa() {

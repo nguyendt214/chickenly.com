@@ -29,6 +29,7 @@ import { ThuChiAddComponent } from './thuChi/add/model.component';
 import { ThuChiEditComponent } from './thuChi/edit/model.component';
 import { ImagePopinDialog } from './upload/popin/popin';
 import { ImageUploaderDirective } from '../directives/dragDrop.directive';
+import { WalletComponent } from './wallet/model.component';
 
 const routes: Routes = [{
   path: '',
@@ -62,6 +63,11 @@ const routes: Routes = [{
     {
       path: 'customer',
       component: CustomerComponent,
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'wallet',
+      component: WalletComponent,
       canActivate: [AuthGuard],
     },
     {
@@ -159,4 +165,5 @@ export const routedComponents = [
   ThuChiEditComponent,
   ImagePopinDialog,
   ImageUploaderDirective,
+  WalletComponent,
 ];

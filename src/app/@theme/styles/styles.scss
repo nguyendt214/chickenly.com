@@ -328,13 +328,16 @@ button:focus {
     margin-bottom: 0;
   }
 }
+
 .kimg {
   max-width: 400px;
 }
+
 .btn:disabled {
   cursor: not-allowed;
   opacity: 0.35;
 }
+
 .img-detail {
   display: flex;
   flex-direction: row;
@@ -342,49 +345,60 @@ button:focus {
   align-content: center;
   justify-content: center;
   align-items: center;
+
   button {
     margin-left: 10px;
   }
+
   img {
     cursor: pointer;
   }
 }
+
 .img-popin {
   img {
     width: auto;
     max-width: 300px;
   }
 }
+
 .add-chi {
   margin-right: 10px !important;
 }
+
 .delete {
   &:hover {
     font-weight: bold;
     cursor: pointer;
   }
 }
+
 .thu-chi {
   img {
     max-width: 50px;
+
     &:hover {
       cursor: pointer;
     }
   }
 }
+
 .da-thu-cn {
   font-weight: bold;
   color: green;
   padding-left: 10px;
 }
+
 .clearfix {
   clear: both;
 }
+
 .kcheckbox-label {
   label {
     margin-bottom: 0px;
   }
 }
+
 .file-upload {
   ul {
     li {
@@ -392,13 +406,33 @@ button:focus {
     }
   }
 }
+
 .tai-file-drop {
   max-width: 100%;
+
   .drop-box {
     width: 100%;
     margin-bottom: 10px;
   }
 }
+.pre-price {
+  font-weight: bold;
+  padding: {
+    left: 5px;
+    top: 5px;
+  }
+  color: #FF4081;
+}
+.kradio {
+  label {
+    margin-bottom: 0;
+    font-weight: bold;
+    &:hover {
+      cursor: pointer;
+    }
+  }
+}
+
 @media screen and (max-width: 699px) {
   .mobile-zoom {
     zoom: 0.5;

@@ -13,6 +13,7 @@ import { UtilService } from '../../../main/util.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { ImagePopinDialog } from '../upload/popin/popin';
 import { MatDialog } from '@angular/material/dialog';
+import { Wallet, WalletService } from '../../../main/wallet.service';
 
 @Component({
   selector: 'ngx-smart-table-school',
@@ -25,6 +26,8 @@ export class ThuChiComponent implements OnInit {
   thuChiTypes: ThuChiType[];
   nhaCungCaps: NhaCungCap[];
   nhaCungCap: NhaCungCap;
+  wallets: Wallet[];
+  wallet: Wallet;
   thuChiType: ThuChiType;
   fileUploads: any[] = [];
   fileUploadsNew: any[] = [];
@@ -146,7 +149,7 @@ export class ThuChiComponent implements OnInit {
       },
     },
     pager: {
-      perPage: 50,
+      perPage: 550,
     },
     actions: {
       edit: false,
@@ -190,11 +193,13 @@ export class ThuChiComponent implements OnInit {
     private utilService: UtilService,
     private customerService: CustomerService,
     private dialog: MatDialog,
+    private walletService: WalletService,
   ) {
     this.getAllThuChiType();
     this.getAllNhaCungCap();
     this.getAllUploadFiles();
     this.getAllCustomer();
+    this.getAllWallet();
     this.getAll();
     this.initThuChi();
   }
@@ -214,7 +219,6 @@ export class ThuChiComponent implements OnInit {
   prepareThuChi() {
     this.tongThu = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey === 'thu');
     this.tongChi = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey !== 'thu');
-    console.log(this.tongChi);
     this.tongThu.forEach((tc: ThuChi) => {
       if (tc.trangThaiTT === 1) {
         this.price.tienChuaThu += +tc.price;
@@ -258,16 +262,40 @@ export class ThuChiComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
+        all = all.reverse();
         this.all = this.modelService.cacheThuChi = all;
         this.mapCustomer();
+        this.mapWallet();
         this.preparePageData(this.all);
       });
     } else {
       this.all = this.modelService.cacheThuChi;
       this.mapCustomer();
+      this.mapWallet();
       this.preparePageData(this.all);
     }
 
+  }
+
+  mapWallet() {
+    this.all.forEach((tc: ThuChi) => {
+      if (tc.walletKey) {
+        let c: any = this.wallets.filter((w: Wallet) => w.key === tc.walletKey);
+        if (c.length) {
+          c = c.shift();
+          tc.wallet = c;
+        }
+      }
+      this.mapPaymentType(tc);
+    });
+  }
+
+  mapPaymentType(tc: ThuChi) {
+    let t: any = this.thuChiTypeService.paymentTypes.filter((tt: any) => tt.key === tc.paymentType);
+    if (t.length) {
+      t = t.shift();
+      tc.paymentTypeLabel = t.name;
+    }
   }
 
   mapCustomer() {
@@ -292,21 +320,8 @@ export class ThuChiComponent implements OnInit {
   }
 
   getAllThuChiType() {
-    if (!this.thuChiTypeService.cacheThuChiType) {
-      this.thuChiTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.thuChiTypes = this.thuChiTypeService.cacheThuChiType = all;
-        this.thuChiType = this.thuChiTypes[0].key;
-      });
-    } else {
-      this.thuChiTypes = this.thuChiTypeService.cacheThuChiType;
-      this.thuChiType = this.thuChiTypes[0].key;
-    }
+    this.thuChiTypes = this.thuChiTypeService.thanhToanTypes;
+    this.thuChiType = this.thuChiTypes[0].key;
   }
 
   getAllUploadFiles() {
@@ -339,6 +354,24 @@ export class ThuChiComponent implements OnInit {
     } else {
       this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps;
       this.nhaCungCap = this.nhaCungCaps[0].key;
+    }
+  }
+
+  getAllWallet() {
+    if (!this.walletService.cacheWallets) {
+      this.walletService.getAll().snapshotChanges().pipe(
+        map(changes =>
+          changes.map(c =>
+            ({key: c.payload.key, ...c.payload.val()}),
+          ),
+        ),
+      ).subscribe(all => {
+        this.wallets = this.walletService.cacheWallets = all;
+        this.wallet = this.wallets[0].key;
+      });
+    } else {
+      this.wallets = this.walletService.cacheWallets;
+      this.wallet = this.wallets[0].key;
     }
   }
 

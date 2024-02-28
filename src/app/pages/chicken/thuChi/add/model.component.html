@@ -3,7 +3,7 @@
   <nb-card-header *ngIf="!isChi">THÊM THU</nb-card-header>
   <nb-card-body>
     <form>
-      <div class="form-group">
+      <div class="form-group mb-0">
         <label class="label">Ngày</label>
         <div class="clearfix"></div>
         <mat-form-field>
@@ -41,23 +41,43 @@
           <nb-option [value]="customer.key" *ngFor="let customer of allCustomers">{{ customer.name }}</nb-option>
         </nb-select>
       </div>
-      <div class="form-group" *ngIf="!isChi">
-        <label for="trangThaiThanhToan" class="label">Trạng Thái Thanh Toán</label>
-        <div class="clearfix"></div>
-        <nb-select [(selected)]="tttt" id="trangThaiThanhToan">
-          <nb-option [value]="tt.key" *ngFor="let tt of thanhToanTypes">{{ tt.name }}</nb-option>
-        </nb-select>
-      </div>
-      <div class="form-group">
-        <label for="exampleInputIMG" class="label">ẢNH GIAO DỊCH</label>
-        <input type="text" nbInput fullWidth id="exampleInputIMG" placeholder="URL ảnh ( google driver, ... )"
-               (keyup)="updateThuChi($event, 'url')">
-      </div>
       <div class="form-group">
         <label for="price" class="label">Số tiền</label>
         <input type="number" nbInput fullWidth id="price" placeholder="Số tiền"
                (keyup)="updateThuChi($event, 'price')" [value]="soTien">
-        <p>{{ thuChi.price | currency : '' : '' : '1.0-0'}} VNĐ</p>
+        <p class="pre-price">{{ thuChi.price | currency : '' : '' : '1.0-0'}} VNĐ</p>
+      </div>
+
+      <div class="form-group">
+        <label for="paymentType" class="label">Hình thức thanh toán</label>
+        <div class="clearfix"></div>
+        <div class="kradio">
+          <mat-radio-group aria-label="Select an option">
+            <mat-radio-button [value]="tt.key" *ngFor="let tt of paymentTypes" [checked]="thuChi.paymentType === tt.key"
+                              (change)="updateThuChi($event, 'paymentType')">{{ tt.name }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="wallet" class="label" *ngIf="isChi">Từ tài khoản</label>
+        <label for="wallet" class="label" *ngIf="!isChi">Tới tài khoản</label>
+        <div class="clearfix"></div>
+        <div class="kradio">
+          <mat-radio-group aria-label="Select an option">
+            <mat-radio-button [value]="tt.key" *ngFor="let tt of wallets" [checked]="thuChi.walletKey === tt.key"
+                              (change)="updateThuChi($event, 'walletKey')">{{ tt.name }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
+      </div>
+      <div class="form-group" *ngIf="!isChi">
+        <label for="trangThaiThanhToan" class="label">Trạng Thái Thanh Toán</label>
+        <div class="clearfix"></div>
+        <div class="kradio">
+          <mat-radio-group aria-label="Select an option">
+            <mat-radio-button [value]="tt.key" *ngFor="let tt of thanhToanTypes" [checked]="thuChi.trangThaiTT === tt.key"
+                              (change)="updateThuChi($event, 'trangThaiTT')">{{ tt.name }}</mat-radio-button>
+          </mat-radio-group>
+        </div>
       </div>
       <div class="form-group">
         <label for="note" class="label">Ghi Chú</label>
