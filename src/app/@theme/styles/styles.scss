@@ -423,6 +423,10 @@ button:focus {
   }
   color: #FF4081;
 }
+nb-menu .menu-item a.active {
+  color: #FF4081;
+  background-color: lightgrey;
+}
 .kradio {
   label {
     margin-bottom: 0;

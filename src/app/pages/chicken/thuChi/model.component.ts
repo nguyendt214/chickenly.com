@@ -262,6 +262,9 @@ export class ThuChiComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
+        all.forEach((tc: ThuChi) => {
+          tc.price = +tc.price;
+        });
         all = all.reverse();
         this.all = this.modelService.cacheThuChi = all;
         this.mapCustomer();
@@ -366,11 +369,19 @@ export class ThuChiComponent implements OnInit {
           ),
         ),
       ).subscribe(all => {
+        all.forEach((w: Wallet) => {
+          w.cashTotal = +w.cashTotal;
+          w.bankTotal = +w.bankTotal;
+        });
         this.wallets = this.walletService.cacheWallets = all;
         this.wallet = this.wallets[0].key;
       });
     } else {
       this.wallets = this.walletService.cacheWallets;
+      this.wallets.forEach((w: Wallet) => {
+        w.cashTotal = +w.cashTotal;
+        w.bankTotal = +w.bankTotal;
+      });
       this.wallet = this.wallets[0].key;
     }
   }
@@ -550,6 +561,9 @@ export class ThuChiComponent implements OnInit {
 
   themMoi(type: string) {
     this.utilService.gotoPage('pages/chicken/thu-chi/add/' + type);
+  }
+  walletTransfer() {
+    this.utilService.gotoPage('pages/chicken/wallet/transfer');
   }
 
   getAllCustomer() {

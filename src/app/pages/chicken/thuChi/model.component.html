@@ -3,7 +3,7 @@
   <nb-card-body class="list-order cong-no">
     <div class="order-date-filter">
       <div class="row">
-        <div class="col-sm">
+        <div class="col-sm-5">
           <mat-form-field>
             <mat-label>LỌC THEO NGÀY</mat-label>
             <mat-date-range-input [rangePicker]="picker" (click)="picker.open()">
@@ -22,9 +22,12 @@
             <button nbButton status="danger" (click)="themMoi('chi')" class="add-chi">THÊM CHI</button>
             <button nbButton status="success" (click)="themMoi('thu')">THÊM THU</button>
           </div>
+          <div class="comeback text-left mb-3">
+            <button nbButton status="warning" (click)="walletTransfer()">CHUYỂN TIỀN GIỮA CÁC VÍ</button>
+          </div>
         </div>
 
-        <div class="col-sm">
+        <div class="col-sm-7">
           <h5> VÍ </h5>
           <div class="table-responsive">
             <table class="table table-striped table-dark table-hover">

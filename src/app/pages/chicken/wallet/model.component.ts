@@ -46,15 +46,6 @@ export class WalletComponent implements OnInit {
         title: 'Tên',
         type: 'string',
       },
-      total: {
-        title: 'Tổng tiền ( VNĐ )',
-        type: 'number',
-        valuePrepareFunction: (cell, row) => {
-          return this.currencyPipe.transform(cell, '', '', '1.0-0');
-        },
-        editable: true,
-        filter: false,
-      },
       cashTotal: {
         title: 'Tiền Mặt ( VNĐ )',
         type: 'number',
@@ -194,7 +185,10 @@ export class WalletComponent implements OnInit {
 
   onEditConfirm(e: any) {
     console.log(e?.newData);
-    this.modelService.update(e?.newData?.key, e?.newData)
+    const newData = e?.newData;
+    newData.bankTotal = +newData.bankTotal;
+    newData.cashTotal = +newData.cashTotal;
+    this.modelService.update(e?.newData?.key, newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());

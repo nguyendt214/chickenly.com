@@ -352,7 +352,7 @@ export class ThuChiAddComponent implements OnInit {
   }
 
   updateThuChi(event, type) {
-    this.thuChi[type] = event.target.value;
+    this.thuChi[type] = event?.target?.value ?? event?.value;
   }
 
   deleteFile(file: FileUpload) {
