@@ -1,13 +1,16 @@
 import { Injectable } from "@angular/core";
 import * as ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
-import { DatePipe } from '@angular/common';
+import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Cart, Order } from './order.service';
+import { ThuChi } from './thuChi.service';
+import { Wallet } from './wallet.service';
 
 @Injectable()
 export class ExportCsvService {
   constructor(
     private datePipe: DatePipe,
+    private currencyPipe: CurrencyPipe,
   ) {
 
   }
@@ -70,7 +73,7 @@ export class ExportCsvService {
 
   exportCongNoTong(data: any, fileName: string) {
     const workbook = new ExcelJS.Workbook();
-    let worksheet = workbook.addWorksheet(data?.sheetName ?? 'Công nợ');
+    const worksheet = workbook.addWorksheet(data?.sheetName ?? 'Công nợ');
     this.prepareCongNoTong(worksheet, data);
 
     // Generate Excel file
@@ -82,7 +85,7 @@ export class ExportCsvService {
 
   exportCongNoTong1(data: any, fileName: string) {
     const workbook = new ExcelJS.Workbook();
-    let worksheet = workbook.addWorksheet(data?.sheetName ?? 'Công nợ');
+    const worksheet = workbook.addWorksheet(data?.sheetName ?? 'Công nợ');
     this.prepareCongNoTong1(worksheet, data);
 
     // Generate Excel file
@@ -97,7 +100,7 @@ export class ExportCsvService {
     ws.getCell('A1').value = data.date.start + ' - ' + data.date.end;
     ws.getCell('A1').font = {
       size: 12,
-      bold: true
+      bold: true,
     };
     ws.getCell('A1').alignment = {wrapText: true};
 
@@ -105,7 +108,7 @@ export class ExportCsvService {
     ws.getCell('F1').value = data.totalPrice;
     ws.getCell('F1').font = {
       size: 14,
-      bold: true
+      bold: true,
     };
     ws.getCell('F1').alignment = {wrapText: true};
     ws.addRow('');
@@ -117,18 +120,18 @@ export class ExportCsvService {
     ws.getCell('E3').value = 'Số Lượng Trả';
     ws.getCell('F3').value = 'Giá bán';
     ws.getCell('G3').value = 'Tổng';
-    this.setFontHeader(ws, ['A3', 'C3', 'D3', 'E3', 'F3', 'G3'])
+    this.setFontHeader(ws, ['A3', 'C3', 'D3', 'E3', 'F3', 'G3']);
     // ROWs
     Object.entries(data.order.sItem).forEach(([key, cart], index) => {
       const item: Cart[] = <Cart[]>cart;
-      item.forEach((cart: Cart) => {
-        ws.addRow([cart.product.category.name,
-          cart.product.name,
-          cart.product.productType.name,
-          cart.qty,
-          this.getTotalReturnByItem(cart),
-          cart.price,
-          this.getTotalByItem(cart)
+      item.forEach((c: Cart) => {
+        ws.addRow([c.product.category.name,
+          c.product.name,
+          c.product.productType.name,
+          c.qty,
+          this.getTotalReturnByItem(c),
+          c.price,
+          this.getTotalByItem(c),
         ]);
       });
     });
@@ -169,7 +172,7 @@ export class ExportCsvService {
         this.datePipe.transform(new Date(o.date), 'dd/MM/YYYY'),
         o.customer.name,
         o.school.name,
-        total
+        total,
       ]);
     });
     ws.addTable({
@@ -201,7 +204,7 @@ export class ExportCsvService {
       ws.getCell(cell).alignment = {
         vertical: 'middle',
         horizontal: 'center',
-        wrapText: true
+        wrapText: true,
       };
     });
     return ws;
@@ -220,5 +223,152 @@ export class ExportCsvService {
       return 0;
     }
     return qtyReturn;
+  }
+
+  exportThuChi(data: any, fileName: string) {
+    const workbook = new ExcelJS.Workbook();
+    const worksheetWallet = workbook.addWorksheet('VÍ');
+    const worksheetThu = workbook.addWorksheet('THU');
+    const worksheetChi = workbook.addWorksheet('CHI');
+    this.prepareWallet(worksheetWallet, data);
+    this.prepareThu(worksheetThu, data);
+    this.prepareChi(worksheetChi, data);
+
+    // Generate Excel file
+    workbook.xlsx.writeBuffer().then((buffer: any) => {
+      const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      saveAs(blob, `${fileName}.xlsx`);
+    });
+  }
+
+  prepareWallet(ws, data) {
+    const rows = [];
+    data.wallets.forEach((o: Wallet, idx: number) => {
+      rows.push([
+        idx + 1,
+        o?.name,
+        o?.cashTotal,
+        o?.bankTotal,
+        o?.cashTotal + o?.bankTotal,
+      ]);
+    });
+    ws.addTable({
+      name: 'Wallet',
+      ref: 'A1',
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: '#', filterButton: true},
+        {name: 'TÊN', filterButton: true},
+        {name: 'TIỀN MẶT', filterButton: true},
+        {name: 'TIỀN TTK', filterButton: true},
+        {name: 'TỔNG', filterButton: true},
+      ],
+      rows: rows,
+    });
+    ws.getColumn(3).numFmt = '#,##0 [$VNĐ];-#,##0 [$VNĐ]';
+    ws.getColumn(4).numFmt = '#,##0 [$VNĐ];-#,##0 [$VNĐ]';
+    ws.getColumn(5).numFmt = '#,##0 [$VNĐ];-#,##0 [$VNĐ]';
+    return ws;
+  }
+
+  prepareChi(ws, data) {
+    const rows = [];
+    ws.getCell('A1').value = 'TỔNG ';
+    ws.getCell('B1').value = this.currencyPipe.transform(data?.priceFilter?.chi, '', '', '1.0-0') + ' VNĐ';
+    ws.getCell('B1').font = {
+      size: 14,
+      bold: true,
+    };
+    data.tongChi.forEach((o: ThuChi) => {
+      rows.push([
+        this.datePipe.transform(new Date(o.date), 'dd/MM/YYYY'),
+        o?.name,
+        o?.soLuong,
+        o?.price,
+        o?.ttLuong ? 'YES' : 'NO',
+        o?.wallet?.name,
+        o?.paymentTypeLabel,
+        o?.note,
+      ]);
+    });
+    ws.addTable({
+      name: 'thu-chi',
+      ref: 'A2',
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: 'NGÀY', filterButton: true},
+        {name: 'KHOẢN CHI', filterButton: true},
+        {name: 'SỐ LƯỢNG', filterButton: true},
+        {name: 'SỐ TIỀN', filterButton: true},
+        {name: 'TT LƯƠNG?', filterButton: true},
+        {name: 'NGUỒN VÍ', filterButton: true},
+        {name: 'HÌNH THỨC THANH TOÁN', filterButton: true},
+        {name: 'GHI CHÚ', filterButton: true},
+      ],
+      rows: rows,
+    });
+    ws.getColumn(4).numFmt = '#,##0 [$VNĐ];-#,##0 [$VNĐ]';
+    return ws;
+  }
+
+  prepareThu(ws, data) {
+    const rows = [];
+    ws.getCell('A1').value = 'TỔNG THU';
+    ws.getCell('B1').value = this.currencyPipe.transform(data?.priceFilter?.tienDaThu, '', '', '1.0-0') + ' VNĐ';
+    ws.getCell('A2').value = 'TỔNG CHƯA THU';
+    ws.getCell('B2').value = this.currencyPipe.transform(data?.priceFilter?.tienChuaThu, '', '', '1.0-0') + ' VNĐ';
+    ws.getCell('B1').font = {
+      size: 14,
+      bold: true,
+    };
+    ws.getCell('B2').font = {
+      size: 14,
+      bold: true,
+    };
+    data.tongThu.forEach((o: ThuChi) => {
+      rows.push([
+        this.datePipe.transform(new Date(o.date), 'dd/MM/YYYY'),
+        o?.name,
+        o?.customer?.name,
+        o?.price,
+        o?.trangThaiLabel,
+        o?.wallet?.name,
+        o?.paymentTypeLabel,
+        o?.note,
+      ]);
+    });
+    ws.addTable({
+      name: 'thu',
+      ref: 'A3',
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: 'NGÀY', filterButton: true},
+        {name: 'KHOẢN THU', filterButton: true},
+        {name: 'ĐỐI TÁC', filterButton: true},
+        {name: 'SỐ TIỀN', filterButton: true},
+        {name: 'TRẠNG THÁI', filterButton: true},
+        {name: 'NGUỒN VÍ', filterButton: true},
+        {name: 'HÌNH THỨC THANH TOÁN', filterButton: true},
+        {name: 'GHI CHÚ', filterButton: true},
+      ],
+      rows: rows,
+    });
+    ws.getColumn(4).numFmt = '#,##0 [$VNĐ];-#,##0 [$VNĐ]';
+    return ws;
   }
 }

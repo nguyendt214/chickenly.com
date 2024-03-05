@@ -25,6 +25,9 @@
           <div class="comeback text-left mb-3">
             <button nbButton status="warning" (click)="walletTransfer()">CHUYỂN TIỀN GIỮA CÁC VÍ</button>
           </div>
+          <div class="comeback text-left mb-3">
+            <button nbButton status="primary" (click)="exportToExcel()" class="d-print-none">XUẤT RA EXCEL</button>
+          </div>
         </div>
 
         <div class="col-sm-7">
@@ -142,7 +145,11 @@
         </mat-expansion-panel-header>
         <nb-card-body>
           <div class="table-responsive">
-            <p>Tổng chi: <strong>{{ priceFilter.chi | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+            <div class="row">
+              <div class="col-sm">
+                <p>Tổng chi: <strong>{{ priceFilter.chi | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
+              </div>
+            </div>
             <table class="table table-striped table-hover">
               <thead>
               <tr>

@@ -14,6 +14,7 @@ import { Customer, CustomerService } from '../../../main/customer.service';
 import { ImagePopinDialog } from '../upload/popin/popin';
 import { MatDialog } from '@angular/material/dialog';
 import { Wallet, WalletService } from '../../../main/wallet.service';
+import { ExportCsvService } from '../../../main/exportCsv.service';
 
 @Component({
   selector: 'ngx-smart-table-school',
@@ -40,12 +41,12 @@ export class ThuChiComponent implements OnInit {
   price = {
     tienDaThu: 0,
     tienChuaThu: 0,
-    chi: 0
+    chi: 0,
   };
   priceFilter = {
     tienDaThu: 0,
     tienChuaThu: 0,
-    chi: 0
+    chi: 0,
   };
   settings = {
     add: {
@@ -194,6 +195,7 @@ export class ThuChiComponent implements OnInit {
     private customerService: CustomerService,
     private dialog: MatDialog,
     private walletService: WalletService,
+    private exportCsvService: ExportCsvService,
   ) {
     this.getAllThuChiType();
     this.getAllNhaCungCap();
@@ -595,6 +597,27 @@ export class ThuChiComponent implements OnInit {
       return thuChi.fileKeys.includes(file.key);
     }
     return false;
+  }
+  isChi(type: string): boolean {
+    return type === 'chi';
+  }
+
+  exportToExcel() {
+    const dataExport = {
+      date: {
+        start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
+        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY'),
+      },
+      priceFilter: this.priceFilter,
+      tongThu: this.tongThu,
+      tongChi: this.tongChi,
+      wallets: this.wallets,
+    };
+    let fileName = 'THU-CHI';
+    fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
+      '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
+
+    this.exportCsvService.exportThuChi(dataExport, fileName);
   }
 
 }
