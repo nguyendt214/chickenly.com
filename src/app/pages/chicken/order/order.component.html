@@ -23,7 +23,7 @@
           <mat-form-field>
             <mat-label>KHÁCH HÀNG</mat-label>
             <mat-select required [(ngModel)]="selectKH">
-              <mat-option value="" (click)="chonKH(null)">Chọn KH</mat-option>
+<!--              <mat-option value="" (click)="chonKH(null)">Chọn KH</mat-option>-->
               <mat-option *ngFor="let o of customers" [value]="o.key" (click)="chonKH(o)">
                 {{o.name}}
               </mat-option>
@@ -79,7 +79,7 @@
               <mat-card *ngFor="let o of category?.value; trackBy: trackByFn; index as i;" (click)="addToCart(o);">
                 <div class="qty-in-cart" *ngIf="itemInCart(o)">{{ itemInCart(o) }}</div>
                 <mat-card-header>
-                  <mat-card-title>{{ o?.name }} ({{ o?.price | currency : '' : '' : '1.0-0' }}-{{ o?.productType?.name }})</mat-card-title>
+                  <mat-card-title>{{ o?.name }} ({{ getCustomerPrice(o) | currency : '' : '' : '1.0-0' }}-{{ o?.productType?.name }})</mat-card-title>
                 </mat-card-header>
               </mat-card>
             </div>

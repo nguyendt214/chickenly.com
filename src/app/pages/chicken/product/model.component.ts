@@ -7,6 +7,7 @@ import { Customer, CustomerService } from '../../../main/customer.service';
 import { Category, CategoryService } from '../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../main/product-type.service';
 import { Product, ProductService } from '../../../main/product.service';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-product',
@@ -70,7 +71,7 @@ export class ProductComponent implements OnInit {
         },
       },
       price: {
-        title: 'Giá bán',
+        title: 'Giá bán chung',
         type: 'number',
       },
       priceStock: {
@@ -89,6 +90,15 @@ export class ProductComponent implements OnInit {
     pager: {
       perPage: 50,
     },
+    actions: {
+      custom: [
+        {
+          name: 'customer-price',
+          title: '<span class="custom-action">Sửa giá theo Đối Tác</span>',
+        },
+      ],
+      columnTitle: '',
+    },
     noDataMessage: 'Không thấy SẢN PHẨM nào!',
   };
 
@@ -100,6 +110,7 @@ export class ProductComponent implements OnInit {
     private customerService: CustomerService,
     private categoryService: CategoryService,
     private productTypeService: ProductTypeService,
+    private utilService: UtilService,
   ) { }
 
   ngOnInit() {
@@ -210,6 +221,12 @@ export class ProductComponent implements OnInit {
   updateTopProduct(p: Product, event: boolean) {
     p.topProduct = event;
     this.modelService.update(p.key, p);
+  }
+
+  onCustom(event) {
+    if (event.action === 'customer-price') {
+      this.utilService.gotoPage('pages/chicken/product/price-by-customer/' + event.data.key);
+    }
   }
 
 }

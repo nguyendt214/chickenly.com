@@ -6,6 +6,7 @@ export interface DialogData {
   cart: Cart[];
   dateStr: string;
   comQty: number;
+  comLy: number;
 }
 
 @Component({
@@ -16,6 +17,7 @@ export class BepDialog implements OnInit {
   cart: Cart[] = [];
   dateStr: string;
   comQty = 0;
+  comLy = 0;
 
   constructor(
     public dialogRef: MatDialogRef<BepDialog>,
@@ -32,6 +34,7 @@ export class BepDialog implements OnInit {
     this.cart = this.data.cart;
     this.dateStr = this.data.dateStr;
     this.comQty = this.data.comQty;
+    this.comLy = this.data.comLy;
   }
 
   printOrder() {

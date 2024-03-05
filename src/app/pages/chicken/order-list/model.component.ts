@@ -205,6 +205,7 @@ export class OrderListComponent implements OnInit {
       ).subscribe(all => {
         this.modelService.cacheOrder = all;
         this.preparePageData(all);
+        console.log('getAllOrderDone', (new Date()).toString());
       });
     }
   }
@@ -277,6 +278,7 @@ export class OrderListComponent implements OnInit {
     let items: Cart[] = [];
     let date = (new Date()).toLocaleDateString('vi-VN');
     let comQty = 0;
+    let comLy = 0;
     const orders: Order[] = JSON.parse(JSON.stringify(this.orderFilter));
     orders.forEach((o: Order) => {
       date = (new Date(o?.date ?? '')).toLocaleDateString('vi-VN');
@@ -295,12 +297,15 @@ export class OrderListComponent implements OnInit {
         if (c.categoryKey === this.categoryService.comKey) {
           comQty += c.qty;
         }
+        if (c.categoryKey === this.categoryService.comLyKey) {
+          comLy += c.qty;
+        }
       });
     });
     items = this.modelService.sortByCategory(items);
     this.dialog.open(BepDialog, {
       width: '100%',
-      data: {cart: items, dateStr: date, comQty: comQty},
+      data: {cart: items, dateStr: date, comQty: comQty, comLy},
       position: {top: '10px'},
     });
   }
@@ -326,6 +331,7 @@ export class OrderListComponent implements OnInit {
         ),
       ).subscribe(all => {
         this.customers = this.customerService.cacheCustomers = all;
+        console.log('getAllCustomerDone', (new Date()).toString());
       });
     }
   }
@@ -342,6 +348,7 @@ export class OrderListComponent implements OnInit {
         ),
       ).subscribe(all => {
         this.employees = this.employeeService.cacheEmployees = all;
+        console.log('getAllEmployeeDone', (new Date()).toString());
       });
     }
   }
@@ -358,6 +365,7 @@ export class OrderListComponent implements OnInit {
         ),
       ).subscribe(all => {
         this.schools = this.schoolService.cacheSchools = this.allSchools = all;
+        console.log('getAllSchoolDone', (new Date()).toString());
       });
     }
   }

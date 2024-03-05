@@ -85,7 +85,7 @@
             <table class="table table-striped table-hover">
               <thead>
               <tr>
-                <th scope="col"></th>
+                <th scope="col" class=" d-none1"></th>
                 <th scope="col"></th>
                 <th scope="col">NGÀY</th>
                 <th scope="col">KHOẢN THU</th>
@@ -100,7 +100,7 @@
               </thead>
               <tbody>
               <tr *ngFor="let tc of tongThuFilter">
-                <td (click)="onDeleteConfirm(tc.key)" class="delete">XÓA</td>
+                <td (click)="onDeleteConfirm(tc.key)" class="delete d-none1">XÓA</td>
                 <td (click)="suaKhoanThu(tc.key)" class="delete">SỬA</td>
                 <td>{{ tc.date | date : 'dd/MM/YYYY' }}</td>
                 <td>{{ tc?.name }}</td>
@@ -146,7 +146,7 @@
             <table class="table table-striped table-hover">
               <thead>
               <tr>
-                <th scope="col"></th>
+                <th scope="col" class=" d-none1"></th>
                 <th scope="col"></th>
                 <th scope="col">NGÀY</th>
                 <th scope="col">KHOẢN CHI</th>
@@ -161,7 +161,7 @@
               </thead>
               <tbody>
               <tr *ngFor="let tc of tongChiFilter">
-                <td (click)="onDeleteConfirm(tc.key)" class="delete">XÓA</td>
+                <td (click)="onDeleteConfirm(tc.key)" class="delete d-none1">XÓA</td>
                 <td (click)="suaKhoanThu(tc.key)" class="delete">SỬA</td>
                 <td>{{ tc.date | date : 'dd/MM/YYYY' }}</td>
                 <td>{{ tc.name }}</td>

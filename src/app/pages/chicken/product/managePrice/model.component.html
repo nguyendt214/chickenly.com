@@ -1,0 +1,41 @@
+<nb-card>
+  <nb-card-header>
+    QUẢN LÝ GIÁ SẢN PHẨM
+    <div class="clearfix row mt-5 top-header">
+      <div class="col-sm">Tên: {{ currentProduct?.name }}</div>
+      <div class="col-sm">Nhóm: {{ currentProduct?.category?.name }}</div>
+      <div class="col-sm">Qui cách: {{ currentProduct?.productType?.name }}</div>
+    </div>
+  </nb-card-header>
+  <div class="clearfix"></div>
+  <nb-card-body>
+    <form (ngSubmit)="submit(myForm)" #myForm="ngForm">
+      <div class="table-responsive">
+        <table class="table">
+          <thead>
+          <tr>
+            <th scope="col">ĐỐI TÁC - GIÁ</th>
+          </tr>
+          </thead>
+          <tbody>
+          <fieldset ngModelGroup="inputs" #inputs="ngModelGroup">
+            <tr *ngFor="let o of allCustomers">
+              <td>{{ o?.name }}</td>
+              <!--          <td>{{ product.price | currency : '' : '' : '1.0-0' }}</td>-->
+              <td>
+                <!--            {{ getCustomerPrice(o?.key) }}-->
+                <input type="number" nbInput fullWidth placeholder="Giá theo đối tác"
+                       [ngModel]="getCustomerPrice(o?.key)" class="price-input" name="{{o?.key}}">
+              </td>
+            </tr>
+          </fieldset>
+          </tbody>
+        </table>
+      </div>
+    </form>
+    <button mat-raised-button (click)="submit(myForm)" color="accent" class="float-right">CẬP NHẬT GIÁ SẢN PHẨM</button>
+    <button mat-raised-button (click)="back()" class="float-right mr-2">BACK</button>
+  </nb-card-body>
+</nb-card>
+
+

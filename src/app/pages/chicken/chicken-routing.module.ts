@@ -31,6 +31,7 @@ import { ImagePopinDialog } from './upload/popin/popin';
 import { ImageUploaderDirective } from '../directives/dragDrop.directive';
 import { WalletComponent } from './wallet/model.component';
 import { WalletTransferComponent } from './wallet/transfer/model.component';
+import { ProductPriceComponent } from './product/managePrice/model.component';
 
 const routes: Routes = [{
   path: '',
@@ -102,6 +103,11 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'product/price-by-customer/:id',
+      component: ProductPriceComponent,
+      canActivate: [AuthGuard],
+    },
+    {
       path: 'employee',
       component: EmployeeComponent,
       canActivate: [AuthGuard],
@@ -151,6 +157,7 @@ export const routedComponents = [
   CategoryComponent,
   ProductTypeComponent,
   ProductComponent,
+  ProductPriceComponent,
   EmployeeComponent,
   OrderComponent,
   OrderListComponent,

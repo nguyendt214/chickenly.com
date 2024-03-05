@@ -30,8 +30,9 @@ export class ProductListComponent implements OnInit, OnChanges {
   allProducts?: Product[] = [];
   tongHop = {
     tongCom: 0,
+    tongComLy: 0,
     tongTien: 0,
-    tongSP: 0
+    tongSP: 0,
   };
   settings = {
     actions: {
@@ -259,15 +260,29 @@ export class ProductListComponent implements OnInit, OnChanges {
   tongHopCart() {
     this.tongHop.tongTien = 0;
     this.tongHop.tongCom = 0;
+    this.tongHop.tongComLy = 0;
     this.tongHop.tongSP = this.order.item.length;
+    let hasCom = false;
+    let hasComLy = false;
     this.order.item.forEach((cart: Cart) => {
       this.tongHop.tongTien += cart.price * cart.qty;
       if (cart.categoryKey === this.categoryService.comKey) {
         this.tongHop.tongCom += cart.qty;
         this.tongHop.tongSP--;
+        hasCom = true;
+      }
+      if (cart.categoryKey === this.categoryService.comLyKey) {
+        this.tongHop.tongComLy += cart.qty;
+        this.tongHop.tongSP--;
+        hasComLy = true;
       }
     });
-    this.tongHop.tongSP++;
+    if (hasCom) {
+      this.tongHop.tongSP++;
+    }
+    if (hasComLy) {
+      this.tongHop.tongSP++;
+    }
   }
 
   editPopup(event) {

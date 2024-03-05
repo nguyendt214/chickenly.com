@@ -7,7 +7,8 @@
     <ng2-smart-table [settings]="settings" [source]="source"
                      (createConfirm)="onCreateConfirm($event)"
                      (editConfirm)="onEditConfirm($event)"
-                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none2 mobile-zoom">
+                     (deleteConfirm)="onDeleteConfirm($event)"
+                     (custom)="onCustom($event)" class="d-none2 mobile-zoom">
     </ng2-smart-table>
   </nb-card-body>
 </nb-card>

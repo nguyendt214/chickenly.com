@@ -71,8 +71,8 @@ export class OrderComponent implements OnInit {
       this.order = Object.assign({}, this.orderService.orderClone);
       this.selectKH = this.order.customer.key;
       this.selectSchool = this.order.school.key;
-      this.selectEmployee = this.order.employee.key;
-      this.tomorrow = new Date(this.order.date ?? '');
+      this.selectEmployee = this.order?.employee?.key ?? '';
+      this.tomorrow = new Date(this.order?.date ?? '');
       delete this.order.key;
       this.order.note = '';
       this.order.updated = this.order.date;
@@ -190,6 +190,7 @@ export class OrderComponent implements OnInit {
         ),
       ).subscribe(all => {
         this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
+        this.selectKH = this.customers[0].key;
       });
     }
   }
@@ -236,7 +237,7 @@ export class OrderComponent implements OnInit {
         }
       });
     } else {
-      this.order.item.push(new Cart(1, (p?.price ?? 0), p, p.categoryKey));
+      this.order.item.push(new Cart(1, this.getCustomerPrice(p), p, p.categoryKey));
     }
     this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
     this.order = Object.assign({}, this.order);
@@ -263,10 +264,19 @@ export class OrderComponent implements OnInit {
     this.schools = this.allSchools.filter((s: School) => s.owner === o.key);
     this.selectSchool = '';
     this.order.school = null;
+    this.updateCartPrice();
     // Lọc sản phẩm theo khách hàng
-    this.products = this.allProducts.filter((p: Product)=> o.products.includes(p.key));
+    this.products = this.allProducts.filter((p: Product) => o.products.includes(p.key));
     this.topProducts = this.products.filter((p: Product) => p.topProduct);
     this.products = this.productService.groupProductByCategory(this.products);
+  }
+
+  updateCartPrice() {
+    this.order.item.forEach((cartItem: Cart) => {
+      cartItem.price = this.getCustomerPrice(cartItem.product);
+    });
+    this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
+    this.order = Object.assign({}, this.order);
   }
 
   chonTruong(o) {
@@ -306,6 +316,16 @@ export class OrderComponent implements OnInit {
     this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
     this.order = Object.assign({}, this.order);
     this.checkButtonTaoDonHang();
+  }
+
+  getCustomerPrice(p: Product) {
+    if (p) {
+      if (p?.priceByUser && this.order.customer) {
+        return p?.priceByUser[this.order?.customer?.key] ?? p?.price;
+      }
+      return p?.price;
+    }
+    return 0;
   }
 
   taoDonHang() {

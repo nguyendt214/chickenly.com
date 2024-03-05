@@ -2,6 +2,14 @@
   <button nbButton (click)="printOrder()" class="d-print-none btn-indonhang">IN ĐƠN</button>
   <button nbButton (click)="onNoClick()" class="d-print-none btn-indonhang ml-2">THOÁT</button>
   <h1 class="text-center">BẾP - HÀNG HÓA CHO NGÀY: {{dateStr}}</h1>
+  <div class="row">
+    <div class="col-sm">
+      <h4 class="text-left">Tổng Cơm Ly: {{ comLy }}</h4>
+    </div>
+    <div class="col-sm">
+      <h4 class="text-right">Tổng cơm: {{ comQty }}</h4>
+    </div>
+  </div>
   <div class="ktable">
     <table class="table table-bordered mobile-zoom">
       <thead>
@@ -20,5 +28,4 @@
       </tbody>
     </table>
   </div>
-  <h4 class="text-right">Tổng cơm: {{ comQty }}</h4>
 </div>

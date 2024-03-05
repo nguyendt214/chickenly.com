@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { Category } from './category.service';
 import { ProductType } from './product-type.service';
+import { Customer } from './customer.service';
 
 export class Product {
   key?: any;
@@ -18,6 +19,7 @@ export class Product {
   cartPrice?: number;
   cartQty?: number;
   topProduct?: boolean;
+  priceByUser?: any;
 }
 
 @Injectable({
@@ -75,5 +77,12 @@ export class ProductService {
   }
   sortByCategory(products: Product[]) {
     return products.sort((a, b) => b.category.name.localeCompare(a.category.name));
+  }
+
+  getProductByKey(o: Product[], key: string) {
+    const obj = o.filter((c: Product) => c.key === key);
+    if (obj?.length) {
+      return obj.shift();
+    }
   }
 }

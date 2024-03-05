@@ -16,6 +16,7 @@ export class CategoryService {
   private dbPath = '/Category';
   cacheCategory: any;
   comKey = '-NiLGKc5UnUHjX1ERp71';
+  comLyKey = '-NrK7K_JvaIKjTs3SaDZ';
   modelRef: AngularFireList<Category>;
 
   constructor(private db: AngularFireDatabase) {
