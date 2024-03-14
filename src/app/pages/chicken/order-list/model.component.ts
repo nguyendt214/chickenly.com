@@ -184,7 +184,7 @@ export class OrderListComponent implements OnInit {
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
   ) {
-
+    this.utilService.loaded = false;
     this.getAllCustomer();
     this.getAllSchools();
     this.getAllEmployee();
@@ -206,6 +206,7 @@ export class OrderListComponent implements OnInit {
         this.modelService.cacheOrder = all;
         this.preparePageData(all);
         console.log('getAllOrderDone', (new Date()).toString());
+        console.log('total order', all.length);
       });
     }
   }
@@ -224,6 +225,7 @@ export class OrderListComponent implements OnInit {
     this.oFilter.startDate = this.startDate;
     this.oFilter.endDate = this.endDate;
     this.filterByDate(this.startDate, this.endDate);
+    this.utilService.loaded = true;
   }
 
   ngOnInit() {

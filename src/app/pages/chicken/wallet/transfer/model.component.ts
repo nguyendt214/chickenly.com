@@ -14,6 +14,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { ThuChiService } from '../../../../main/thuChi.service';
 import { ThuChiTypeService } from '../../../../main/thuChiType.service';
 import { WalletTransfer, WalletTransferService } from '../../../../main/walletTransfer.service';
+import { UtilService } from '../../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-customer',
@@ -112,6 +113,7 @@ export class WalletTransferComponent implements OnInit {
     private currencyPipe: CurrencyPipe,
     private thuChiTypeService: ThuChiTypeService,
     private datePipe: DatePipe,
+    private utilService: UtilService,
   ) {
   }
 
@@ -132,6 +134,7 @@ export class WalletTransferComponent implements OnInit {
       console.log(all);
       this.source.load(this.allWalletTransfer);
       this.transferWallet.soTien = 0;
+      this.utilService.loaded = true;
     });
 
   }

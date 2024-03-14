@@ -11,6 +11,7 @@ import { ProductType, ProductTypeService } from '../../../main/product-type.serv
 import { Product, ProductService } from '../../../main/product.service';
 import { Wallet, WalletService } from '../../../main/wallet.service';
 import { CurrencyPipe } from '@angular/common';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-customer',
@@ -86,6 +87,7 @@ export class WalletComponent implements OnInit {
     private productTypeService: ProductTypeService,
     private productService: ProductService,
     private currencyPipe: CurrencyPipe,
+    private utilService: UtilService,
   ) {
   }
 
@@ -106,6 +108,7 @@ export class WalletComponent implements OnInit {
     ).subscribe(all => {
       this.all = this.allWallets = all;
       this.source.load(this.all);
+      this.utilService.loaded = true;
     });
 
   }

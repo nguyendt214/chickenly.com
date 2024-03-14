@@ -436,7 +436,12 @@ nb-menu .menu-item a.active {
     }
   }
 }
-
+.kloading {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+}
 @media screen and (max-width: 699px) {
   .mobile-zoom {
     zoom: 0.5;

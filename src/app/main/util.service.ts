@@ -10,7 +10,7 @@ export class UtilService {
   ) {
   }
   googleDriveURL = 'https://drive.google.com/thumbnail?id=';
-
+  loaded = false;
   gotoPage(path: string) {
     this.router.navigate([path]);
   }

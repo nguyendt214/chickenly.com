@@ -66,6 +66,7 @@ export class OrderComponent implements OnInit {
     this.getAllSchools();
     this.order.item = [];
     this.order.date = this.tomorrow.toString();
+    this.utilService.loaded = true;
     this.toastrConfig();
     if (this.orderService.orderClone) {
       this.order = Object.assign({}, this.orderService.orderClone);

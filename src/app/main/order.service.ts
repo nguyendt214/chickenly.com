@@ -75,12 +75,13 @@ export class OrderService {
   }
 
   getAll(number?: number): AngularFireList<Order> {
-    if (number) {
-      return this.db.list(this.dbPath, ref =>
-        ref.limitToLast(number));
-    } else {
-      return this.modelRef;
-    }
+    return this.modelRef;
+    // if (number) {
+    //   return this.db.list(this.dbPath, ref =>
+    //     ref.limitToLast(number));
+    // } else {
+    //   return this.modelRef;
+    // }
   }
 
   create(o: Order): any {

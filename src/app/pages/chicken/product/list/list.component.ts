@@ -11,6 +11,7 @@ import { Cart, Order, OrderService } from '../../../../main/order.service';
 import { CurrencyPipe } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { OrderItemDialog } from '../order-dialog/order-item-dialog.component';
+import { UtilService } from '../../../../main/util.service';
 
 @Component({
   selector: 'app-product-list',
@@ -135,6 +136,7 @@ export class ProductListComponent implements OnInit, OnChanges {
     private orderService: OrderService,
     private currencyPipe: CurrencyPipe,
     private dialog: MatDialog,
+    private utilService: UtilService,
   ) {
   }
 
@@ -143,6 +145,7 @@ export class ProductListComponent implements OnInit, OnChanges {
     this.getAllProductType();
     this.getAllProducts();
     this.initTable();
+    this.utilService.loaded = true;
   }
 
   initTable() {

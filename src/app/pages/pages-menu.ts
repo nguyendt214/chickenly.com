@@ -17,6 +17,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
     link: '/pages/chicken/cong-no',
   },
   {
+    title: 'DOANH THU',
+    icon: 'bulb',
+    link: '/pages/chicken/doanh-thu',
+  },
+  {
     title: 'KHÁCH HÀNG',
     icon: 'person-done',
     link: '/pages/chicken/customer',

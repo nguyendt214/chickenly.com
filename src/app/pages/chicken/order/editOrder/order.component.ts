@@ -81,6 +81,7 @@ export class OrderEdit2Component implements OnInit {
         this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
         this.order = Object.assign({}, this.order);
         this.checkButtonTaoDonHang();
+        this.utilService.loaded = true;
       });
   }
 

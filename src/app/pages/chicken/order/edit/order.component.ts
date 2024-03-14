@@ -63,6 +63,7 @@ export class EditOrderComponent implements OnInit {
     this.orderService.getOrderByKey(this.orderId)
       .subscribe(order => {
         this.order = order;
+        this.utilService.loaded = true;
       });
   }
 

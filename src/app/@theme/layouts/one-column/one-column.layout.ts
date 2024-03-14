@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
 import { AuthService } from '../../../main/auth.service';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-one-column-layout',
@@ -15,7 +16,15 @@ import { AuthService } from '../../../main/auth.service';
       </nb-sidebar>
 
       <nb-layout-column>
-        <ng-content select="router-outlet"></ng-content>
+        <div class="kloading" *ngIf="!utilService.loaded">
+          <mat-progress-spinner
+            class="example-margin"
+            [color]="'accent'"
+            [mode]="'indeterminate'"
+            [value]="30">
+          </mat-progress-spinner>
+        </div>
+        <ng-content select="router-outlet" *ngIf="utilService.loaded"></ng-content>
       </nb-layout-column>
 
       <nb-layout-footer fixed>
@@ -26,8 +35,10 @@ import { AuthService } from '../../../main/auth.service';
 })
 export class OneColumnLayoutComponent {
   isLogged = false;
+
   constructor(
-    private authService: AuthService
+    public authService: AuthService,
+    public utilService: UtilService,
   ) {
     this.isLogged = this.authService.isLogged();
   }

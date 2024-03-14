@@ -7,6 +7,7 @@ import { Customer, CustomerService } from '../../../main/customer.service';
 import { map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { NhaCungCap, NhaCungCapService } from '../../../main/nhaCungCap.service';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-nhacc',
@@ -63,6 +64,7 @@ export class NhaCungCapComponent implements OnInit {
     private mainService: MainService,
     private modelService: NhaCungCapService,
     private dialog: MatDialog,
+    private utilService: UtilService,
   ) {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
@@ -73,6 +75,7 @@ export class NhaCungCapComponent implements OnInit {
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
+      this.utilService.loaded = true;
     });
   }
 

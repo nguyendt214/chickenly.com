@@ -4,6 +4,7 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { map } from 'rxjs/operators';
 import { ProductType, ProductTypeService } from '../../../main/product-type.service';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-product-type',
@@ -49,6 +50,7 @@ export class ProductTypeComponent implements OnInit {
   constructor(
     private service: SmartTableData,
     private modelService: ProductTypeService,
+    private utilService: UtilService,
   ) {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
@@ -59,6 +61,7 @@ export class ProductTypeComponent implements OnInit {
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
+      this.utilService.loaded = true;
     });
   }
 

@@ -5,6 +5,7 @@ import { SmartTableData } from '../../../@core/data/smart-table';
 import { map } from 'rxjs/operators';
 import { School, SchoolService } from '../../../main/school.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-school',
@@ -84,6 +85,7 @@ export class SchoolComponent implements OnInit {
     private service: SmartTableData,
     private modelService: SchoolService,
     private customerService: CustomerService,
+    private utilService: UtilService,
   ) {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
@@ -94,6 +96,7 @@ export class SchoolComponent implements OnInit {
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
+      this.utilService.loaded = true;
     });
   }
 

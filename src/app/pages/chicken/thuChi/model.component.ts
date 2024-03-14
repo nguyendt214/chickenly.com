@@ -253,6 +253,7 @@ export class ThuChiComponent implements OnInit {
     this.thuChi.fileKeys = [];
     this.thuChi.thuChiTypeKey = '';
     this.thuChi.nhaCungCapKey = '';
+    this.utilService.loaded = true;
   }
 
   getAll() {

@@ -13,13 +13,15 @@ import { MatDialog } from '@angular/material/dialog';
 import { UtilService } from '../../../main/util.service';
 import { CategoryService } from '../../../main/category.service';
 import { ExportCsvService } from '../../../main/exportCsv.service';
+import * as _ from 'lodash';
+import { AuthService } from '../../../main/auth.service';
 
 @Component({
   selector: 'ngx-smart-table-cong-no',
   templateUrl: './model.component.html',
   styleUrls: ['./model.component.scss'],
 })
-export class CongNoComponent implements OnInit {
+export class DoanhThuComponent implements OnInit {
   all?: Order[] = [];
   orderFilter?: Order[] = [];
   customers: Customer[] = [];
@@ -183,12 +185,13 @@ export class CongNoComponent implements OnInit {
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
     private exportCsvService: ExportCsvService,
+    private authService: AuthService,
   ) {
+    this.utilService.loaded = false;
     this.getAllCustomer();
     this.getAllSchools();
     this.getAllEmployee();
     this.getCongNo(false);
-    this.utilService.loaded = true;
   }
 
   getCongNo(force: boolean = false) {
@@ -223,6 +226,7 @@ export class CongNoComponent implements OnInit {
     this.oFilter.startDate = this.startDate;
     this.oFilter.endDate = this.endDate;
     this.filterByDate(this.startDate, this.endDate);
+    this.utilService.loaded = true;
   }
 
   ngOnInit() {
@@ -487,11 +491,8 @@ export class CongNoComponent implements OnInit {
         order.master = this.hoaDonTongBySchool(_orders);
       });
     });
-
     this.congNoTheoKhachHang();
     this.tongHopOrder = this.hoaDonTongBySchool(this.orderFilter);
-    console.log(this.tongHopOrder);
-    // this.exportCongNoTong1();
   }
 
   congNoTheoKhachHang() {
@@ -576,6 +577,7 @@ export class CongNoComponent implements OnInit {
   }
 
   exportCongNoTong1() {
+    this.sortByDateAndSchool();
     const dataExport = {
       order: this.orderFilter,
       sheetName: 'Tổng hợp',
@@ -597,6 +599,10 @@ export class CongNoComponent implements OnInit {
     this.exportCsvService.exportCongNoTong1(dataExport, fileName);
   }
 
+  sortByDateAndSchool() {
+    this.orderFilter = _.sortBy(this.orderFilter, ['school.key']);
+  }
+
   truyThuCongNo() {
     const dataCongNo = {
       order: this.tongHopOrder,
@@ -606,6 +612,31 @@ export class CongNoComponent implements OnInit {
     };
     this.modelService.truyThuCongNo = dataCongNo;
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
+  }
+  exportToExcelBySchoolOrCustomer() {
+    if (!this.oFilter.school && !this.oFilter.customer) {
+      alert('HÃY CHỌN KHÁCH HÀNG HOẶC ĐỊA ĐIỂM!');
+      return;
+    }
+    const dataExport = {
+      school: this.orderBySchool,
+      sheetName: 'Tổng Thanh Toán',
+      date: {
+        start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
+        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY'),
+      },
+    };
+    let fileName = 'doanhThu';
+    if (this.oFilter.customer) {
+      fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
+    }
+    if (this.oFilter.school) {
+      fileName += '-' + this.oFilter.school.name.replace(' ', '-');
+    }
+    fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
+      '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
+
+    this.exportCsvService.exportToExcelBySchoolOrCustomer(dataExport, fileName);
   }
 
 }

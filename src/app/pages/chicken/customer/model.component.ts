@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Category, CategoryService } from '../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../main/product-type.service';
 import { Product, ProductService } from '../../../main/product.service';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-customer',
@@ -73,6 +74,7 @@ export class CustomerComponent implements OnInit {
     private categoryService: CategoryService,
     private productTypeService: ProductTypeService,
     private productService: ProductService,
+    private utilService: UtilService,
   ) {
   }
 
@@ -93,6 +95,7 @@ export class CustomerComponent implements OnInit {
     ).subscribe(all => {
       this.all = this.allCustomers = all;
       this.source.load(this.all);
+      this.utilService.loaded = true;
     });
 
   }

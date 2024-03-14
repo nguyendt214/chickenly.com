@@ -117,6 +117,7 @@ export class ProductComponent implements OnInit {
     this.getAllCategories();
     this.getAllProductType();
     this.getAllProducts();
+    this.utilService.loaded = true;
   }
   getAllProducts() {
     this.modelService.getAll().snapshotChanges().pipe(

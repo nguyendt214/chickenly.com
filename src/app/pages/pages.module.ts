@@ -8,6 +8,7 @@ import { ECommerceModule } from './e-commerce/e-commerce.module';
 import { PagesRoutingModule } from './pages-routing.module';
 import { MiscellaneousModule } from './miscellaneous/miscellaneous.module';
 import { ImageUploaderDirective } from './directives/dragDrop.directive';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
 @NgModule({
   imports: [
@@ -17,6 +18,7 @@ import { ImageUploaderDirective } from './directives/dragDrop.directive';
     DashboardModule,
     ECommerceModule,
     MiscellaneousModule,
+    MatProgressSpinnerModule,
   ],
   declarations: [
     PagesComponent,

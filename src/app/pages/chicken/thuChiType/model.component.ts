@@ -4,6 +4,7 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { map } from 'rxjs/operators';
 import { ThuChiType, ThuChiTypeService } from '../../../main/thuChiType.service';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-school',
@@ -48,7 +49,9 @@ export class ThuChiTypeComponent implements OnInit {
   constructor(
     private service: SmartTableData,
     private modelService: ThuChiTypeService,
+    private utilService: UtilService,
   ) {
+    this.utilService.loaded = false;
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -58,6 +61,7 @@ export class ThuChiTypeComponent implements OnInit {
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
+      this.utilService.loaded = true;
     });
   }
 

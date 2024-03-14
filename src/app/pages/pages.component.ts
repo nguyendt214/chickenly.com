@@ -16,7 +16,7 @@ import { AuthService } from '../main/auth.service';
 export class PagesComponent {
   isLogged = false;
   constructor(
-    private authService: AuthService
+    private authService: AuthService,
   ) { }
   menu = this.authService.isLogged() ? MENU_ITEMS : [];
 

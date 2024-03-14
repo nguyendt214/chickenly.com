@@ -46,6 +46,7 @@ export class ProductPriceComponent implements OnInit {
     this.getAllCategories();
     this.getAllProductType();
     this.getAllProducts();
+    this.utilService.loaded = true;
   }
 
   initPageData() {

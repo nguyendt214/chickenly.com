@@ -32,6 +32,7 @@ import { ImageUploaderDirective } from '../directives/dragDrop.directive';
 import { WalletComponent } from './wallet/model.component';
 import { WalletTransferComponent } from './wallet/transfer/model.component';
 import { ProductPriceComponent } from './product/managePrice/model.component';
+import { DoanhThuComponent } from './doanhThu/model.component';
 
 const routes: Routes = [{
   path: '',
@@ -60,6 +61,11 @@ const routes: Routes = [{
     {
       path: 'cong-no',
       component: CongNoComponent,
+      canActivate: [AuthGuard],
+    },
+    {
+      path: 'doanh-thu',
+      component: DoanhThuComponent,
       canActivate: [AuthGuard],
     },
     {
@@ -180,4 +186,5 @@ export const routedComponents = [
   ImageUploaderDirective,
   WalletComponent,
   WalletTransferComponent,
+  DoanhThuComponent,
 ];

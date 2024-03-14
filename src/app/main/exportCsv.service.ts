@@ -5,6 +5,7 @@ import { CurrencyPipe, DatePipe } from '@angular/common';
 import { Cart, Order } from './order.service';
 import { ThuChi } from './thuChi.service';
 import { Wallet } from './wallet.service';
+import { School } from './school.service';
 
 @Injectable()
 export class ExportCsvService {
@@ -13,6 +14,38 @@ export class ExportCsvService {
     private currencyPipe: CurrencyPipe,
   ) {
 
+  }
+
+
+  /**
+   * Tổng tiền theo nhóm order
+   * @param orders
+   */
+  tongTienByOrders(orders: Order[]) {
+    let total = 0;
+    orders.forEach((o: Order) => {
+      total += this.calculatorOrderPrice(o);
+    });
+    return total;
+  }
+
+  /**
+   * Tổng tiền 1 order
+   * @param order
+   */
+  tongTienByOrder(order: Order) {
+    return this.calculatorOrderPrice(order);
+  }
+
+  calculatorOrderPrice(o: Order) {
+    let total = 0;
+    if (!o) {
+      return 0;
+    }
+    o.item.forEach((item: Cart) => {
+      total += (item.qty - this.getQtyReturn(item.qtyReturn)) * item.price;
+    });
+    return total;
   }
 
   exportToExcel(data: any[], fileName: string) {
@@ -142,28 +175,23 @@ export class ExportCsvService {
     return ws;
   }
 
+  /**
+   * Doanh thu theo khách hàng
+   * @param ws
+   * @param data
+   */
   prepareCongNoTong1(ws, data) {
-    // Header
-    // ws.getCell('A1').value = 'NGÀY';
-    // ws.getCell('B1').value = 'KHÁCH HÀNG';
-    // ws.getCell('C1').value = 'ĐỊA ĐIỂM';
-    // ws.getCell('D1').value = 'TỔNG TIỀN';
-    // this.setFontHeader(ws, ['A1', 'B1', 'C1', 'D1'])
-    // // ROWs
-    // data.order.forEach((o: Order) => {
-    //   let total = 0;
-    //   o.item.forEach((item: Cart) => {
-    //     total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
-    //   });
-    //   ws.addRow([
-    //     o.date,
-    //     o.customer.name,
-    //     o.school.name,
-    //     total
-    //   ]);
-    // });
     const rows = [];
-    data.order.forEach((o: Order) => {
+    let placeNameKey = '';
+    data.order.forEach((o: Order, idx) => {
+      if (idx === 0) {
+        placeNameKey = o?.school?.key;
+      }
+      if (placeNameKey !== o?.school?.key) {
+        // Thêm 1 row để tách biệt giữa các trường
+        rows.push(['', '', '', '']);
+        placeNameKey = o?.school?.key;
+      }
       let total = 0;
       o.item.forEach((item: Cart) => {
         total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
@@ -371,4 +399,280 @@ export class ExportCsvService {
     ws.getColumn(4).numFmt = '#,##0 [$VNĐ];-#,##0 [$VNĐ]';
     return ws;
   }
+
+  exportToExcelBySchoolOrCustomer(data: any, fileName: string) {
+    console.log(data);
+    const workbook = new ExcelJS.Workbook();
+    const worksheet = workbook.addWorksheet(data?.sheetName ?? 'Tổng thanh toán');
+    this.prepareTongThanhToan(worksheet, data);
+    data.school.forEach((orders: Order[]) => {
+      let ws = workbook.addWorksheet(orders[0]?.school?.name);
+      this.prepareDoanhThuTheoDiaDiem(ws, orders);
+    });
+
+    // Generate Excel file
+    workbook.xlsx.writeBuffer().then((buffer: any) => {
+      const blob = new Blob([buffer], {type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
+      saveAs(blob, `${fileName}.xlsx`);
+    });
+  }
+
+  prepareTongThanhToan(ws, data) {
+    const rows = [];
+    let rowCount = 1;
+    let fillRows = [];
+    let mergeCells = [];
+    let tongHop = [];
+    let totalPrice = 0;
+    data.school.forEach((orders: Order[], idx: number) => {
+      let totalBySchool = 0;
+      let schoolName = '';
+      let mergeMinCell = rowCount + 1;
+      let mergeMaxCell = rowCount + orders.length;
+      rowCount += orders.length;
+      // Thêm từng ngày cho mỗi school
+      orders.forEach((o: Order) => {
+        schoolName = o?.school?.name;
+        let total = 0;
+        o.item.forEach((item: Cart) => {
+          total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
+        });
+        totalBySchool += total;
+        totalPrice += total;
+        rows.push([
+          this.datePipe.transform(new Date(o.date), 'dd/MM/YYYY'),
+          o.school.name,
+          total,
+        ]);
+      });
+      if (idx < data.school.length - 1) {
+        // Add empty row
+        rows.push(['', '', '']);
+        rowCount++;
+        fillRows.push(rowCount);
+      }
+      mergeCells.push({min: mergeMinCell, max: mergeMaxCell});
+      tongHop.push({name: schoolName, price: totalBySchool});
+    });
+    // Add thêm cột tổng bên các trường
+    rows.push(['TỔNG', 'Tổng', totalPrice]);
+    this.mergedCol(ws, {min: rowCount + 1, max: rowCount + 1}, 'A', 'B');
+    // Bảng chi tiết các trường theo từng ngày
+    ws.addTable({
+      name: 'CongNoTheoDanhSach',
+      ref: 'A1',
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: 'NGÀY', filterButton: true},
+        {name: 'ĐỊA ĐIỂM', filterButton: true},
+        {name: 'TỔNG TIỀN', filterButton: false},
+      ],
+      rows: rows,
+    });
+    this.fillRowsColor(ws, fillRows, 'eaaf74');
+    this.fillRowColor(ws, rowCount + 1, 'ffff00');
+    this.fillRowText(ws, rowCount + 1, 16, false, true, false, 'ff0000');
+
+    // Format Price
+    this.formatColByVND(ws, 'C');
+    // Merge row
+    this.mergedRow(ws, mergeCells, 'B');
+    this.colAlignment(ws, 'B', 'middle', 'left');
+    this.setFontHeader(ws, ['A1', 'B1', 'C1']);
+
+    // Thêm bảng tổng kết
+    const rowTotal = [];
+    tongHop.forEach(item => {
+      rowTotal.push([
+        item.name,
+        item.price,
+      ]);
+    });
+    rowTotal.push(['Tổng', totalPrice]);
+
+    ws.addTable({
+      name: 'CongNoTheoDanhSach_Total',
+      ref: 'E5',
+      headerRow: false,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: 'Địa Điểm', filterButton: false},
+        {name: 'TỔNG', filterButton: false},
+      ],
+      rows: rowTotal,
+    });
+    this.formatColByVND(ws, 'F');
+    this.fillCellColor(ws.getCell('E' + (data.school.length + 5)), 'ffff00');
+    this.fillCellColor(ws.getCell('F' + (data.school.length + 5)), 'ffff00');
+    this.cellFillTextStyle(ws.getCell('E' + (data.school.length + 5)), 16, false, true, false, 'ff0000');
+    this.cellFillTextStyle(ws.getCell('F' + (data.school.length + 5)), 16, false, true, false, 'ff0000');
+
+    return ws;
+  }
+
+  prepareDoanhThuTheoDiaDiem(ws, orders: Order[]) {
+    let rowCount = 1;
+    const rows = [];
+    const mergeCells = [];
+    const fillRows = [];
+    ws.mergeCells('A1:R1');
+    const masterOrder = orders[0]?.master;
+    const school: School = masterOrder?.school;
+    ws.getCell('A1').value = school?.name;
+    this.cellFillTextStyle(ws.getCell('A1'), 18, false, true, false, '000000');
+    this.cellAlignment(ws, 'A1');
+    rowCount += 2;
+    let mergeMinCell = 0;
+    let mergeMaxCell = 0;
+    orders.forEach((o: Order) => {
+      // Danh sách theo ngày ( table )
+      Object.keys(o?.sItem).forEach(item => {
+        const carts: Cart[] = o?.sItem[item];
+        carts.forEach((cart: Cart) => {
+          rows.push([
+            this.datePipe.transform(new Date(o.date), 'dd/MM/YYYY'),
+            cart.product.category.name,
+            cart.product.name,
+            cart.product.productType.name,
+            cart.qty,
+            this.getTotalReturnByItem(cart),
+            cart.price,
+            this.getTotalByItem(cart),
+          ]);
+        });
+      });
+      mergeMinCell = rowCount + 1;
+      mergeMaxCell = rowCount + o?.item?.length;
+      rows.push(['', '', '', '', '', '', '', this.tongTienByOrder(o)]);
+      rowCount += o?.item?.length + 1;
+      mergeCells.push({min: mergeMinCell, max: mergeMaxCell});
+      fillRows.push(mergeMaxCell + 1);
+    });
+
+    ws.addTable({
+      name: 'by_diadiem_' + school?.name,
+      ref: 'A3',
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: 'Ngày', filterButton: true},
+        {name: 'Sản Phẩm', filterButton: true},
+        {name: ' ', filterButton: false},
+        {name: 'Đơn vị', filterButton: true},
+        {name: 'Số Lượng Giao', filterButton: true},
+        {name: 'Số Lượng Trả', filterButton: true},
+        {name: 'Đơn giá', filterButton: true},
+        {name: 'Tổng', filterButton: false},
+      ],
+      rows: rows,
+    });
+    this.formatColByVND(ws, 'G');
+    this.formatColByVND(ws, 'H');
+    this.setFontHeader(ws, ['A3', 'B3', 'C3', 'D3', 'E3', 'F3', 'G3', 'H3']);
+    ws.mergeCells('B3:C3');
+    // Merge row
+    this.mergedRow(ws, mergeCells, 'A');
+    this.fillRowsColor(ws, fillRows, 'eaaf74');
+    this.colAlignment(ws, 'A', 'middle', 'center');
+    this.colAlignment(ws, 'D', 'middle', 'center');
+    this.colAlignment(ws, 'E', 'middle', 'center');
+    this.colAlignment(ws, 'F', 'middle', 'center');
+    // Add row TOTAL
+    ws.mergeCells('A' + (rowCount + 1) + ':' + 'G' + (rowCount + 1));
+    this.cellFillValue(ws, 'A' + (rowCount + 1), 'TỔNG');
+    this.cellFillValue(ws, 'H' + (rowCount + 1), this.tongTienByOrders(orders));
+    this.fillCellColor(ws.getCell('A' + (rowCount + 1)), 'ffff00');
+    this.fillCellColor(ws.getCell('H' + (rowCount + 1)), 'ffff00');
+    this.cellFillTextStyle(ws.getCell('A' + (rowCount + 1)), 16, false, true, false, 'ff0000');
+    this.cellFillTextStyle(ws.getCell('H' + (rowCount + 1)), 16, false, true, false, 'ff0000');
+
+    // THÊM BẢNG TỔNG KẾT
+
+    return ws;
+  }
+
+  fillRowsColor(ws, fillRows, color) {
+    fillRows.forEach((rowNumber) => {
+      const row = ws.getRow(rowNumber);
+      row.eachCell((cell, colNumber) => {
+        cell.fill = {
+          type: 'pattern',
+          pattern: 'darkVertical',
+          fgColor: {argb: color}
+        };
+      });
+    });
+  }
+
+  fillRowColor(ws, rowNumber, color) {
+    const row = ws.getRow(rowNumber);
+    row.eachCell((cell, colNumber) => {
+      this.fillCellColor(cell, color);
+    });
+  }
+
+  fillCellColor(cell, color) {
+    cell.fill = {
+      type: 'pattern',
+      pattern: 'darkVertical',
+      fgColor: {argb: color}
+    };
+  }
+
+  fillRowText(ws, rowNumber, size, underline, bold, italic, color) {
+    const row = ws.getRow(rowNumber);
+    row.eachCell((cell, colNumber) => {
+      this.cellFillTextStyle(cell, size, underline, bold, italic, color);
+    });
+  }
+
+  cellFillTextStyle(cell, size, underline, bold, italic, color) {
+    cell.font = {
+      size: size,
+      underline: false,
+      bold: bold,
+      color: {argb: color},
+      italic: italic
+    };
+  }
+
+  formatColByVND(ws, colName) {
+    ws.getColumn(colName).numFmt = '#,##0 [$đ];-#,##0 [$đ]';
+  }
+
+  mergedRow(ws, mergeCells, colName) {
+    mergeCells.forEach(item => {
+      ws.mergeCells(colName + item.min, colName + item.max);
+    });
+  }
+
+  mergedCol(ws, mergeCols, fromColName, toColNam) {
+    ws.mergeCells(fromColName + mergeCols.min, toColNam + mergeCols.max);
+  }
+
+  colAlignment(ws, colName, vertical = 'middle', horizontal = 'left') {
+    ws.getColumn(colName).alignment = {vertical: vertical, horizontal: horizontal};
+  }
+
+  cellAlignment(ws, cellName, vertical = 'middle', horizontal = 'left') {
+    ws.getCell(cellName).alignment = {vertical: vertical, horizontal: horizontal};
+  }
+
+  cellFillValue(ws, cellName, value) {
+    ws.getCell(cellName).value = value;
+  }
+
 }

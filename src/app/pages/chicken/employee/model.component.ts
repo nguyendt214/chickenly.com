@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 import { Employee, EmployeeService } from '../../../main/employee.service';
 import { MatDialog } from '@angular/material/dialog';
 import { NbToastrService } from '@nebular/theme';
+import { UtilService } from '../../../main/util.service';
 
 @Component({
   selector: 'ngx-smart-table-employee',
@@ -65,6 +66,7 @@ export class EmployeeComponent implements OnInit {
     private modelService: EmployeeService,
     private dialog: MatDialog,
     private toastrService: NbToastrService,
+    private utilService: UtilService,
   ) {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
@@ -75,6 +77,7 @@ export class EmployeeComponent implements OnInit {
     ).subscribe(all => {
       this.all = all;
       this.source.load(this.all);
+      this.utilService.loaded = true;
     });
   }
 

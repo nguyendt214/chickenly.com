@@ -6,7 +6,6 @@ import { User } from '../@core/data/users';
 })
 export class AuthService {
   user: User
-
   login(user) {
 
   }
