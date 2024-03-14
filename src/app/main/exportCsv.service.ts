@@ -447,7 +447,7 @@ export class ExportCsvService {
       });
       if (idx < data.school.length - 1) {
         // Add empty row
-        rows.push(['', '', '']);
+        rows.push(['', '', totalBySchool]);
         rowCount++;
         fillRows.push(rowCount);
       }
@@ -516,6 +516,12 @@ export class ExportCsvService {
     this.cellFillTextStyle(ws.getCell('E' + (data.school.length + 5)), 16, false, true, false, 'ff0000');
     this.cellFillTextStyle(ws.getCell('F' + (data.school.length + 5)), 16, false, true, false, 'ff0000');
 
+    this.minWidthForColumn(ws);
+    this.colDateWidth(ws, 'A');
+    this.colDiaDiemWidth(ws, 'B');
+    this.colDiaDiemWidth(ws, 'E');
+    this.colPriceWidth(ws, 'C');
+    this.colDiaDiemWidth(ws, 'F');
     return ws;
   }
 
@@ -524,7 +530,7 @@ export class ExportCsvService {
     const rows = [];
     const mergeCells = [];
     const fillRows = [];
-    ws.mergeCells('A1:R1');
+    ws.mergeCells('A1:P1');
     const masterOrder = orders[0]?.master;
     const school: School = masterOrder?.school;
     ws.getCell('A1').value = school?.name;
@@ -600,7 +606,72 @@ export class ExportCsvService {
     this.cellFillTextStyle(ws.getCell('H' + (rowCount + 1)), 16, false, true, false, 'ff0000');
 
     // THÊM BẢNG TỔNG KẾT
+    rowCount = 3;
+    const rowTotal = [];
+    Object.keys(masterOrder?.sItem).forEach(item => {
+      const carts: Cart[] = masterOrder?.sItem[item];
+      carts.forEach((cart: Cart) => {
+        rowTotal.push([
+          cart.product.category.name,
+          cart.product.name,
+          cart.product.productType.name,
+          cart.qty,
+          this.getTotalReturnByItem(cart),
+          cart.price,
+          this.getTotalByItem(cart),
+        ]);
+      });
+    });
+    rowCount += masterOrder?.item?.length;
+    ws.addTable({
+      name: 'by_diadiem_total_' + school?.name,
+      ref: 'J3',
+      headerRow: true,
+      totalsRow: false,
+      style: {
+        theme: 'TableStyleDark3',
+        showRowStripes: true,
+      },
+      columns: [
+        {name: 'Sản Phẩm', filterButton: true},
+        {name: ' ', filterButton: false},
+        {name: 'Đơn vị', filterButton: true},
+        {name: 'Số Lượng Giao', filterButton: true},
+        {name: 'Số Lượng Trả', filterButton: true},
+        {name: 'Đơn giá', filterButton: true},
+        {name: 'Tổng', filterButton: false},
+      ],
+      rows: rowTotal,
+    });
+    this.formatColByVND(ws, 'O');
+    this.formatColByVND(ws, 'P');
+    this.colAlignment(ws, 'L', 'middle', 'center');
+    this.colAlignment(ws, 'M', 'middle', 'center');
+    this.colAlignment(ws, 'N', 'middle', 'center');
+    ws.mergeCells('J' + (rowCount + 1) + ':' + 'O' + (rowCount + 1));
+    this.cellFillValue(ws, 'J' + (rowCount + 1), 'TỔNG');
+    this.cellFillValue(ws, 'P' + (rowCount + 1), this.tongTienByOrders(orders));
+    this.fillCellColor(ws.getCell('J' + (rowCount + 1)), 'ffff00');
+    this.fillCellColor(ws.getCell('P' + (rowCount + 1)), 'ffff00');
+    this.cellFillTextStyle(ws.getCell('J' + (rowCount + 1)), 16, false, true, false, 'ff0000');
+    this.cellFillTextStyle(ws.getCell('P' + (rowCount + 1)), 16, false, true, false, 'ff0000');
 
+    this.minWidthForColumn(ws);
+    this.colDateWidth(ws, 'A');
+    this.colPriceWidth(ws, 'B');
+    this.colProductNameWidth(ws, 'C');
+    this.colPriceWidth(ws, 'D');
+    this.colProductNameWidth(ws, 'E');
+    this.colProductNameWidth(ws, 'F');
+    this.colPriceWidth(ws, 'G');
+    this.colPriceWidth(ws, 'H');
+    this.colPriceWidth(ws, 'J');
+    this.colProductNameWidth(ws, 'K');
+    this.colPriceWidth(ws, 'L');
+    this.colProductNameWidth(ws, 'M');
+    this.colProductNameWidth(ws, 'N');
+    this.colPriceWidth(ws, 'O');
+    this.colPriceWidth(ws, 'P');
     return ws;
   }
 
@@ -673,6 +744,24 @@ export class ExportCsvService {
 
   cellFillValue(ws, cellName, value) {
     ws.getCell(cellName).value = value;
+  }
+
+  minWidthForColumn(ws) {
+    ws.columns.forEach(column => {
+      column.width = 12;
+    });
+  }
+  colDateWidth(ws, colName) {
+    ws.getColumn(colName).width = 15;
+  }
+  colDiaDiemWidth(ws, colName) {
+    ws.getColumn(colName).width = 20;
+  }
+  colPriceWidth(ws, colName) {
+    ws.getColumn(colName).width = 13;
+  }
+  colProductNameWidth(ws, colName) {
+    ws.getColumn(colName).width = 18;
   }
 
 }
