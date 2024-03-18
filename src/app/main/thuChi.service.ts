@@ -4,6 +4,7 @@ import { FileUpload } from './upload.service';
 import { Observable, of } from 'rxjs';
 import { Customer } from './customer.service';
 import { Wallet } from './wallet.service';
+import { map } from 'rxjs/operators';
 
 export class ThuChi {
   key?: any;
@@ -53,6 +54,16 @@ export class ThuChiService {
       return of(this.cacheThuChi);
     }
     return this.modelRef.valueChanges();
+  }
+
+  getAll3() {
+    return this.modelRef.snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+    );
   }
 
   getThuChiByKey(key: string): Observable<any> {

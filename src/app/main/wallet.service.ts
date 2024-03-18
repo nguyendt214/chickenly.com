@@ -40,6 +40,16 @@ export class WalletService {
     return this.modelRef.valueChanges();
   }
 
+  getAll3() {
+    return this.modelRef.snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+    );
+  }
+
   create(tutorial: Wallet): any {
     return this.modelRef.push(tutorial);
   }

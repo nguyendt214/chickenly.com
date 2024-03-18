@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class ProductType {
   key?: any;
@@ -29,6 +30,16 @@ export class ProductTypeService {
       return of(this.cacheProductTypes);
     }
     return this.modelRef.valueChanges();
+  }
+
+  getAll3() {
+    return this.modelRef.snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+    );
   }
 
   create(o: ProductType): any {

@@ -65,12 +65,12 @@ export class OrderComponent implements OnInit {
 
   getAllInParallel() {
     forkJoin([
-      this.productTypeService.getAll2().pipe(take(1)),
-      this.categoryService.getAll2().pipe(take(1)),
-      this.customerService.getAll2().pipe(take(1)),
-      this.employeeService.getAll2().pipe(take(1)),
-      this.productService.getAll2().pipe(take(1)),
-      this.schoolService.getAll2().pipe(take(1)),
+      this.productTypeService.getAll3().pipe(take(1)),
+      this.categoryService.getAll3().pipe(take(1)),
+      this.customerService.getAll3().pipe(take(1)),
+      this.employeeService.getAll3().pipe(take(1)),
+      this.productService.getAll3().pipe(take(1)),
+      this.schoolService.getAll3().pipe(take(1)),
     ]).subscribe(
       (all) => {
         this.productTypes = this.productTypeService.cacheProductTypes = all[0];

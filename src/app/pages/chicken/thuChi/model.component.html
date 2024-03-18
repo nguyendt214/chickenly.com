@@ -115,8 +115,8 @@
                   </div>
                   <div class="file-upload">
                     <ul class="list-group list-group-flush"
-                        *ngFor="let file of fileUploads">
-                      <li class="list-group-item" *ngIf="showFile(tc, file)">
+                        *ngFor="let file of tc?.files">
+                      <li class="list-group-item">
                         <app-upload-details [fileUpload]='file' [allowDelete]="false"
                                             (showImg)="showImage($event)"></app-upload-details>
                       </li>
@@ -180,8 +180,8 @@
                   </div>
                   <div class="file-upload">
                     <ul class="list-group list-group-flush"
-                        *ngFor="let file of fileUploads">
-                      <li class="list-group-item" *ngIf="showFile(tc, file)">
+                        *ngFor="let file of tc?.files">
+                      <li class="list-group-item">
                         <app-upload-details [fileUpload]='file' [allowDelete]="false"
                                             (showImg)="showImage($event)"></app-upload-details>
                       </li>
@@ -208,14 +208,14 @@
                      (custom)="onCustom($event)">
     </ng2-smart-table>
 
-    <div class="file-upload d-none">
-      <ul class="list-group list-group-flush"
-          *ngFor="let file of fileUploads">
-        <li class="list-group-item">
-          <app-upload-details [fileUpload]='file' [allowDelete]="true"></app-upload-details>
-        </li>
-      </ul>
-    </div>
+<!--    <div class="file-upload d-none">-->
+<!--      <ul class="list-group list-group-flush"-->
+<!--          *ngFor="let file of fileUploads">-->
+<!--        <li class="list-group-item">-->
+<!--          <app-upload-details [fileUpload]='file' [allowDelete]="true"></app-upload-details>-->
+<!--        </li>-->
+<!--      </ul>-->
+<!--    </div>-->
   </nb-card-body>
 </nb-card>
 

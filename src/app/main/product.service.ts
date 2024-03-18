@@ -4,6 +4,7 @@ import { Category } from './category.service';
 import { ProductType } from './product-type.service';
 import { Customer } from './customer.service';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class Product {
   key?: any;
@@ -43,6 +44,16 @@ export class ProductService {
       return of(this.cacheProducts);
     }
     return this.modelRef.valueChanges();
+  }
+
+  getAll3() {
+    return this.modelRef.snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+    );
   }
 
   create(o: Product): any {

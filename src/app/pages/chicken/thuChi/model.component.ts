@@ -206,11 +206,11 @@ export class ThuChiComponent implements OnInit {
     this.getAllThuChiType();
 
     forkJoin([
-      this.nhaCungCapService.getAll2().pipe(take(1)),
-      this.uploadService.getAll2().pipe(take(1)),
-      this.customerService.getAll2().pipe(take(1)),
-      this.walletService.getAll2().pipe(take(1)),
-      this.thuChiService.getAll2().pipe(take(1)),
+      this.nhaCungCapService.getAll3().pipe(take(1)),
+      this.uploadService.getAll3().pipe(take(1)),
+      this.customerService.getAll3().pipe(take(1)),
+      this.walletService.getAll3().pipe(take(1)),
+      this.thuChiService.getAll3().pipe(take(1)),
     ]).subscribe(
       (all) => {
         this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[0];
@@ -224,6 +224,7 @@ export class ThuChiComponent implements OnInit {
         });
         this.wallet = this.wallets[0].key;
         this.all = this.thuChiService.cacheThuChi = all[4];
+        this.utilService.sortListByDate(this.all);
         this.mapCustomer();
         this.mapWallet();
         this.preparePageData(this.all);
@@ -244,6 +245,13 @@ export class ThuChiComponent implements OnInit {
     this.oFilter.startDate = this.startDate;
     this.oFilter.endDate = this.endDate;
     this.filterByDate(this.startDate, this.endDate);
+    // Prepare files
+    this.all.forEach((tc: ThuChi) => {
+      tc.files = this.fileUploads.filter((file: FileUpload) => {
+        const fileKeys = tc?.fileKeys ?? [];
+        return fileKeys.includes(file.key)
+      });
+    });
     this.prepareThuChi();
   }
 
@@ -509,6 +517,7 @@ export class ThuChiComponent implements OnInit {
   themMoi(type: string) {
     this.utilService.gotoPage('pages/chicken/thu-chi/add/' + type);
   }
+
   walletTransfer() {
     this.utilService.gotoPage('pages/chicken/wallet/transfer');
   }
@@ -527,6 +536,7 @@ export class ThuChiComponent implements OnInit {
     }
     return false;
   }
+
   isChi(type: string): boolean {
     return type === 'chi';
   }

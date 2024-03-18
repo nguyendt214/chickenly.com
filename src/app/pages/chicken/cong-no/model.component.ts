@@ -190,10 +190,10 @@ export class CongNoComponent implements OnInit {
   }
 
   getAllInParallel() {
-    const getAllCustomers = this.customerService.getAll2();
-    const getAllSchools = this.schoolService.getAll2();
-    const getAllEmployees = this.employeeService.getAll2();
-    const getAllOrders = this.orderService.getAll2();
+    const getAllCustomers = this.customerService.getAll3();
+    const getAllSchools = this.schoolService.getAll3();
+    const getAllEmployees = this.employeeService.getAll3();
+    const getAllOrders = this.orderService.getAll3();
     forkJoin([
       getAllCustomers.pipe(take(1)),
       getAllSchools.pipe(take(1)),

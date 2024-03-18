@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { NhaCungCap } from './nhaCungCap.service';
 import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class ThuChiType {
   key?: any;
@@ -65,6 +66,16 @@ export class ThuChiTypeService {
       return of(this.cacheThuChiType);
     }
     return this.modelRef.valueChanges();
+  }
+
+  getAll3() {
+    return this.modelRef.snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+    );
   }
 
   create(o: ThuChiType): any {
