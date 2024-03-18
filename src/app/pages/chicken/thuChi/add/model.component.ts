@@ -272,7 +272,6 @@ export class ThuChiAddComponent implements OnInit {
     }
     this.thuChi.price = +this.thuChi.price;
 
-    console.log(this.thuChi);
     // Update wallet
     this.updateWallet();
 
@@ -302,7 +301,6 @@ export class ThuChiAddComponent implements OnInit {
   updateWallet() {
     if (this.thuChi.walletKey && this.thuChi.paymentType) {
       this.wallet = (this.wallets.filter((w: Wallet) => w.key === this.thuChi.walletKey)).shift();
-      console.log(this.wallet);
       this.wallet.bankTotal = +this.wallet.bankTotal;
       this.wallet.cashTotal = +this.wallet.cashTotal;
       let update = false;

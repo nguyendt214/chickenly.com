@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
+import { Observable, of } from 'rxjs';
 
 export class ProductType {
   key?: any;
@@ -22,6 +23,12 @@ export class ProductTypeService {
 
   getAll(): AngularFireList<ProductType> {
     return this.modelRef;
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheProductTypes) {
+      return of(this.cacheProductTypes);
+    }
+    return this.modelRef.valueChanges();
   }
 
   create(o: ProductType): any {

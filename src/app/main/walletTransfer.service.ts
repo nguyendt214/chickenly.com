@@ -3,6 +3,7 @@ import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/datab
 import { map } from 'rxjs/operators';
 import { Product } from './product.service';
 import { Wallet } from './wallet.service';
+import { Observable, of } from 'rxjs';
 
 export class WalletTransfer {
   key?: any;
@@ -33,6 +34,12 @@ export class WalletTransferService {
 
   getAll(): AngularFireList<WalletTransfer> {
     return this.modelRef;
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheWalletTransfer) {
+      return of(this.cacheWalletTransfer);
+    }
+    return this.modelRef.valueChanges();
   }
 
   create(tutorial: WalletTransfer): any {

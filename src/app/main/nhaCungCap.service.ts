@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
+import { Observable, of } from 'rxjs';
 
 export class NhaCungCap {
   key?: any;
@@ -24,6 +25,12 @@ export class NhaCungCapService {
 
   getAll(): AngularFireList<NhaCungCap> {
     return this.modelRef;
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheNhaCungCaps) {
+      return of(this.cacheNhaCungCaps);
+    }
+    return this.modelRef.valueChanges();
   }
 
   create(tutorial: NhaCungCap): any {

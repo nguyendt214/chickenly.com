@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { FileUpload } from './upload.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
 import { Customer } from './customer.service';
 import { Wallet } from './wallet.service';
 
@@ -47,6 +47,12 @@ export class ThuChiService {
 
   getAll(): AngularFireList<ThuChi> {
     return this.modelRef;
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheThuChi) {
+      return of(this.cacheThuChi);
+    }
+    return this.modelRef.valueChanges();
   }
 
   getThuChiByKey(key: string): Observable<any> {

@@ -82,7 +82,6 @@ export class EmployeeComponent implements OnInit {
   }
 
   ngOnInit() {
-    // console.log(full.join(' '));
     // const cutFirst = full.slice(0, 8);
     // const cutLast = full.slice(-4);
     // const reverseA = full.reverse();

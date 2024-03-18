@@ -5,13 +5,14 @@ import { School, SchoolService } from '../../../main/school.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { Employee, EmployeeService } from '../../../main/employee.service';
 import { Product, ProductService } from '../../../main/product.service';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Category, CategoryService } from '../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../main/product-type.service';
 import { MatDialog } from '@angular/material/dialog';
 import { CartDialog } from './cart-dialog/cart-dialog.component';
 import { UtilService } from '../../../main/util.service';
 import { NbToastrService } from '@nebular/theme';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-order',
@@ -58,12 +59,36 @@ export class OrderComponent implements OnInit {
     private toastrService: NbToastrService,
   ) {
     this.tomorrow.setDate(this.tomorrow.getDate() + 1);
-    this.getAllProductTypes();
-    this.getAllCategories();
-    this.getAllCustomer();
-    this.getAllEmployee();
-    this.getAllProducts();
-    this.getAllSchools();
+    this.utilService.loaded = false;
+    this.getAllInParallel();
+  }
+
+  getAllInParallel() {
+    forkJoin([
+      this.productTypeService.getAll2().pipe(take(1)),
+      this.categoryService.getAll2().pipe(take(1)),
+      this.customerService.getAll2().pipe(take(1)),
+      this.employeeService.getAll2().pipe(take(1)),
+      this.productService.getAll2().pipe(take(1)),
+      this.schoolService.getAll2().pipe(take(1)),
+    ]).subscribe(
+      (all) => {
+        this.productTypes = this.productTypeService.cacheProductTypes = all[0];
+        this.categories = this.categoryService.cacheCategory = all[1];
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
+        this.selectKH = this.customers[0].key;
+        this.employees = this.employeeService.cacheEmployees = all[3];
+        this.products = this.allProducts = this.productService.cacheProducts = all[4];
+        this.prepareProducts();
+        this.schools = this.allSchools = this.schoolService.cacheSchools = all[5];
+        this.preparePageData();
+      },
+      () => {
+      },
+      () => this.utilService.loaded = true
+    );
+  }
+  preparePageData() {
     this.order.item = [];
     this.order.date = this.tomorrow.toString();
     this.utilService.loaded = true;
@@ -114,58 +139,6 @@ export class OrderComponent implements OnInit {
     this.order.date = e.value.toString();
   }
 
-  getAllCategories() {
-    if (this.categoryService.cacheCategory) {
-      this.categories = this.categoryService.cacheCategory;
-    } else {
-      this.categoryService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.categories = all;
-        this.categoryService.cacheCategory = all;
-      });
-    }
-  }
-
-  getAllProductTypes() {
-    if (this.productTypeService.cacheProductTypes) {
-      this.productTypes = this.productTypeService.cacheProductTypes;
-    } else {
-      this.productTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.productTypes = this.productTypeService.cacheProductTypes = all;
-      });
-    }
-  }
-
-  getAllProducts() {
-    if (this.productService.cacheProducts) {
-      this.products = this.allProducts = this.productService.cacheProducts;
-      this.prepareProducts();
-
-    } else {
-      this.productService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.products = this.allProducts = this.productService.cacheProducts = all;
-        this.prepareProducts();
-      });
-    }
-  }
-
   prepareProducts() {
     // Category
     this.products.forEach((p: Product) => {
@@ -177,55 +150,6 @@ export class OrderComponent implements OnInit {
     });
     this.topProducts = this.products.filter((p: Product) => p.topProduct);
     this.products = this.productService.groupProductByCategory(this.products);
-  }
-
-  getAllCustomer() {
-    if (this.customerService.cacheCustomers) {
-      this.customers = this.allCustomers = this.customerService.cacheCustomers;
-    } else {
-      this.customerService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
-        this.selectKH = this.customers[0].key;
-      });
-    }
-  }
-
-  getAllEmployee() {
-    if (this.employeeService.cacheEmployees) {
-      this.employees = this.employeeService.cacheEmployees;
-    } else {
-      this.employeeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.employees = this.employeeService.cacheEmployees = all;
-      });
-    }
-  }
-
-  getAllSchools() {
-    if (this.schoolService.cacheSchools) {
-      this.schools = this.allSchools = this.schoolService.cacheSchools;
-    } else {
-      this.schoolService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.schools = this.allSchools = this.schoolService.cacheSchools = all;
-      });
-    }
   }
 
   addToCart(p: Product) {

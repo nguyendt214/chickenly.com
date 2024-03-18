@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { map } from 'rxjs/operators';
+import { Observable, of } from 'rxjs';
 
 export class Employee {
   key?: any;
@@ -25,6 +26,22 @@ export class EmployeeService {
 
   getAll(): AngularFireList<Employee> {
     return this.modelRef;
+  }
+
+  getAllEmployees() : Observable<any[]> {
+    return this.modelRef.snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+    );
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheEmployees) {
+      return of(this.cacheEmployees);
+    }
+    return this.modelRef.valueChanges();
   }
 
   create(tutorial: Employee): any {

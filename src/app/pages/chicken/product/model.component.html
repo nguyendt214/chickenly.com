@@ -34,10 +34,10 @@
           <th scope="row">
             <mat-checkbox class="example-margin" [checked]="product.topProduct" (change)="updateTopProduct(product, $event.checked)"></mat-checkbox>
           </th>
-          <td>{{ product.name }}</td>
-          <td>{{ product.category.name }}</td>
-          <td>{{ product.productType.name }}</td>
-          <td>{{ product.price | currency : '' : '' : '1.0-0' }}</td>
+          <td>{{ product?.name }}</td>
+          <td>{{ product?.category?.name }}</td>
+          <td>{{ product?.productType?.name }}</td>
+          <td>{{ product?.price | currency : '' : '' : '1.0-0' }}</td>
         </tr>
         </tbody>
       </table>

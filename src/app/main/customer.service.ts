@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { map } from 'rxjs/operators';
 import { Product } from './product.service';
+import { Observable, of } from 'rxjs';
 
 export class Customer {
   key?: any;
@@ -27,6 +28,12 @@ export class CustomerService {
 
   getAll(): AngularFireList<Customer> {
     return this.modelRef;
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheCustomers) {
+      return of(this.cacheCustomers);
+    }
+    return this.modelRef.valueChanges();
   }
 
   create(tutorial: Customer): any {

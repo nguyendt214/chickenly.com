@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Cart, CongNoByCustomer, CongNoBySchool, Order, OrderService } from '../../../main/order.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { School, SchoolService } from '../../../main/school.service';
@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UtilService } from '../../../main/util.service';
 import { CategoryService } from '../../../main/category.service';
 import { ExportCsvService } from '../../../main/exportCsv.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-smart-table-cong-no',
@@ -173,7 +174,7 @@ export class CongNoComponent implements OnInit {
 
   constructor(
     private service: SmartTableData,
-    public modelService: OrderService,
+    public orderService: OrderService,
     private currencyPipe: CurrencyPipe,
     private dialog: MatDialog,
     private utilService: UtilService,
@@ -184,29 +185,32 @@ export class CongNoComponent implements OnInit {
     private categoryService: CategoryService,
     private exportCsvService: ExportCsvService,
   ) {
-    this.getAllCustomer();
-    this.getAllSchools();
-    this.getAllEmployee();
-    this.getCongNo(false);
-    this.utilService.loaded = true;
+    this.utilService.loaded = false;
+    this.getAllInParallel();
   }
 
-  getCongNo(force: boolean = false) {
-    const number = this.showAllCongNo ? 0 : this.numberCongNo;
-    if (this.modelService.cacheOrder && !force) {
-      this.preparePageData(this.modelService.cacheOrder);
-    } else {
-      this.modelService.getAll(number).snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.modelService.cacheOrder = all;
-        this.preparePageData(all);
-      });
-    }
+  getAllInParallel() {
+    const getAllCustomers = this.customerService.getAll2();
+    const getAllSchools = this.schoolService.getAll2();
+    const getAllEmployees = this.employeeService.getAll2();
+    const getAllOrders = this.orderService.getAll2();
+    forkJoin([
+      getAllCustomers.pipe(take(1)),
+      getAllSchools.pipe(take(1)),
+      getAllEmployees.pipe(take(1)),
+      getAllOrders.pipe(take(1)),
+    ]).subscribe(
+      (all) => {
+        this.customers = this.customerService.cacheCustomers = all[0];
+        this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.employees = this.employeeService.cacheEmployees = all[2];
+        this.orderService.cacheOrder = all[3];
+        this.preparePageData(all[3]);
+      },
+      () => {
+      },
+      () => this.utilService.loaded = true
+    );
   }
 
   preparePageData(orders: Order[]) {
@@ -217,7 +221,7 @@ export class CongNoComponent implements OnInit {
     this.orderFilter = orders;
     this.source.load(this.orderFilter);
     // Lấy order cho 7 ngày gần nhất
-    const date = this.modelService.getCurrentWeek();
+    const date = this.orderService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
@@ -229,14 +233,14 @@ export class CongNoComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    this.orderService.create(e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    this.orderService.update(e?.newData?.key, e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
@@ -244,7 +248,7 @@ export class CongNoComponent implements OnInit {
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.modelService.delete(e?.data?.key)
+      this.orderService.delete(e?.data?.key)
         .then(() => e.confirm.resolve())
         .catch(() => e.confirm.reject());
     } else {
@@ -265,12 +269,12 @@ export class CongNoComponent implements OnInit {
 
   filterByDate(startDate: any, endDate: any) {
     if (!(startDate instanceof Date)) {
-      this.modelService.filterStartDate = this.utilService.getDateFromString(startDate.value);
-      this.modelService.filterEndDate = this.utilService.getDateFromString(endDate.value);
-      this.oFilter.startDate = this.modelService.filterStartDate;
-      this.oFilter.endDate = this.modelService.filterEndDate;
+      this.orderService.filterStartDate = this.utilService.getDateFromString(startDate.value);
+      this.orderService.filterEndDate = this.utilService.getDateFromString(endDate.value);
+      this.oFilter.startDate = this.orderService.filterStartDate;
+      this.oFilter.endDate = this.orderService.filterEndDate;
       this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
-        this.modelService.filterStartDate.getTime() === this.modelService.filterEndDate.getTime();
+        this.orderService.filterStartDate.getTime() === this.orderService.filterEndDate.getTime();
     }
     this.globalFilter();
   }
@@ -278,54 +282,6 @@ export class CongNoComponent implements OnInit {
   onCustom(event) {
     if (event.action === 'tra-hang') {
       this.utilService.gotoPage('pages/chicken/order/' + event.data.key);
-    }
-  }
-
-  getAllCustomer() {
-    if (this.customerService.cacheCustomers) {
-      this.customers = this.customerService.cacheCustomers;
-    } else {
-      this.customerService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.customers = this.customerService.cacheCustomers = all;
-      });
-    }
-  }
-
-  getAllEmployee() {
-    if (this.employeeService.cacheEmployees) {
-      this.employees = this.employeeService.cacheEmployees;
-    } else {
-      this.employeeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.employees = this.employeeService.cacheEmployees = all;
-      });
-    }
-  }
-
-  getAllSchools() {
-    if (this.schoolService.cacheSchools) {
-      this.schools = this.allSchools = this.schoolService.cacheSchools;
-    } else {
-      this.schoolService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.schools = this.schoolService.cacheSchools = this.allSchools = all;
-      });
     }
   }
 
@@ -364,7 +320,7 @@ export class CongNoComponent implements OnInit {
     // Always filter by date
     this.orderFilter = this.all.filter((o: Order) => {
       const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
-      return this.modelService.filterStartDate <= orderDate && orderDate <= this.modelService.filterEndDate;
+      return this.orderService.filterStartDate <= orderDate && orderDate <= this.orderService.filterEndDate;
     });
 
     if (this.oFilter.customer) {
@@ -384,7 +340,7 @@ export class CongNoComponent implements OnInit {
   }
 
   getPreviousWeek(previous: number) {
-    const date = this.modelService.getLastWeek(previous);
+    const date = this.orderService.getLastWeek(previous);
     this.thuCongNo = true;
     this.startDate = date[0];
     this.endDate = date[1];
@@ -394,8 +350,8 @@ export class CongNoComponent implements OnInit {
   }
 
   resetFilter() {
-    this.modelService.filterStartDate = null;
-    const date = this.modelService.getCurrentWeek();
+    this.orderService.filterStartDate = null;
+    const date = this.orderService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.selectKH = '';
@@ -490,8 +446,6 @@ export class CongNoComponent implements OnInit {
 
     this.congNoTheoKhachHang();
     this.tongHopOrder = this.hoaDonTongBySchool(this.orderFilter);
-    console.log(this.tongHopOrder);
-    // this.exportCongNoTong1();
   }
 
   congNoTheoKhachHang() {
@@ -604,7 +558,7 @@ export class CongNoComponent implements OnInit {
       time: 'Từ ' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd/MM/YYYY') +
         '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
     };
-    this.modelService.truyThuCongNo = dataCongNo;
+    this.orderService.truyThuCongNo = dataCongNo;
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
   }
 

@@ -1,11 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
+import { AngularFireDatabase, AngularFireList, SnapshotAction } from '@angular/fire/compat/database';
 import { Product } from './product.service';
 import { UtilService } from './util.service';
 import { Employee } from './employee.service';
 import { Customer } from './customer.service';
 import { School } from './school.service';
-import { Observable } from 'rxjs';
+import { Observable, of } from 'rxjs';
+import { map } from 'rxjs/operators';
 
 export class Order {
   key?: any;
@@ -83,6 +84,12 @@ export class OrderService {
     //   return this.modelRef;
     // }
   }
+  getAll2(): Observable<any> {
+    if (this.cacheOrder) {
+      return of(this.cacheOrder);
+    }
+    return this.modelRef.valueChanges();
+  }
 
   create(o: Order): any {
     return this.modelRef.push(o);
@@ -102,6 +109,16 @@ export class OrderService {
 
   getOrderByKey(key: string): Observable<any> {
     return this.db.object(this.dbPath + '/' + key).valueChanges();
+  }
+
+  getAllOrders() : Observable<any[]> {
+    return this.modelRef.snapshotChanges().pipe(
+      map(changes =>
+        changes.map(c =>
+          ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+    );
   }
 
   /**

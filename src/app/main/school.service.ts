@@ -1,5 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
+import { Observable, of } from 'rxjs';
 
 export class School {
   key?: any;
@@ -26,6 +27,12 @@ export class SchoolService {
 
   getAll(): AngularFireList<School> {
     return this.modelRef;
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheSchools) {
+      return of(this.cacheSchools);
+    }
+    return this.modelRef.valueChanges();
   }
 
   create(o: School): any {

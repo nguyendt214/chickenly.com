@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { NhaCungCap } from './nhaCungCap.service';
+import { Observable, of } from 'rxjs';
 
 export class ThuChiType {
   key?: any;
@@ -58,6 +59,12 @@ export class ThuChiTypeService {
 
   getAll(): AngularFireList<ThuChiType> {
     return this.modelRef;
+  }
+  getAll2(): Observable<any> {
+    if (this.cacheThuChiType) {
+      return of(this.cacheThuChiType);
+    }
+    return this.modelRef.valueChanges();
   }
 
   create(o: ThuChiType): any {

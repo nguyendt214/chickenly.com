@@ -186,9 +186,7 @@ export class ThuChiEditComponent implements OnInit {
   updateWallet() {
     if (this.thuChi.walletKey && this.thuChi.paymentType) {
       this.wallet = (this.wallets.filter((w: Wallet) => w.key === this.thuChi.walletKey)).shift();
-      console.log(this.wallet);
       const price = this.oldPrice - this.thuChi.price;
-      console.log('chuan price', this.oldPrice);
       this.wallet.bankTotal = +this.wallet.bankTotal;
       this.wallet.cashTotal = +this.wallet.cashTotal;
       let update = false;

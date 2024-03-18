@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { ThuChi, ThuChiService } from '../../../main/thuChi.service';
 import { FileUpload, FileUploadService } from '../../../main/upload.service';
 import { ThuChiType, ThuChiTypeService } from '../../../main/thuChiType.service';
@@ -15,6 +15,7 @@ import { ImagePopinDialog } from '../upload/popin/popin';
 import { MatDialog } from '@angular/material/dialog';
 import { Wallet, WalletService } from '../../../main/wallet.service';
 import { ExportCsvService } from '../../../main/exportCsv.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-smart-table-school',
@@ -184,7 +185,7 @@ export class ThuChiComponent implements OnInit {
 
   constructor(
     private service: SmartTableData,
-    private modelService: ThuChiService,
+    private thuChiService: ThuChiService,
     private uploadService: FileUploadService,
     private thuChiTypeService: ThuChiTypeService,
     private toastrService: NbToastrService,
@@ -197,19 +198,47 @@ export class ThuChiComponent implements OnInit {
     private walletService: WalletService,
     private exportCsvService: ExportCsvService,
   ) {
+    this.utilService.loaded = false;
+    this.getAllInParallel();
+  }
+
+  getAllInParallel() {
     this.getAllThuChiType();
-    this.getAllNhaCungCap();
-    this.getAllUploadFiles();
-    this.getAllCustomer();
-    this.getAllWallet();
-    this.getAll();
-    this.initThuChi();
+
+    forkJoin([
+      this.nhaCungCapService.getAll2().pipe(take(1)),
+      this.uploadService.getAll2().pipe(take(1)),
+      this.customerService.getAll2().pipe(take(1)),
+      this.walletService.getAll2().pipe(take(1)),
+      this.thuChiService.getAll2().pipe(take(1)),
+    ]).subscribe(
+      (all) => {
+        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[0];
+        this.nhaCungCap = this.nhaCungCaps[0].key;
+        this.fileUploads = this.uploadService.cacheUploadFiles = all[1];
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
+        this.wallets = this.walletService.cacheWallets = all[3];
+        this.wallets.forEach((w: Wallet) => {
+          w.cashTotal = +w.cashTotal;
+          w.bankTotal = +w.bankTotal;
+        });
+        this.wallet = this.wallets[0].key;
+        this.all = this.thuChiService.cacheThuChi = all[4];
+        this.mapCustomer();
+        this.mapWallet();
+        this.preparePageData(this.all);
+        this.initThuChi();
+      },
+      () => {
+      },
+      () => this.utilService.loaded = true
+    );
   }
 
   preparePageData(all: ThuChi[]) {
     this.thuChiFilter = all;
     this.source.load(this.all);
-    const date = this.modelService.getCurrentMonth();
+    const date = this.thuChiService.getCurrentMonth();
     this.startDate = date[0];
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
@@ -254,33 +283,6 @@ export class ThuChiComponent implements OnInit {
     this.thuChi.thuChiTypeKey = '';
     this.thuChi.nhaCungCapKey = '';
     this.utilService.loaded = true;
-  }
-
-  getAll() {
-    if (!this.modelService.cacheThuChi) {
-      this.modelService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        all.forEach((tc: ThuChi) => {
-          tc.price = +tc.price;
-        });
-        all = this.utilService.sortListByDate(all);
-        this.all = this.modelService.cacheThuChi = all;
-        this.mapCustomer();
-        this.mapWallet();
-        this.preparePageData(this.all);
-      });
-    } else {
-      this.all = this.modelService.cacheThuChi;
-      this.mapCustomer();
-      this.mapWallet();
-      this.preparePageData(this.all);
-    }
-
   }
 
   mapWallet() {
@@ -330,77 +332,19 @@ export class ThuChiComponent implements OnInit {
     this.thuChiType = this.thuChiTypes[0].key;
   }
 
-  getAllUploadFiles() {
-    if (!this.uploadService.cacheUploadFiles) {
-      this.uploadService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          // store the key
-          changes.map(c => ({key: c.payload.key, ...c.payload.val()})),
-        ),
-      ).subscribe(fileUploads => {
-        this.fileUploads = this.uploadService.cacheUploadFiles = fileUploads;
-      });
-    } else {
-      this.fileUploads = this.uploadService.cacheUploadFiles;
-    }
-  }
-
-  getAllNhaCungCap() {
-    if (!this.nhaCungCapService.cacheNhaCungCaps) {
-      this.nhaCungCapService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all;
-        this.nhaCungCap = this.nhaCungCaps[0].key;
-      });
-    } else {
-      this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps;
-      this.nhaCungCap = this.nhaCungCaps[0].key;
-    }
-  }
-
-  getAllWallet() {
-    if (!this.walletService.cacheWallets) {
-      this.walletService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        all.forEach((w: Wallet) => {
-          w.cashTotal = +w.cashTotal;
-          w.bankTotal = +w.bankTotal;
-        });
-        this.wallets = this.walletService.cacheWallets = all;
-        this.wallet = this.wallets[0].key;
-      });
-    } else {
-      this.wallets = this.walletService.cacheWallets;
-      this.wallets.forEach((w: Wallet) => {
-        w.cashTotal = +w.cashTotal;
-        w.bankTotal = +w.bankTotal;
-      });
-      this.wallet = this.wallets[0].key;
-    }
-  }
 
   ngOnInit() {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    this.thuChiService.create(e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    this.thuChiService.update(e?.newData?.key, e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
@@ -408,7 +352,7 @@ export class ThuChiComponent implements OnInit {
 
   onDeleteConfirm(key: string): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.modelService.delete(key)
+      this.thuChiService.delete(key)
         .then(() => {
           setTimeout(() => {
             window.location.reload();
@@ -463,13 +407,13 @@ export class ThuChiComponent implements OnInit {
   addItem() {
     this.thuChi.thuChiTypeKey = <string>this.thuChiType;
     this.thuChi.nhaCungCapKey = <string>this.nhaCungCap;
-    this.modelService.create(this.thuChi).then(
+    this.thuChiService.create(this.thuChi).then(
       () => {
         this.thuChi = new ThuChi();
-        this.modelService.cacheThuChi = null;
+        this.thuChiService.cacheThuChi = null;
         this.initThuChi();
         this.showToa();
-        this.getAll();
+        this.getAllInParallel();
       },
     );
   }
@@ -499,12 +443,12 @@ export class ThuChiComponent implements OnInit {
 
   filterByDate(startDate: any, endDate: any) {
     if (!(startDate instanceof Date)) {
-      this.modelService.filterStartDate = this.utilService.getDateFromString(startDate.value);
-      this.modelService.filterEndDate = this.utilService.getDateFromString(endDate.value);
-      this.oFilter.startDate = this.modelService.filterStartDate;
-      this.oFilter.endDate = this.modelService.filterEndDate;
+      this.thuChiService.filterStartDate = this.utilService.getDateFromString(startDate.value);
+      this.thuChiService.filterEndDate = this.utilService.getDateFromString(endDate.value);
+      this.oFilter.startDate = this.thuChiService.filterStartDate;
+      this.oFilter.endDate = this.thuChiService.filterEndDate;
       this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
-        this.modelService.filterStartDate.getTime() === this.modelService.filterEndDate.getTime();
+        this.thuChiService.filterStartDate.getTime() === this.thuChiService.filterEndDate.getTime();
     }
     this.globalFilter();
   }
@@ -513,7 +457,7 @@ export class ThuChiComponent implements OnInit {
     // Always filter by date
     this.thuChiFilter = this.all.filter((o: ThuChi) => {
       const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
-      return this.modelService.filterStartDate <= orderDate && orderDate <= this.modelService.filterEndDate;
+      return this.thuChiService.filterStartDate <= orderDate && orderDate <= this.thuChiService.filterEndDate;
     });
 
     if (this.oFilter.thuChiType) {
@@ -537,8 +481,8 @@ export class ThuChiComponent implements OnInit {
   }
 
   resetFilter() {
-    this.modelService.filterStartDate = null;
-    const date = this.modelService.getCurrentMonth();
+    this.thuChiService.filterStartDate = null;
+    const date = this.thuChiService.getCurrentMonth();
     this.startDate = date[0];
     this.endDate = date[1];
     this.selectThuChiType = '';
@@ -567,22 +511,6 @@ export class ThuChiComponent implements OnInit {
   }
   walletTransfer() {
     this.utilService.gotoPage('pages/chicken/wallet/transfer');
-  }
-
-  getAllCustomer() {
-    if (this.customerService.cacheCustomers) {
-      this.customers = this.allCustomers = this.customerService.cacheCustomers;
-    } else {
-      this.customerService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
-      });
-    }
   }
 
   showImage(imgSrc, googleDrive = false) {

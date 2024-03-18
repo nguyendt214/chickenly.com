@@ -179,7 +179,6 @@ export class WalletComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    console.log(e?.newData);
     this.modelService.create(e?.newData)
       .then(() => {
       })
@@ -187,7 +186,6 @@ export class WalletComponent implements OnInit {
   }
 
   onEditConfirm(e: any) {
-    console.log(e?.newData);
     const newData = e?.newData;
     newData.bankTotal = +newData.bankTotal;
     newData.cashTotal = +newData.cashTotal;

@@ -131,7 +131,6 @@ export class WalletTransferComponent implements OnInit {
       ),
     ).subscribe(all => {
       this.allWalletTransfer = all;
-      console.log(all);
       this.source.load(this.allWalletTransfer);
       this.transferWallet.soTien = 0;
       this.utilService.loaded = true;
@@ -157,7 +156,6 @@ export class WalletTransferComponent implements OnInit {
 
 
   onCreateConfirm(e: any) {
-    console.log(e?.newData);
     this.walletTransferService.create(e?.newData)
       .then(() => {
       })
@@ -171,7 +169,6 @@ export class WalletTransferComponent implements OnInit {
         this.transferWallet.soTien = +e?.newData.soTien - +e?.data?.soTien;
         this.transferWallet.fromWallet = this.walletService.getWalletByKey(this.allWallets, this.transferWallet.fromWalletKey);
         this.transferWallet.toWallet = this.walletService.getWalletByKey(this.allWallets, this.transferWallet.toWalletKey);
-        console.log(this.transferWallet);
         this.updateWallet();
       })
       .catch(() => e.confirm.reject());

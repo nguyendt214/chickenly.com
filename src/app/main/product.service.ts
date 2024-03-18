@@ -3,6 +3,7 @@ import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/datab
 import { Category } from './category.service';
 import { ProductType } from './product-type.service';
 import { Customer } from './customer.service';
+import { Observable, of } from 'rxjs';
 
 export class Product {
   key?: any;
@@ -37,6 +38,12 @@ export class ProductService {
   getAll(): AngularFireList<Product> {
     return this.modelRef;
   }
+  getAll2(): Observable<any> {
+    if (this.cacheProducts) {
+      return of(this.cacheProducts);
+    }
+    return this.modelRef.valueChanges();
+  }
 
   create(o: Product): any {
     return this.modelRef.push(o);
@@ -61,7 +68,7 @@ export class ProductService {
   groupProductByCategory(products: Product[]) {
     const groupBy = (x, f) => x.reduce((a, b, i) => ((a[f(b, i, x)] ||= []).push(b), a), {});
     // Sort by category `order`
-    products = groupBy(products, p => p.category.name);
+    products = groupBy(products, p => p.category?.name ?? p.categoryKey);
     // products = Object.keys(products).map(key => products[key]);
     return products;
   }

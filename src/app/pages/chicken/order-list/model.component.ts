@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Cart, Order, OrderService } from '../../../main/order.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { School, SchoolService } from '../../../main/school.service';
@@ -13,6 +13,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { UtilService } from '../../../main/util.service';
 import { BepDialog } from '../order/don-hang-cho-bep-dialog/bep-dialog.component';
 import { CategoryService } from '../../../main/category.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-smart-table-order-list',
@@ -174,7 +175,7 @@ export class OrderListComponent implements OnInit {
 
   constructor(
     private service: SmartTableData,
-    private modelService: OrderService,
+    private orderService: OrderService,
     private currencyPipe: CurrencyPipe,
     private dialog: MatDialog,
     private utilService: UtilService,
@@ -185,30 +186,27 @@ export class OrderListComponent implements OnInit {
     private categoryService: CategoryService,
   ) {
     this.utilService.loaded = false;
-    this.getAllCustomer();
-    this.getAllSchools();
-    this.getAllEmployee();
-    this.getAllOrders(false);
+    this.getAllInParallel();
   }
 
-  getAllOrders(force: boolean = false) {
-    const number = this.showAllOrder ? 0 : this.numberOrder;
-    if (this.modelService.cacheOrder && !force) {
-      this.preparePageData(this.modelService.cacheOrder);
-    } else {
-      this.modelService.getAll(number).snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.modelService.cacheOrder = all;
-        this.preparePageData(all);
-        console.log('getAllOrderDone', (new Date()).toString());
-        console.log('total order', all.length);
-      });
-    }
+  getAllInParallel() {
+    forkJoin([
+      this.customerService.getAll2().pipe(take(1)),
+      this.schoolService.getAll2().pipe(take(1)),
+      this.employeeService.getAll2().pipe(take(1)),
+      this.orderService.getAll2().pipe(take(1)),
+    ]).subscribe(
+      (all) => {
+        this.customers = this.customerService.cacheCustomers = all[0];
+        this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.employees = this.employeeService.cacheEmployees = all[2];
+        this.orderService.cacheOrder = all[3];
+        this.preparePageData(all[3]);
+      },
+      () => {
+      },
+      () => this.utilService.loaded = true
+    );
   }
 
   preparePageData(orders: Order[]) {
@@ -219,7 +217,7 @@ export class OrderListComponent implements OnInit {
     this.orderFilter = orders;
     this.source.load(this.orderFilter);
     // Lấy order cho từ T2-T7 của tuần này
-    const date = this.modelService.getCurrentWeek();
+    const date = this.orderService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
@@ -232,14 +230,14 @@ export class OrderListComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    this.orderService.create(e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    this.orderService.update(e?.newData?.key, e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
@@ -247,7 +245,7 @@ export class OrderListComponent implements OnInit {
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.modelService.delete(e?.data?.key)
+      this.orderService.delete(e?.data?.key)
         .then(() => e.confirm.resolve())
         .catch(() => e.confirm.reject());
     } else {
@@ -268,10 +266,10 @@ export class OrderListComponent implements OnInit {
 
   filterByDate(startDate: any, endDate: any) {
     if (!(startDate instanceof Date)) {
-      this.modelService.filterStartDate = this.utilService.getDateFromString(startDate.value);
-      this.modelService.filterEndDate = this.utilService.getDateFromString(endDate.value);
-      this.oFilter.startDate = this.modelService.filterStartDate;
-      this.oFilter.endDate = this.modelService.filterEndDate;
+      this.orderService.filterStartDate = this.utilService.getDateFromString(startDate.value);
+      this.orderService.filterEndDate = this.utilService.getDateFromString(endDate.value);
+      this.oFilter.startDate = this.orderService.filterStartDate;
+      this.oFilter.endDate = this.orderService.filterEndDate;
     }
     this.globalFilter();
   }
@@ -304,7 +302,7 @@ export class OrderListComponent implements OnInit {
         }
       });
     });
-    items = this.modelService.sortByCategory(items);
+    items = this.orderService.sortByCategory(items);
     this.dialog.open(BepDialog, {
       width: '100%',
       data: {cart: items, dateStr: date, comQty: comQty, comLy},
@@ -316,59 +314,8 @@ export class OrderListComponent implements OnInit {
     if (event.action === 'tra-hang') {
       this.utilService.gotoPage('pages/chicken/order/edit/' + event.data.key);
     } else if (event.action === 'clone') {
-      this.modelService.orderClone = event.data;
+      this.orderService.orderClone = event.data;
       this.utilService.gotoPage('pages/chicken/order');
-    }
-  }
-
-  getAllCustomer() {
-    if (this.customerService.cacheCustomers) {
-      this.customers = this.customerService.cacheCustomers;
-    } else {
-      this.customerService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.customers = this.customerService.cacheCustomers = all;
-        console.log('getAllCustomerDone', (new Date()).toString());
-      });
-    }
-  }
-
-  getAllEmployee() {
-    if (this.employeeService.cacheEmployees) {
-      this.employees = this.employeeService.cacheEmployees;
-    } else {
-      this.employeeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.employees = this.employeeService.cacheEmployees = all;
-        console.log('getAllEmployeeDone', (new Date()).toString());
-      });
-    }
-  }
-
-  getAllSchools() {
-    if (this.schoolService.cacheSchools) {
-      this.schools = this.allSchools = this.schoolService.cacheSchools;
-    } else {
-      this.schoolService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.schools = this.schoolService.cacheSchools = this.allSchools = all;
-        console.log('getAllSchoolDone', (new Date()).toString());
-      });
     }
   }
 
@@ -407,7 +354,7 @@ export class OrderListComponent implements OnInit {
     // Always filter by date
     this.orderFilter = this.all.filter((o: Order) => {
       const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
-      return this.modelService.filterStartDate <= orderDate && orderDate <= this.modelService.filterEndDate;
+      return this.orderService.filterStartDate <= orderDate && orderDate <= this.orderService.filterEndDate;
     });
 
     if (this.oFilter.customer) {
@@ -423,8 +370,8 @@ export class OrderListComponent implements OnInit {
   }
 
   resetFilter() {
-    this.modelService.filterStartDate = null;
-    const date = this.modelService.getCurrentWeek();
+    this.orderService.filterStartDate = null;
+    const date = this.orderService.getCurrentWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.selectKH = '';
@@ -441,8 +388,8 @@ export class OrderListComponent implements OnInit {
   }
 
   prevWeek() {
-    this.modelService.filterStartDate = null;
-    const date = this.modelService.getLastWeek();
+    this.orderService.filterStartDate = null;
+    const date = this.orderService.getLastWeek();
     this.startDate = date[0];
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;

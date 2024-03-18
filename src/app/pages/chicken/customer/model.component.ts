@@ -4,12 +4,13 @@ import { LocalDataSource } from 'ng2-smart-table';
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { MainService } from '../../../main/main.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { Category, CategoryService } from '../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../main/product-type.service';
 import { Product, ProductService } from '../../../main/product.service';
 import { UtilService } from '../../../main/util.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-smart-table-customer',
@@ -69,7 +70,7 @@ export class CustomerComponent implements OnInit {
   constructor(
     private service: SmartTableData,
     private mainService: MainService,
-    private modelService: CustomerService,
+    private customerService: CustomerService,
     private dialog: MatDialog,
     private categoryService: CategoryService,
     private productTypeService: ProductTypeService,
@@ -79,79 +80,30 @@ export class CustomerComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.getAllProductTypes();
-    this.getAllCategories();
-    this.getAllProducts();
-    this.initPageData();
+    this.utilService.loaded = false;
+    this.getAllInParallel();
   }
 
-  initPageData() {
-    this.modelService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
-      this.all = this.allCustomers = all;
-      this.source.load(this.all);
-      this.utilService.loaded = true;
-    });
-
-  }
-
-  getAllCategories() {
-    if (this.categoryService.cacheCategory) {
-      this.categories = this.categoryService.cacheCategory;
-    } else {
-      this.categoryService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.categories = all;
-        this.categoryService.cacheCategory = all;
-      });
-    }
-  }
-
-  getAllProductTypes() {
-    if (this.productTypeService.cacheProductTypes) {
-      this.productTypes = this.productTypeService.cacheProductTypes;
-    } else {
-      this.productTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.productTypes = this.productTypeService.cacheProductTypes = all;
-      });
-    }
-  }
-
-  getAllProducts() {
-    if (this.productService.cacheProducts) {
-      this.products = this.productService.cacheProducts;
-      this.prepareProducts();
-
-    } else {
-      this.productService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.products = this.productService.cacheProducts = all;
+  getAllInParallel() {
+    forkJoin([
+      this.productTypeService.getAll2().pipe(take(1)),
+      this.categoryService.getAll2().pipe(take(1)),
+      this.productService.getAll2().pipe(take(1)),
+      this.customerService.getAll2().pipe(take(1)),
+    ]).subscribe(
+      (all) => {
+        this.productTypes = this.productTypeService.cacheProductTypes = all[0];
+        this.categories = this.categoryService.cacheCategory = all[1];
+        this.products = this.productService.cacheProducts = all[2];
         this.prepareProducts();
-      });
-    }
+        this.all = this.allCustomers = all[3];
+        this.source.load(this.all);
+      },
+      () => {
+      },
+      () => this.utilService.loaded = true
+    );
   }
-
 
   prepareProducts() {
     // Category
@@ -166,14 +118,14 @@ export class CustomerComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    this.customerService.create(e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    this.customerService.update(e?.newData?.key, e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
@@ -181,7 +133,7 @@ export class CustomerComponent implements OnInit {
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.modelService.delete(e?.data?.key)
+      this.customerService.delete(e?.data?.key)
         .then(() => e.confirm.resolve())
         .catch(() => e.confirm.reject());
     } else {
@@ -201,18 +153,10 @@ export class CustomerComponent implements OnInit {
       c.products = c.products.filter((val: string) => val !== p.key);
     }
     c.products = [...new Set(c.products)];
-    this.modelService.update(c.key, c);
+    this.customerService.update(c.key, c);
   }
 
   setCurrentCustomer(c: Customer) {
     this.currenCustomerKey = c.key;
-  }
-
-  initFirstData() {
-    this.allCustomers.forEach((c: Customer) => {
-      this.products.forEach((p: Product) => {
-        this.updateCustomerProduct(c, p, true);
-      });
-    });
   }
 }
