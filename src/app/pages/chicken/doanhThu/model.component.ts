@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
-import { map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Cart, CongNoByCustomer, CongNoBySchool, Order, OrderService } from '../../../main/order.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { School, SchoolService } from '../../../main/school.service';
@@ -14,7 +14,6 @@ import { UtilService } from '../../../main/util.service';
 import { CategoryService } from '../../../main/category.service';
 import { ExportCsvService } from '../../../main/exportCsv.service';
 import * as _ from 'lodash';
-import { AuthService } from '../../../main/auth.service';
 import { forkJoin } from 'rxjs';
 
 @Component({
@@ -165,7 +164,7 @@ export class DoanhThuComponent implements OnInit {
       delete: false,
     },
     pager: {
-      perPage: 50,
+      perPage: 10,
     },
     noDataMessage: 'Không thấy công nợ nào!',
   };
@@ -173,6 +172,12 @@ export class DoanhThuComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource();
   tongHopOrder: Order;
   thuCongNo = true;
+  doantThuLabel = 'Tuần này';
+  cnTheoTuan = 0;
+  congNo = {
+    paid: 0,
+    unpaid: 0
+  };
 
   constructor(
     private service: SmartTableData,
@@ -186,7 +191,6 @@ export class DoanhThuComponent implements OnInit {
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
     private exportCsvService: ExportCsvService,
-    private authService: AuthService,
   ) {
     this.utilService.loaded = false;
     this.getAllInParallel();
@@ -344,6 +348,7 @@ export class DoanhThuComponent implements OnInit {
   }
 
   getPreviousWeek(previous: number) {
+    this.cnTheoTuan = previous;
     const date = this.orderService.getLastWeek(previous);
     this.thuCongNo = true;
     this.startDate = date[0];
@@ -351,6 +356,30 @@ export class DoanhThuComponent implements OnInit {
     this.oFilter.startDate = this.startDate;
     this.oFilter.endDate = this.endDate;
     this.globalFilter();
+    this.updateDoanhThuLabel(previous);
+  }
+
+  updateDoanhThuLabel(number) {
+    switch (number) {
+      case 0:
+        this.doantThuLabel = 'Tuần này';
+        break;
+      case 1:
+        this.doantThuLabel = 'Tuần trước';
+        break;
+      case 2:
+        this.doantThuLabel = '2 Tuần trước';
+        break;
+      case 3:
+        this.doantThuLabel = '3 Tuần trước';
+        break;
+      case 4:
+        this.doantThuLabel = '4 Tuần trước';
+        break;
+      default:
+        this.doantThuLabel = 'Tuần này';
+        break;
+    }
   }
 
   resetFilter() {
@@ -449,6 +478,13 @@ export class DoanhThuComponent implements OnInit {
     });
     this.congNoTheoKhachHang();
     this.tongHopOrder = this.hoaDonTongBySchool(this.orderFilter);
+    // Tổng hợp truy thu công nợ
+    this.congNo.paid = 0;
+    this.congNo.unpaid = 0;
+    this.congNoByCustomer.forEach((o: CongNoByCustomer) => {
+      this.congNo.paid += o?.paidTotal;
+      this.congNo.unpaid += o?.unpaidTotal;
+    });
   }
 
   congNoTheoKhachHang() {
@@ -463,13 +499,33 @@ export class DoanhThuComponent implements OnInit {
           const congNoBySchool = new CongNoBySchool();
           congNoBySchool.school = Object.assign({}, orders[0].school);
           congNoBySchool.total = this.tongTienByOrders(orders);
+          congNoBySchool.paid = this.checkThuCongNo(orders);
           congNo.masterTotal += congNoBySchool.total;
           congNo.schools.push(congNoBySchool);
         }
       });
+      const paidInfo = this.paidAndUnpaidBySchool(congNo);
+      congNo.paidTotal = paidInfo.paid;
+      congNo.unpaidTotal = paidInfo.unpaid;
       this.congNoByCustomer.push(congNo);
     });
   }
+
+  paidAndUnpaidBySchool(congNo: CongNoByCustomer) {
+    let paid = 0;
+    let unpaid = 0;
+    congNo.schools.forEach((o: CongNoBySchool) => {
+      if (o?.paid) {
+        paid += o?.total;
+      } else {
+        unpaid += o?.total;
+      }
+    });
+    return {
+      paid, unpaid
+    }
+  }
+
 
   /**
    * Công nợ theo từng trường
@@ -559,15 +615,25 @@ export class DoanhThuComponent implements OnInit {
     this.orderFilter = _.sortBy(this.orderFilter, ['school.key']);
   }
 
-  truyThuCongNo() {
+  truyThuCongNo(orders: Order[]) {
     const dataCongNo = {
-      order: this.tongHopOrder,
-      totalPrice: this.calculatorOrderPrice(this.tongHopOrder),
+      orders: orders,
+      totalPrice: this.tongTienByOrders(orders),
       time: 'Từ ' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd/MM/YYYY') +
         '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
     };
-    this.orderService.truyThuCongNo = dataCongNo;
+    this.orderService.thuCongNoBySchool = dataCongNo;
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
+  }
+
+  checkThuCongNo(orders: Order[]) {
+    let chuaThu = true;
+    orders.forEach((o: Order) => {
+      if (o?.paid === undefined || o?.paid === false) {
+        chuaThu = false;
+      }
+    });
+    return chuaThu;
   }
 
   exportToExcelBySchoolOrCustomer() {

@@ -69,7 +69,7 @@
       <div class="order-master">
         <span>Tổng hợp từ ngày: </span> <b>{{ orderService.filterStartDate | date : 'dd/MM/YYYY' }}
         - {{ orderService.filterEndDate | date : 'dd/MM/YYYY' }}</b>
-        <span class="text-right tong-hop-tien">{{ tongTienByOrder(tongHopOrder) }}</span>
+        <span class="text-right tong-hop-tien">{{ tongTienByOrder(tongHopOrder) }} (THAM KHẢO)</span>
       </div>
       <div class="order-tong-hop">
         <div class="ktable">
@@ -217,13 +217,13 @@
       <mat-accordion>
         <mat-expansion-panel *ngFor="let congNo of congNoByCustomer; let index = index;"
                              [expanded]="index === 0">
-          <mat-expansion-panel-header>
+          <mat-expansion-panel-header [ngClass]="{ 'd-none': congNo?.masterTotal === 0 }">
             <mat-panel-title>
               Đối tác: {{ congNo?.customer?.name }}
             </mat-panel-title>
           </mat-expansion-panel-header>
           <!-- Chi tiết theo ngày -->
-          <div class="list-product">
+          <div class="list-product" [ngClass]="{ 'd-none': congNo?.masterTotal === 0 }">
             <div class="time" [ngClass]="{ 'd-none': isSameDay}"
                  *ngIf="orderService?.filterStartDate?.toString() !== 'Invalid Date' && orderService?.filterEndDate?.toString() !== 'Invalid Date'">
               <span>Thời gian: </span> <b>Từ {{ orderService.filterStartDate | date : 'dd/MM/YYYY' }}

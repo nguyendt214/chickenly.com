@@ -163,7 +163,7 @@ export class CongNoComponent implements OnInit {
       delete: false,
     },
     pager: {
-      perPage: 50,
+      perPage: 10,
     },
     noDataMessage: 'Không thấy công nợ nào!',
   };

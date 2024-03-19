@@ -294,6 +294,30 @@ button:focus {
     font-weight: 700;
     color: blue;
     font-size: 16px;
+    .da-thu {
+      color: green;
+    }
+    .chua-thu {
+      color: red;
+    }
+  }
+  .cn-dathu {
+    color: green;
+  }
+  .cn-chuathu {
+    color: red;
+  }
+  .cn-dathumotphan {
+    color: blue;
+  }
+  .kopacity {
+    opacity: 0.65;
+  }
+  .btn-current {
+    background: orange !important;
+    color: white !important;
+    text-transform: uppercase;
+    border: orange !important;
   }
 
   .cn-title {
@@ -441,6 +465,13 @@ nb-menu .menu-item a.active {
   justify-content: center;
   align-items: center;
   height: 100%;
+}
+.doanhthu-label {
+  color: red;
+  text-transform: uppercase;
+}
+.row {
+  align-items: center;
 }
 @media screen and (max-width: 699px) {
   .mobile-zoom {

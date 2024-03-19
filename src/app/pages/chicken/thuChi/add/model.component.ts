@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ng2-smart-table';
-
 import { SmartTableData } from '../../../../@core/data/smart-table';
 import { map } from 'rxjs/operators';
 import { ThuChi, ThuChiService } from '../../../../main/thuChi.service';
@@ -14,7 +12,6 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { Customer, CustomerService } from '../../../../main/customer.service';
 import { Order, OrderService } from '../../../../main/order.service';
 import { ImageFile } from '../../../directives/dragDrop.directive';
-import { Observable } from 'rxjs';
 import { Wallet, WalletService } from '../../../../main/wallet.service';
 
 @Component({
@@ -71,18 +68,27 @@ export class ThuChiAddComponent implements OnInit {
     this.isChi = this.thuChiType === 'chi';
     this.getAllThuChiType();
     this.getAllWallet();
-    // this.getAllNhaCungCap();
-    // this.getAllUploadFiles();
     if (!this.isChi) {
       this.getAllCustomer();
     }
     this.getAll();
+  }
+
+  truyThuCongNo() {
     // Check if truy thu cong no
     if (this.orderService.truyThuCongNo) {
       const congNo = this.orderService.truyThuCongNo;
       this.selectKH = congNo.order.customer.key;
       this.khoanThu = 'Công nợ: ' + congNo.order.school.name + ' ' + congNo.time;
       this.soTien = congNo.totalPrice;
+      this.thuChi.price = this.soTien;
+      this.thuChi.trangThaiTT = 2;
+    } else if (this.orderService.thuCongNoBySchool) {
+      const congNo: Order = this.orderService.thuCongNoBySchool.orders[0];
+      this.selectKH = congNo.customer.key;
+      this.khoanThu = 'Công nợ: ' + congNo.school.name + ', ' + this.orderService.thuCongNoBySchool.time;
+      this.soTien = this.orderService.thuCongNoBySchool.totalPrice;
+      this.thuChi.name = this.khoanThu;
       this.thuChi.price = this.soTien;
       this.thuChi.trangThaiTT = 2;
     }
@@ -117,10 +123,14 @@ export class ThuChiAddComponent implements OnInit {
       ).subscribe(all => {
         this.all = this.modelService.cacheThuChi = all;
         this.initThuChi();
+        this.truyThuCongNo();
+        this.utilService.loaded = true;
       });
     } else {
       this.all = this.modelService.cacheThuChi;
       this.initThuChi();
+      this.truyThuCongNo();
+      this.utilService.loaded = true;
     }
 
   }
@@ -276,8 +286,9 @@ export class ThuChiAddComponent implements OnInit {
     this.updateWallet();
 
     // Update order thành đã thu công nợ
-    if (this.orderService.truyThuCongNo) {
-      const orderKeys = this.orderService.truyThuCongNo.order.orderKeys ?? [];
+    if (this.orderService.truyThuCongNo || this.orderService.thuCongNoBySchool) {
+      const orderKeys = this.orderService.truyThuCongNo ?
+        (this.orderService.truyThuCongNo.order.orderKeys ?? []) : (this.orderService.thuCongNoBySchool.orders.map((order: Order) => order?.key));
       orderKeys.forEach((k: any) => {
         let o: any = this.orderService.cacheOrder.filter((order: Order) => order.key === k);
         if (o.length) {
@@ -288,6 +299,7 @@ export class ThuChiAddComponent implements OnInit {
         }
       });
     }
+    console.log(this.thuChi);
     this.modelService.create(this.thuChi).then(
       () => {
         this.modelService.cacheThuChi = null;

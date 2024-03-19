@@ -47,12 +47,15 @@ export class CongNoByCustomer {
   customer?: Customer;
   schools?: CongNoBySchool[];
   masterTotal?: number;
+  paidTotal?: number;
+  unpaidTotal?: number;
   note?: string;
 }
 
 export class CongNoBySchool {
   school?: School;
   total?: number;
+  paid?: boolean;
   note?: string;
 }
 
@@ -67,6 +70,7 @@ export class OrderService {
   cacheOrder: any;
   orderClone: Order;
   truyThuCongNo = null;
+  thuCongNoBySchool = null;
 
   constructor(
     private db: AngularFireDatabase,
