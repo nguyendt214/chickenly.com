@@ -52,20 +52,25 @@ export const MENU_ITEMS: NbMenuItem[] = [
     link: '/pages/chicken/employee',
   },
   {
+    title: 'NHÀ CUNG CẤP',
+    icon: 'behance-outline',
+    link: '/pages/chicken/nha-cung-cap',
+  },
+  {
     title: 'DANH SÁCH THU CHI',
     icon: 'twitter-outline',
     link: '/pages/chicken/thu-chi',
+  },
+  {
+    title: 'BÁO CÁO',
+    icon: 'loader-outline',
+    link: '/pages/chicken/bao-cao',
   },
   // {
   //   title: 'LOẠI THU CHI',
   //   icon: 'heart-outline',
   //   link: '/pages/chicken/thu-chi-type',
   // },
-  {
-    title: 'NHÀ CUNG CẤP',
-    icon: 'person-done',
-    link: '/pages/chicken/nha-cung-cap',
-  },
   // {
   //   title: 'FEATURES',
   //   group: true,

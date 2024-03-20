@@ -1,0 +1,66 @@
+<nb-card>
+  <nb-card-header>
+    BÁO CÁO THEO BIỂU ĐỒ  ** <span class="doanhthu-label">{{ doantThuLabel }}</span> **
+  </nb-card-header>
+  <nb-card-body class="list-order cong-no">
+    <div class="order-date-filter">
+      <div class="col-md-12 col-lg-12 col-xxxl-12">
+        <mat-form-field>
+          <mat-label>LỌC THEO NGÀY</mat-label>
+          <mat-date-range-input [rangePicker]="picker" (click)="picker.open()" disabled="true">
+            <input matStartDate placeholder="Ngày Bắt Đầu" #dateRangeStart [ngModel]="startDate">
+            <input matEndDate placeholder="Ngày Cuối"
+                   #dateRangeEnd [ngModel]="endDate"
+                   (dateChange)="filterByDate(dateRangeStart, dateRangeEnd)">
+          </mat-date-range-input>
+          <mat-datepicker-toggle matIconSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-date-range-picker #picker></mat-date-range-picker>
+        </mat-form-field>
+        <div class="example-form-fields">
+          <!--            KHÁCH HÀNG -->
+          <mat-form-field class="padding-right-10">
+            <mat-label>KHÁCH HÀNG</mat-label>
+            <mat-select [(ngModel)]="selectKH">
+              <mat-option value="" (click)="filterByCustomer(null)">Chọn KH</mat-option>
+              <mat-option *ngFor="let o of customers" [value]="o.key" (click)="filterByCustomer(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!--            TRƯỜNG-->
+          <mat-form-field class="padding-right-10">
+            <mat-label>ĐỊA ĐIỂM</mat-label>
+            <mat-select [(ngModel)]="selectSchool">
+              <mat-option value="" (click)="filterBySchool(null)">Chọn Địa Điểm</mat-option>
+              <mat-option *ngFor="let o of schools" [value]="o.key" (click)="filterBySchool(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+          <!--            NHAN VIEN-->
+          <mat-form-field class="padding-right-10">
+            <mat-label>NHÂN VIÊN GIAO</mat-label>
+            <mat-select [(ngModel)]="selectEmployee" disabled="true">
+              <mat-option value="" (click)="filterByEmployee(null)">Chọn NV</mat-option>
+              <mat-option *ngFor="let o of employees" [value]="o.key" (click)="filterByEmployee(o)">
+                {{o.name}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+        </div>
+        <div class="reset-filter">
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(4)" [ngClass]="{'btn-current': cnTheoTuan === 4 }">4 Tuần trước</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(3)" [ngClass]="{'btn-current': cnTheoTuan === 3 }">3 Tuần trước</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(2)" [ngClass]="{'btn-current': cnTheoTuan === 2 }">2 Tuần trước</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(1)" [ngClass]="{'btn-current': cnTheoTuan === 1 }">Tuần trước</button>
+          <button class="primary" mat-flat-button (click)="getPreviousWeek(0)" [ngClass]="{'btn-current': cnTheoTuan === 0 }">Tuần này</button>
+        </div>
+      </div>
+      <mat-divider></mat-divider>
+    </div>
+    <div class="kchart">
+      <div echarts [options]="options" class="echart"></div>
+    </div>
+
+  </nb-card-body>
+</nb-card>

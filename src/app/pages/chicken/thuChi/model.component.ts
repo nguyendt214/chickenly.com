@@ -182,6 +182,7 @@ export class ThuChiComponent implements OnInit {
   isSameDay = false;
   allCustomers: Customer[] = [];
   customers: Customer[] = [];
+  cnNcc = 0;
 
   constructor(
     private service: SmartTableData,
@@ -215,6 +216,7 @@ export class ThuChiComponent implements OnInit {
       (all) => {
         this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[0];
         this.nhaCungCap = this.nhaCungCaps[0].key;
+        this.cnNhaCungCap();
         this.fileUploads = this.uploadService.cacheUploadFiles = all[1];
         this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
         this.wallets = this.walletService.cacheWallets = all[3];
@@ -234,6 +236,12 @@ export class ThuChiComponent implements OnInit {
       },
       () => this.utilService.loaded = true
     );
+  }
+
+  cnNhaCungCap() {
+    this.nhaCungCaps.forEach((ncc: NhaCungCap) => {
+      this.cnNcc += +ncc.price || 0;
+    });
   }
 
   preparePageData(all: ThuChi[]) {

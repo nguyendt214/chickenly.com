@@ -54,6 +54,7 @@ export class ThuChiTypeService {
     }
   ];
 
+
   constructor(private db: AngularFireDatabase) {
     this.modelRef = db.list(this.dbPath);
   }

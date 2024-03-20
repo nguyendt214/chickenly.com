@@ -73,6 +73,10 @@ export class SchoolComponent implements OnInit {
         title: 'Ghi Chú',
         type: 'string',
       },
+      printNumber: {
+        title: 'Số bản in',
+        type: 'string',
+      },
     },
     pager: {
       perPage: 50,
@@ -83,11 +87,11 @@ export class SchoolComponent implements OnInit {
 
   constructor(
     private service: SmartTableData,
-    private modelService: SchoolService,
+    private schoolService: SchoolService,
     private customerService: CustomerService,
     private utilService: UtilService,
   ) {
-    this.modelService.getAll().snapshotChanges().pipe(
+    this.schoolService.getAll().snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
           ({key: c.payload.key, ...c.payload.val()}),
@@ -105,14 +109,14 @@ export class SchoolComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    this.schoolService.create(e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    this.schoolService.update(e?.newData?.key, e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
@@ -120,7 +124,7 @@ export class SchoolComponent implements OnInit {
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.modelService.delete(e?.data?.key)
+      this.schoolService.delete(e?.data?.key)
         .then(() => e.confirm.resolve())
         .catch(() => e.confirm.reject());
     } else {

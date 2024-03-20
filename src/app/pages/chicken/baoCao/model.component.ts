@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { AfterViewInit, Component, OnDestroy, OnInit } from '@angular/core';
 import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
@@ -15,13 +15,16 @@ import { CategoryService } from '../../../main/category.service';
 import { ExportCsvService } from '../../../main/exportCsv.service';
 import * as _ from 'lodash';
 import { forkJoin } from 'rxjs';
+import { NbThemeService } from '@nebular/theme';
 
 @Component({
-  selector: 'ngx-smart-table-cong-no',
+  selector: 'ngx-smart-table-bao-cao',
   templateUrl: './model.component.html',
   styleUrls: ['./model.component.scss'],
 })
-export class DoanhThuComponent implements OnInit {
+export class BaoCaoComponent implements OnInit, AfterViewInit, OnDestroy {
+  options: any = {};
+  themeSubscription: any;
   all?: Order[] = [];
   orderFilter?: Order[] = [];
   customers: Customer[] = [];
@@ -44,132 +47,6 @@ export class DoanhThuComponent implements OnInit {
   showSellPrice = true;
   showAllCongNo = false;
   numberCongNo = 1000;
-  settings = {
-    add: {
-      confirmCreate: true,
-      addButtonContent: '<i class="nb-plus"></i>',
-      createButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-    },
-    edit: {
-      confirmSave: true,
-      editButtonContent: '<i class="nb-edit"></i>',
-      saveButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-    },
-    delete: {
-      deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: true,
-    },
-    columns: {
-      date: {
-        title: 'NGÀY',
-        type: 'string',
-        valuePrepareFunction: (c, row) => {
-          return this.datePipe.transform(new Date(c), 'dd/MM/YYYY');
-        },
-        sort: true,
-        sortDirection: 'desc',
-        compareFunction: (direction: any, c1: string, c2: string) => {
-          const first = (new Date(c1)).getTime();
-          const second = (new Date(c2)).getTime();
-          if (first < second) {
-            return -1 * direction;
-          }
-          if (first > second) {
-            return direction;
-          }
-          return 0;
-        },
-        filter: false,
-      },
-      customer: {
-        title: 'KHÁCH HÀNG',
-        type: 'string',
-        valuePrepareFunction: (c: Customer) => {
-          return c.name;
-        },
-        compareFunction: (direction: any, c1: Customer, c2: Customer) => {
-          if (direction === 1) {
-            return c1.name.localeCompare(c2.name);
-          }
-          return c2.name.localeCompare(c1.name);
-        },
-        filterFunction(el?: any, search?: string): boolean {
-          const match = el?.name.toUpperCase().indexOf(search.toUpperCase()) > -1;
-          if (match || search === '') {
-            return true;
-          } else {
-            return false;
-          }
-        },
-      },
-      school: {
-        title: 'ĐỊA ĐIỂM',
-        type: 'string',
-        valuePrepareFunction: (c: School) => {
-          return c.name;
-        },
-        compareFunction: (direction: any, c1: School, c2: School) => {
-          if (direction === 1) {
-            return c1.name.localeCompare(c2.name);
-          }
-          return c2.name.localeCompare(c1.name);
-        },
-        filterFunction(el?: any, search?: string): boolean {
-          const match = el?.name.toUpperCase().indexOf(search.toUpperCase()) > -1;
-          if (match || search === '') {
-            return true;
-          } else {
-            return false;
-          }
-        },
-      },
-      employee: {
-        title: 'Nhân Viên Giao',
-        type: 'string',
-        valuePrepareFunction: (c: Employee) => {
-          return c.name;
-        },
-        compareFunction: (direction: any, c1: Employee, c2: Employee) => {
-          if (direction === 1) {
-            return c1.name.localeCompare(c2.name);
-          }
-          return c2.name.localeCompare(c1.name);
-        },
-        filterFunction(el?: any, search?: string): boolean {
-          const match = el?.name.toUpperCase().indexOf(search.toUpperCase()) > -1;
-          if (match || search === '') {
-            return true;
-          } else {
-            return false;
-          }
-        },
-      },
-      orderTotal: {
-        title: 'Tổng tiền',
-        valuePrepareFunction: (cell, row) => {
-          let total = 0;
-          row.item.forEach((item: Cart) => {
-            total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
-          });
-          return this.currencyPipe.transform(total, '', '', '1.0-0') + ' VNĐ';
-        },
-        filter: false,
-      },
-    },
-    actions: {
-      edit: false,
-      add: false,
-      delete: false,
-    },
-    pager: {
-      perPage: 5,
-    },
-    noDataMessage: 'Không thấy công nợ nào!',
-  };
-
-  source: LocalDataSource = new LocalDataSource();
   tongHopOrder: Order;
   thuCongNo = true;
   doantThuLabel = 'Tuần này';
@@ -191,6 +68,7 @@ export class DoanhThuComponent implements OnInit {
     private employeeService: EmployeeService,
     private categoryService: CategoryService,
     private exportCsvService: ExportCsvService,
+    private theme: NbThemeService,
   ) {
     this.utilService.loaded = false;
     this.getAllInParallel();
@@ -226,7 +104,6 @@ export class DoanhThuComponent implements OnInit {
     });
     this.all = orders;
     this.orderFilter = orders;
-    this.source.load(this.orderFilter);
     // Lấy order cho 7 ngày gần nhất
     const date = this.orderService.getCurrentWeek();
     this.startDate = date[0];
@@ -240,41 +117,6 @@ export class DoanhThuComponent implements OnInit {
   ngOnInit() {
   }
 
-  onCreateConfirm(e: any) {
-    this.orderService.create(e?.newData)
-      .then(() => {
-      })
-      .catch(() => e.confirm.reject());
-  }
-
-  onEditConfirm(e: any) {
-    this.orderService.update(e?.newData?.key, e?.newData)
-      .then(() => {
-      })
-      .catch(() => e.confirm.reject());
-  }
-
-  onDeleteConfirm(e): void {
-    if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.orderService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
-        .catch(() => e.confirm.reject());
-    } else {
-      e.confirm.reject();
-    }
-  }
-
-  printOrder(e) {
-    const dialogRef = this.dialog.open(CartDialog, {
-      width: '100%',
-      data: {order: e.data},
-      position: {top: '10px'},
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-    });
-  }
-
   filterByDate(startDate: any, endDate: any) {
     if (!(startDate instanceof Date)) {
       this.orderService.filterStartDate = this.utilService.getDateFromString(startDate.value);
@@ -285,12 +127,6 @@ export class DoanhThuComponent implements OnInit {
         this.orderService.filterStartDate.getTime() === this.orderService.filterEndDate.getTime();
     }
     this.globalFilter();
-  }
-
-  onCustom(event) {
-    if (event.action === 'tra-hang') {
-      this.utilService.gotoPage('pages/chicken/order/' + event.data.key);
-    }
   }
 
   filterByCustomer(c: Customer) {
@@ -340,7 +176,6 @@ export class DoanhThuComponent implements OnInit {
     if (this.oFilter.employee) {
       this.orderFilter = this.orderFilter.filter((o: Order) => o.employee.key === this.oFilter.employee.key);
     }
-    this.source.load(this.orderFilter);
     // Cong no
     setTimeout(() => {
       this.tongHopCongNo();
@@ -485,6 +320,8 @@ export class DoanhThuComponent implements OnInit {
       this.congNo.paid += o?.paidTotal;
       this.congNo.unpaid += o?.unpaidTotal;
     });
+    // Init Graph
+    this.initGraph();
   }
 
   congNoTheoKhachHang() {
@@ -565,52 +402,6 @@ export class DoanhThuComponent implements OnInit {
     return qtyReturn;
   }
 
-  exportCongNoTong() {
-    const dataExport = {
-      order: this.tongHopOrder,
-      totalPrice: this.tongTienByOrder(this.tongHopOrder),
-      sheetName: 'Tổng hợp',
-      date: {
-        start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
-        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY'),
-      },
-    };
-    let fileName = 'tongHop';
-    if (this.oFilter.customer) {
-      fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
-    }
-    if (this.oFilter.school) {
-      fileName += '-' + this.oFilter.school.name.replace(' ', '-');
-    }
-    fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
-      '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
-
-    this.exportCsvService.exportCongNoTong(dataExport, fileName);
-  }
-
-  exportCongNoTong1() {
-    this.sortByDateAndSchool();
-    const dataExport = {
-      order: this.orderFilter,
-      sheetName: 'Tổng hợp',
-      date: {
-        start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
-        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY'),
-      },
-    };
-    let fileName = 'tongHop1';
-    if (this.oFilter.customer) {
-      fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
-    }
-    if (this.oFilter.school) {
-      fileName += '-' + this.oFilter.school.name.replace(' ', '-');
-    }
-    fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
-      '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
-
-    this.exportCsvService.exportCongNoTong1(dataExport, fileName);
-  }
-
   sortByDateAndSchool() {
     this.orderFilter = _.sortBy(this.orderFilter, ['school.key']);
   }
@@ -636,30 +427,94 @@ export class DoanhThuComponent implements OnInit {
     return chuaThu;
   }
 
-  exportToExcelBySchoolOrCustomer() {
-    if (!this.oFilter.school && !this.oFilter.customer) {
-      alert('HÃY CHỌN KHÁCH HÀNG HOẶC ĐỊA ĐIỂM!');
-      return;
-    }
-    const dataExport = {
-      school: this.orderBySchool,
-      sheetName: 'Tổng Thanh Toán',
-      date: {
-        start: this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY'),
-        end: this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY'),
-      },
-    };
-    let fileName = 'doanhThu';
-    if (this.oFilter.customer) {
-      fileName += '-' + this.oFilter.customer.name.replace(' ', '-');
-    }
-    if (this.oFilter.school) {
-      fileName += '-' + this.oFilter.school.name.replace(' ', '-');
-    }
-    fileName += '-' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd-MM-YYYY') +
-      '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
 
-    this.exportCsvService.exportToExcelBySchoolOrCustomer(dataExport, fileName);
+  ngOnDestroy(): void {
+    this.themeSubscription.unsubscribe();
+  }
+
+  ngAfterViewInit() {
+  }
+
+  print() {
+    window.print();
+  }
+
+  initGraph() {
+
+    this.themeSubscription = this.theme.getJsTheme().subscribe(config => {
+
+      const colors = config.variables;
+      const echarts: any = config.variables.echarts;
+
+      this.options = {
+        title: {
+          left: '0%',
+          text: 'DOANH SỐ THEO SẢN PHẨM',
+          subtext: '',
+          textAlign: 'left',
+        },
+        backgroundColor: echarts.bg,
+        color: [colors.warningLight, colors.infoLight, colors.dangerLight, colors.successLight, colors.primaryLight],
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b} : SL {c} - ({d}%)',
+        },
+        legend: {
+          data: [],
+          textStyle: {
+            color: echarts.textColor,
+          },
+        },
+        series: [
+          {
+            name: 'Countries',
+            type: 'pie',
+            radius: '80%',
+            center: ['50%', '50%'],
+            data: [],
+            itemStyle: {
+              emphasis: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: echarts.itemHoverShadowColor,
+              },
+            },
+            label: {
+              normal: {
+                textStyle: {
+                  color: echarts.textColor,
+                },
+              },
+            },
+            labelLine: {
+              normal: {
+                lineStyle: {
+                  color: echarts.axisLineColor,
+                },
+              },
+            },
+          },
+        ],
+      };
+    });
+
+    console.log('orderFilter', this.orderFilter);
+    console.log('tongHopOrder', this.tongHopOrder);
+    console.log('orderBySchool', this.orderBySchool);
+    console.log('congNoByCustomer', this.congNoByCustomer);
+    this.tongHopOrder.item.sort((a, b) => a.qty - b.qty);
+    console.log('tongHopOrder', this.tongHopOrder);
+    // Báo cáo theo số lượng sản phẩm bán ra
+    this.options.legend.orient = 'Tên Sản Phẩm';
+    this.options.legend.data = [];
+    this.options.series[0].data = [];
+    this.tongHopOrder.item.forEach((cart: Cart) => {
+      // this.options.legend.data.push(cart?.product?.name);
+      const label = '( Bán: ' + cart?.qty + ', Trả: ' + (cart?.qtyReturn || 0) + ')';
+      this.options.series[0].data.push({value: (cart.qty - (cart?.qtyReturn || 0)), name: (cart?.product?.name + label) });
+    });
+    console.log(this.options);
+
   }
 
 }

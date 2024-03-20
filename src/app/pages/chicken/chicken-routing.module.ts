@@ -33,6 +33,7 @@ import { WalletComponent } from './wallet/model.component';
 import { WalletTransferComponent } from './wallet/transfer/model.component';
 import { ProductPriceComponent } from './product/managePrice/model.component';
 import { DoanhThuComponent } from './doanhThu/model.component';
+import { BaoCaoComponent } from './baoCao/model.component';
 
 const routes: Routes = [{
   path: '',
@@ -139,8 +140,13 @@ const routes: Routes = [{
       canActivate: [AuthGuard],
     },
     {
+      path: 'bao-cao',
+      component: BaoCaoComponent,
+      canActivate: [AuthGuard],
+    },
+    {
       path: '',
-      redirectTo: 'cong-no',
+      redirectTo: 'doanh-thu',
       pathMatch: 'full',
     },
     {
@@ -187,4 +193,5 @@ export const routedComponents = [
   WalletComponent,
   WalletTransferComponent,
   DoanhThuComponent,
+  BaoCaoComponent,
 ];

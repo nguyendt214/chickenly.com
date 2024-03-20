@@ -8,6 +8,8 @@ import { map } from 'rxjs/operators';
 import { MatDialog } from '@angular/material/dialog';
 import { NhaCungCap, NhaCungCapService } from '../../../main/nhaCungCap.service';
 import { UtilService } from '../../../main/util.service';
+import { Cart } from '../../../main/order.service';
+import { CurrencyPipe } from '@angular/common';
 
 @Component({
   selector: 'ngx-smart-table-nhacc',
@@ -46,6 +48,13 @@ export class NhaCungCapComponent implements OnInit {
         title: 'Địa chỉ',
         type: 'string',
       },
+      price: {
+        title: 'Công nợ (VNĐ)',
+        valuePrepareFunction: (cell, row) => {
+          return this.currencyPipe.transform(+cell ?? 0, '', '', '1.0-0');
+        },
+        filter: false,
+      },
       note: {
         title: 'Ghi Chú',
         type: 'string',
@@ -65,6 +74,7 @@ export class NhaCungCapComponent implements OnInit {
     private modelService: NhaCungCapService,
     private dialog: MatDialog,
     private utilService: UtilService,
+    private currencyPipe: CurrencyPipe,
   ) {
     this.modelService.getAll().snapshotChanges().pipe(
       map(changes =>
@@ -83,14 +93,18 @@ export class NhaCungCapComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    const ncc = e?.newData;
+    ncc.price = +ncc?.price ?? 0;
+    this.modelService.create(ncc)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    const ncc = e?.newData;
+    ncc.price = +ncc?.price ?? 0;
+    this.modelService.update(e?.newData?.key, ncc)
       .then(() => {
       })
       .catch(() => e.confirm.reject());

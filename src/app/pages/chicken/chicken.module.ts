@@ -34,6 +34,7 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ExportCsvService } from '../../main/exportCsv.service';
 import { MatRadioModule } from '@angular/material/radio';
+import { NgxEchartsModule } from 'ngx-echarts';
 
 @NgModule({
   imports: [
@@ -77,6 +78,7 @@ import { MatRadioModule } from '@angular/material/radio';
     ChickenRoutingModule,
     Ng2SmartTableModule,
     MatRadioModule,
+    NgxEchartsModule,
   ],
   declarations: [
     ...routedComponents,

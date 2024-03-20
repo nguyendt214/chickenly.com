@@ -12,6 +12,7 @@ export class School {
   customerKey?: any;
   owner?: any;
   disable?: boolean;
+  printNumber?: number;
 }
 
 @Injectable({
@@ -29,6 +30,7 @@ export class SchoolService {
   getAll(): AngularFireList<School> {
     return this.modelRef;
   }
+
   getAll2(): Observable<any> {
     if (this.cacheSchools) {
       return of(this.cacheSchools);
@@ -41,6 +43,11 @@ export class SchoolService {
       map(changes =>
         changes.map(c =>
           ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+      map(changes =>
+        changes.map(c =>
+          ({...c, printNumber: c?.printNumber || 2}),
         ),
       ),
     );

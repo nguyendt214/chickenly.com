@@ -21,7 +21,7 @@ export class SignInComponent extends NbLoginComponent {
     super(service, options, cd, router);
     this.isLogged = this.authService.isLogged();
     if(this.isLogged) {
-      this.router.navigate(['pages/chicken/order-list']);
+      this.router.navigate(['pages/chicken/doanh-thu']);
     }
   }
 

@@ -10,6 +10,7 @@ export class NhaCungCap {
   phone?: string;
   note?: string;
   disable?: boolean;
+  price?: number;
 }
 
 @Injectable({
@@ -27,6 +28,7 @@ export class NhaCungCapService {
   getAll(): AngularFireList<NhaCungCap> {
     return this.modelRef;
   }
+
   getAll2(): Observable<any> {
     if (this.cacheNhaCungCaps) {
       return of(this.cacheNhaCungCaps);
@@ -39,6 +41,11 @@ export class NhaCungCapService {
       map(changes =>
         changes.map(c =>
           ({key: c.payload.key, ...c.payload.val()}),
+        ),
+      ),
+      map(ncc =>
+        ncc.map(c =>
+          ({...c, price: +c.price || 0}),
         ),
       ),
     );
@@ -60,11 +67,11 @@ export class NhaCungCapService {
     return this.modelRef.remove();
   }
 
-  getNhaCungCapByKey(customers: NhaCungCap[], key: string) {
-    if (customers) {
-      const customer = customers.filter((c: NhaCungCap) => c.key === key);
-      if (customer?.length) {
-        const cus: NhaCungCap = customer.shift();
+  getNhaCungCapByKey(nccs: NhaCungCap[], key: string) {
+    if (nccs) {
+      const ncc = nccs.filter((c: NhaCungCap) => c.key === key);
+      if (ncc?.length) {
+        const cus: NhaCungCap = ncc.shift();
         return cus;
       }
     }

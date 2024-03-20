@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { SmartTableData } from '../../../../@core/data/smart-table';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { ThuChi, ThuChiService } from '../../../../main/thuChi.service';
 import { FileUpload, FileUploadService } from '../../../../main/upload.service';
 import { ThuChiType, ThuChiTypeService } from '../../../../main/thuChiType.service';
@@ -13,6 +13,7 @@ import { Customer, CustomerService } from '../../../../main/customer.service';
 import { Order, OrderService } from '../../../../main/order.service';
 import { ImageFile } from '../../../directives/dragDrop.directive';
 import { Wallet, WalletService } from '../../../../main/wallet.service';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-smart-thuchi-add',
@@ -25,6 +26,7 @@ export class ThuChiAddComponent implements OnInit {
   thuChiTypes: ThuChiType[];
   nhaCungCaps: NhaCungCap[];
   nhaCungCap: string;
+  selectNcc: '';
   selectKH: '';
   thuChiType: string;
   fileUploads: any[] = [];
@@ -50,7 +52,7 @@ export class ThuChiAddComponent implements OnInit {
 
   constructor(
     private service: SmartTableData,
-    private modelService: ThuChiService,
+    private thuChiService: ThuChiService,
     private uploadService: FileUploadService,
     private thuChiTypeService: ThuChiTypeService,
     private toastrService: NbToastrService,
@@ -66,12 +68,31 @@ export class ThuChiAddComponent implements OnInit {
   ) {
     this.thuChiType = this.activatedRoute.snapshot.paramMap.get('type');
     this.isChi = this.thuChiType === 'chi';
+    this.utilService.loaded = false;
+    this.getAllInParallel();
+  }
+
+  getAllInParallel() {
     this.getAllThuChiType();
-    this.getAllWallet();
-    if (!this.isChi) {
-      this.getAllCustomer();
-    }
-    this.getAll();
+
+    forkJoin([
+      this.walletService.getAll3().pipe(take(1)),
+      this.customerService.getAll3().pipe(take(1)),
+      this.nhaCungCapService.getAll3().pipe(take(1)),
+      this.thuChiService.getAll3().pipe(take(1)),
+    ]).subscribe(
+      (all) => {
+        this.wallets = this.walletService.cacheWallets = all[0];
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = all[1];
+        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[2];
+        this.all = this.thuChiService.cacheThuChi = all[3];
+        this.initThuChi();
+        this.truyThuCongNo();
+      },
+      () => {
+      },
+      () => this.utilService.loaded = true
+    );
   }
 
   truyThuCongNo() {
@@ -110,112 +131,25 @@ export class ThuChiAddComponent implements OnInit {
     this.thuChi.trangThaiTT = this.isChi ? 2 : 1; // Chưa thanh toán
     this.thuChi.paymentType = 1; // Chuyển khoản
     this.thuChi.walletKey = this.walletService.viCtyKey;
-  }
-
-  getAll() {
-    if (!this.modelService.cacheThuChi) {
-      this.modelService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.all = this.modelService.cacheThuChi = all;
-        this.initThuChi();
-        this.truyThuCongNo();
-        this.utilService.loaded = true;
-      });
-    } else {
-      this.all = this.modelService.cacheThuChi;
-      this.initThuChi();
-      this.truyThuCongNo();
-      this.utilService.loaded = true;
-    }
-
+    this.disableAddChi();
   }
 
   getAllThuChiType() {
     this.thuChiTypes = this.thuChiTypeService.thuChiType;
   }
 
-  getAllWallet() {
-    if (!this.walletService.cacheWallets) {
-      this.walletService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.wallets = this.walletService.cacheWallets = all;
-      });
-    } else {
-      this.wallets = this.walletService.cacheWallets;
-    }
-  }
-
-  getAllUploadFiles() {
-    if (!this.uploadService.cacheUploadFiles) {
-      this.uploadService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          // store the key
-          changes.map(c => ({key: c.payload.key, ...c.payload.val()})),
-        ),
-      ).subscribe(fileUploads => {
-        this.fileUploads = this.uploadService.cacheUploadFiles = fileUploads;
-      });
-    } else {
-      this.fileUploads = this.uploadService.cacheUploadFiles;
-    }
-  }
-
-  getAllNhaCungCap() {
-    if (!this.nhaCungCapService.cacheNhaCungCaps) {
-      this.nhaCungCapService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all;
-        this.nhaCungCap = this.nhaCungCaps[0].key;
-      });
-    } else {
-      this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps;
-      this.nhaCungCap = this.nhaCungCaps[0].key;
-    }
-  }
-
-  getAllCustomer() {
-    if (this.customerService.cacheCustomers) {
-      this.customers = this.allCustomers = this.customerService.cacheCustomers;
-    } else {
-      this.customerService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
-      });
-    }
-  }
-
   ngOnInit() {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    this.thuChiService.create(e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
-    this.modelService.update(e?.newData?.key, e?.newData)
+    this.thuChiService.update(e?.newData?.key, e?.newData)
       .then(() => {
       })
       .catch(() => e.confirm.reject());
@@ -223,7 +157,7 @@ export class ThuChiAddComponent implements OnInit {
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.modelService.delete(e?.data?.key)
+      this.thuChiService.delete(e?.data?.key)
         .then(() => e.confirm.resolve())
         .catch(() => e.confirm.reject());
     } else {
@@ -280,11 +214,16 @@ export class ThuChiAddComponent implements OnInit {
     if (this.thuChi.url) {
       this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
     }
-    this.thuChi.price = +this.thuChi.price;
+    this.thuChi.price = +this.thuChi.price || 0;
 
     // Update wallet
     this.updateWallet();
-
+    // Nếu là chi cho đối tác, thì cần cập nhật công nợ cho đối tác
+    if (this.selectNcc) {
+      const nhaCungCap = this.nhaCungCapService.getNhaCungCapByKey(this.nhaCungCaps, this.selectNcc);
+      nhaCungCap.price -= this.thuChi.price;
+      this.nhaCungCapService.update(nhaCungCap.key, nhaCungCap);
+    }
     // Update order thành đã thu công nợ
     if (this.orderService.truyThuCongNo || this.orderService.thuCongNoBySchool) {
       const orderKeys = this.orderService.truyThuCongNo ?
@@ -299,10 +238,9 @@ export class ThuChiAddComponent implements OnInit {
         }
       });
     }
-    console.log(this.thuChi);
-    this.modelService.create(this.thuChi).then(
+    this.thuChiService.create(this.thuChi).then(
       () => {
-        this.modelService.cacheThuChi = null;
+        this.thuChiService.cacheThuChi = null;
         setTimeout(() => {
           this.router.navigate(['pages/chicken/thu-chi']);
         });
@@ -363,6 +301,7 @@ export class ThuChiAddComponent implements OnInit {
 
   updateThuChi(event, type) {
     this.thuChi[type] = event?.target?.value ?? event?.value;
+    this.disableAddChi();
   }
 
   deleteFile(file: FileUpload) {
@@ -378,6 +317,12 @@ export class ThuChiAddComponent implements OnInit {
   }
   ungTraLuongClick(checked: boolean) {
     this.thuChi.ttLuong = checked;
+  }
+  disableAddChi() {
+    if (!this.thuChi.name) {
+      return true;
+    }
+    return false;
   }
 
 }

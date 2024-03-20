@@ -169,6 +169,11 @@ export class OrderListComponent implements OnInit {
       perPage: 50,
     },
     noDataMessage: 'Không thấy ĐƠN HÀNG nào!',
+    rowClassFunction: (row) => {
+      if (row?.data?.printed) {
+        return 'kopacity kprinted';
+      }
+    },
   };
 
   source: LocalDataSource = new LocalDataSource();
@@ -254,6 +259,11 @@ export class OrderListComponent implements OnInit {
   }
 
   printOrder(e) {
+    this.orderFilter.forEach((o: Order) => {
+      if(o?.key === e?.data?.key) {
+        o.printed = true;
+      }
+    });
     const dialogRef = this.dialog.open(CartDialog, {
       width: '100%',
       data: {order: e.data},

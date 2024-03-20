@@ -116,7 +116,7 @@ export const NB_CORE_PROVIDERS = [
           method: 'post',
           requireValidToken: false,
           redirect: {
-            success: '/pages/chicken/order-list',
+            success: '/pages/chicken/doanh-thu',
             failure: null, // stay on the same page
           },
         }

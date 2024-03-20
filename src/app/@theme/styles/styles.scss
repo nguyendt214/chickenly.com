@@ -310,9 +310,6 @@ button:focus {
   .cn-dathumotphan {
     color: blue;
   }
-  .kopacity {
-    opacity: 0.65;
-  }
   .btn-current {
     background: orange !important;
     color: white !important;
@@ -447,6 +444,12 @@ button:focus {
   }
   color: #FF4081;
 }
+.kopacity {
+  opacity: 0.65;
+}
+.kprinted {
+  opacity: 0.2;
+}
 nb-menu .menu-item a.active {
   color: #FF4081;
   background-color: lightgrey;
@@ -472,6 +475,15 @@ nb-menu .menu-item a.active {
 }
 .row {
   align-items: center;
+}
+.kdanger {
+  color: red;
+}
+.kokay {
+  color: blue;
+}
+.kprint {
+  page-break-before: always;
 }
 @media screen and (max-width: 699px) {
   .mobile-zoom {

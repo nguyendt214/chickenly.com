@@ -25,6 +25,7 @@ export class Order {
   updated: string;
   paid?: boolean;
   orderKeys?: Array<string>;
+  printed?: boolean;
 }
 
 export class Cart {
