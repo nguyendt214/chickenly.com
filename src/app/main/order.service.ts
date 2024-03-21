@@ -47,6 +47,8 @@ export class Cart {
 export class CongNoByCustomer {
   customer?: Customer;
   schools?: CongNoBySchool[];
+  orders?: Order[];
+  orderKeys?: Array<string>;
   masterTotal?: number;
   paidTotal?: number;
   unpaidTotal?: number;
@@ -72,6 +74,7 @@ export class OrderService {
   orderClone: Order;
   truyThuCongNo = null;
   thuCongNoBySchool = null;
+  thuCongNoByCustomer = null;
 
   constructor(
     private db: AngularFireDatabase,

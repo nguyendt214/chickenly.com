@@ -112,6 +112,14 @@ export class ThuChiAddComponent implements OnInit {
       this.thuChi.name = this.khoanThu;
       this.thuChi.price = this.soTien;
       this.thuChi.trangThaiTT = 2;
+    } else if (this.orderService.thuCongNoByCustomer) {
+      this.selectKH = this.orderService.thuCongNoByCustomer.congNoByCustomer.customer.key;
+      this.khoanThu = 'Công nợ: ' + this.orderService.thuCongNoByCustomer.congNoByCustomer.customer.name + ', ' + this.orderService.thuCongNoByCustomer.time;
+      this.soTien = this.orderService.thuCongNoByCustomer.totalPrice;
+      this.thuChi.name = this.khoanThu;
+      this.thuChi.price = this.soTien;
+      this.thuChi.trangThaiTT = 2;
+      console.log(this.orderService.thuCongNoByCustomer);
     }
   }
 
@@ -226,8 +234,15 @@ export class ThuChiAddComponent implements OnInit {
     }
     // Update order thành đã thu công nợ
     if (this.orderService.truyThuCongNo || this.orderService.thuCongNoBySchool) {
-      const orderKeys = this.orderService.truyThuCongNo ?
-        (this.orderService.truyThuCongNo.order.orderKeys ?? []) : (this.orderService.thuCongNoBySchool.orders.map((order: Order) => order?.key));
+      let orderKeys = [];
+      if (this.orderService.truyThuCongNo) {
+        orderKeys = this.orderService.truyThuCongNo.order.orderKeys ?? [];
+      } else if (this.orderService.thuCongNoBySchool) {
+        orderKeys = this.orderService.thuCongNoBySchool.orders.map((order: Order) => order?.key);
+      } else if (this.orderService.thuCongNoByCustomer) {
+        orderKeys = this.orderService.thuCongNoByCustomer.orderKeys;
+      }
+
       orderKeys.forEach((k: any) => {
         let o: any = this.orderService.cacheOrder.filter((order: Order) => order.key === k);
         if (o.length) {

@@ -494,7 +494,10 @@ export class DoanhThuComponent implements OnInit {
       congNo.schools = [];
       congNo.masterTotal = 0;
       congNo.customer = Object.assign({}, c);
+      // congNo.orders = Object.assign({}, cnbs);
+      congNo.orderKeys = [];
       cnbs.forEach((orders: Order[], index: number) => {
+        congNo.orderKeys = [...congNo.orderKeys, ...orders.map((o: Order) => o?.key)];
         if (orders[0].customer.key === c.key) {
           const congNoBySchool = new CongNoBySchool();
           congNoBySchool.school = Object.assign({}, orders[0].school);
@@ -623,6 +626,18 @@ export class DoanhThuComponent implements OnInit {
         '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
     };
     this.orderService.thuCongNoBySchool = dataCongNo;
+    this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
+  }
+
+  truyThuCongNoTheoTruong(congNoByCustomer: CongNoByCustomer) {
+    const dataCongNo = {
+      congNoByCustomer: congNoByCustomer,
+      orderKeys: congNoByCustomer.orderKeys,
+      totalPrice: congNoByCustomer.masterTotal,
+      time: 'Từ ' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd/MM/YYYY') +
+        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
+    };
+    this.orderService.thuCongNoByCustomer = dataCongNo;
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
   }
 
