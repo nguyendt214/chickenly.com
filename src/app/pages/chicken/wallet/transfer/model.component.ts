@@ -123,13 +123,8 @@ export class WalletTransferComponent implements OnInit {
   }
 
   initPageData() {
-    this.walletTransferService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
+    this.walletTransferService.getAll3().subscribe(all => {
+      this.walletTransferService.storeData(all);
       this.allWalletTransfer = all;
       this.source.load(this.allWalletTransfer);
       this.transferWallet.soTien = 0;
@@ -158,6 +153,7 @@ export class WalletTransferComponent implements OnInit {
   onCreateConfirm(e: any) {
     this.walletTransferService.create(e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.walletTransferService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -165,6 +161,7 @@ export class WalletTransferComponent implements OnInit {
   onEditConfirm(e: any) {
     this.walletTransferService.update(e?.newData?.key, e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.walletTransferService.lcKey]);
         this.transferWallet = Object.assign({}, e?.newData);
         this.transferWallet.soTien = +e?.newData.soTien - +e?.data?.soTien;
         this.transferWallet.fromWallet = this.walletService.getWalletByKey(this.allWallets, this.transferWallet.fromWalletKey);
@@ -177,7 +174,10 @@ export class WalletTransferComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.walletTransferService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.walletTransferService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();

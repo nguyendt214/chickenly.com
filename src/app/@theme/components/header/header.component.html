@@ -4,6 +4,10 @@
       <nb-icon icon="menu-2-outline"></nb-icon>
     </a>
     <a class="logo" href="#" (click)="navigateHome()">TPĐ</a>
+    <a class="load-all" (click)="loadAllData(true)"
+       matTooltip="Click nếu muốn hệ thống lấy dữ liệu mới nhất!!!"
+    >LAST DATA?</a>
+<!--    <a class="load-all-order pl-2" (click)="loadAllOrder()">ALL ORDERS?</a>-->
   </div>
   <nb-select [selected]="currentTheme" (selectedChange)="changeTheme($event)" status="primary" class="d-none">
     <nb-option *ngFor="let theme of themes" [value]="theme.value"> {{ theme.name }}</nb-option>

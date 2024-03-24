@@ -74,13 +74,19 @@ export class OrderComponent implements OnInit {
     ]).subscribe(
       (all) => {
         this.productTypes = this.productTypeService.cacheProductTypes = all[0];
+        this.productTypeService.storeData(this.productTypes);
         this.categories = this.categoryService.cacheCategory = all[1];
+        this.categoryService.storeData(this.categories);
         this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
+        this.customerService.storeData(this.customers);
         this.selectKH = this.customers[0].key;
         this.employees = this.employeeService.cacheEmployees = all[3];
+        this.employeeService.storeData(this.employees);
         this.products = this.allProducts = this.productService.cacheProducts = all[4];
+        this.productService.storeData(this.products);
         this.prepareProducts();
         this.schools = this.allSchools = this.schoolService.cacheSchools = all[5];
+        this.schoolService.storeData(this.schools);
         this.preparePageData();
       },
       () => {
@@ -260,6 +266,7 @@ export class OrderComponent implements OnInit {
         this.order.item = [];
         this.order.sItem = null;
         this.orderService.cacheOrder = null;
+        this.utilService.clearCache([this.orderService.lcKey]);
         this.showToa();
         this.checkButtonTaoDonHang();
       },

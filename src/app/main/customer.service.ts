@@ -3,6 +3,7 @@ import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/datab
 import { map } from 'rxjs/operators';
 import { Product } from './product.service';
 import { Observable, of } from 'rxjs';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class Customer {
   key?: any;
@@ -21,8 +22,13 @@ export class CustomerService {
   private dbPath = '/Customer';
   cacheCustomers: any;
   modelRef: AngularFireList<Customer>;
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(
+    private db: AngularFireDatabase,
+    private lc: LocalStorageService,
+  ) {
     this.modelRef = db.list(this.dbPath);
   }
 
@@ -37,6 +43,9 @@ export class CustomerService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -44,6 +53,11 @@ export class CustomerService {
         ),
       ),
     );
+  }
+
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, data);
   }
 
   create(tutorial: Customer): any {

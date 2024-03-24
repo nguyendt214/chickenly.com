@@ -54,13 +54,7 @@ export class ProductPriceComponent implements OnInit {
   }
 
   getAllProducts() {
-    this.modelService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
+    this.modelService.getAll3().subscribe(all => {
       this.all = all;
       this.all.forEach((product: Product) => {
         product.category = this.categories.find((c: Category) => c.key === product.categoryKey);
@@ -75,13 +69,7 @@ export class ProductPriceComponent implements OnInit {
     if (this.categoryService.cacheCategory) {
       this.categories = this.categoryService.cacheCategory;
     } else {
-      this.categoryService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.categoryService.getAll3().subscribe(all => {
         this.categories = this.categoryService.cacheCategory = all;
       });
     }
@@ -91,13 +79,7 @@ export class ProductPriceComponent implements OnInit {
     if (this.productTypeService.cacheProductTypes) {
       this.productTypes = this.productTypeService.cacheProductTypes;
     } else {
-      this.productTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.productTypeService.getAll3().subscribe(all => {
         this.productTypes = this.productTypeService.cacheProductTypes = all;
       });
     }
@@ -107,13 +89,7 @@ export class ProductPriceComponent implements OnInit {
     if (this.customerService.cacheCustomers) {
       this.allCustomers = this.customerService.cacheCustomers;
     } else {
-      this.customerService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.customerService.getAll3().subscribe(all => {
         this.allCustomers = this.customerService.cacheCustomers = all;
       });
     }

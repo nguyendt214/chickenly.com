@@ -5,6 +5,7 @@ import { ProductType } from './product-type.service';
 import { Customer } from './customer.service';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class Product {
   key?: any;
@@ -31,8 +32,13 @@ export class ProductService {
   private dbPath = '/Products';
   cacheProducts: any;
   modelRef: AngularFireList<Product>;
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(
+    private db: AngularFireDatabase,
+    private lc: LocalStorageService,
+  ) {
     this.modelRef = db.list(this.dbPath);
   }
 
@@ -47,6 +53,9 @@ export class ProductService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -54,6 +63,11 @@ export class ProductService {
         ),
       ),
     );
+  }
+
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, data);
   }
 
   create(o: Product): any {

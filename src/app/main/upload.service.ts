@@ -3,6 +3,7 @@ import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/datab
 import { AngularFireStorage } from '@angular/fire/compat/storage';
 import { Observable, of } from 'rxjs';
 import { finalize, map } from 'rxjs/operators';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class FileUpload {
   key: string;
@@ -22,8 +23,14 @@ export class FileUploadService {
   private dbPath = '/uploads';
   cacheUploadFiles: any;
   modelRef: AngularFireList<FileUpload>;
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
-  constructor(private db: AngularFireDatabase, private storage: AngularFireStorage) {
+  constructor(
+    private db: AngularFireDatabase,
+    private storage: AngularFireStorage,
+    private lc: LocalStorageService,
+  ) {
     this.modelRef = db.list(this.dbPath);
   }
 
@@ -86,6 +93,9 @@ export class FileUploadService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -93,6 +103,15 @@ export class FileUploadService {
         ),
       ),
     );
+  }
+
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, this.getLimitOrder(data));
+  }
+
+  getLimitOrder(data = [], number = 1000) {
+    return data.slice((data.length - number), data.length);
   }
 
   create(o: FileUpload): any {

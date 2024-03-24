@@ -215,17 +215,22 @@ export class ThuChiComponent implements OnInit {
     ]).subscribe(
       (all) => {
         this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[0];
+        this.nhaCungCapService.storeData(this.nhaCungCaps);
         this.nhaCungCap = this.nhaCungCaps[0].key;
         this.cnNhaCungCap();
         this.fileUploads = this.uploadService.cacheUploadFiles = all[1];
+        this.uploadService.storeData(this.fileUploads);
         this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
+        this.customerService.storeData(this.customers);
         this.wallets = this.walletService.cacheWallets = all[3];
+        this.walletService.storeData(this.wallets);
         this.wallets.forEach((w: Wallet) => {
           w.cashTotal = +w.cashTotal;
           w.bankTotal = +w.bankTotal;
         });
         this.wallet = this.wallets[0].key;
         this.all = this.thuChiService.cacheThuChi = all[4];
+        this.thuChiService.storeData(this.all);
         this.utilService.sortListByDate(this.all);
         this.mapCustomer();
         this.mapWallet();

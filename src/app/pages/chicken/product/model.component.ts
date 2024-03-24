@@ -120,14 +120,9 @@ export class ProductComponent implements OnInit {
     this.utilService.loaded = true;
   }
   getAllProducts() {
-    this.modelService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
+    this.modelService.getAll3().subscribe(all => {
       this.all = all;
+      this.modelService.storeData(all);
       this.all.forEach((product: Product) => {
         product.category = this.categories.find((c: Category) => c.key === product.categoryKey);
         product.productType = this.productTypes.find((pt: ProductType) => pt.key === product.productTypeKey);
@@ -156,7 +151,10 @@ export class ProductComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.modelService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.modelService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();
@@ -168,13 +166,7 @@ export class ProductComponent implements OnInit {
       this.categories = this.categoryService.cacheCategory;
       this.prepareCategory();
     } else {
-      this.categoryService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.categoryService.getAll3().subscribe(all => {
         this.categories = this.categoryService.cacheCategory = all;
         this.prepareCategory();
       });
@@ -182,6 +174,7 @@ export class ProductComponent implements OnInit {
   }
 
   prepareCategory() {
+    this.categoryService.storeData(this.categories);
     this.categories.forEach((c: Category) => {
       this.settings.columns.categoryKey.editor.config.list.push({
         value: c.key,
@@ -196,13 +189,7 @@ export class ProductComponent implements OnInit {
       this.productTypes = this.productTypeService.cacheProductTypes;
       this.prepareProductType();
     } else {
-      this.productTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.productTypeService.getAll3().subscribe(all => {
         this.productTypes = this.productTypeService.cacheProductTypes = all;
         this.prepareProductType();
       });
@@ -210,6 +197,7 @@ export class ProductComponent implements OnInit {
   }
 
   prepareProductType() {
+    this.productTypeService.storeData(this.productTypes);
     this.productTypes.forEach((c: ProductType) => {
       this.settings.columns.productTypeKey.editor.config.list.push({
         value: c.key,

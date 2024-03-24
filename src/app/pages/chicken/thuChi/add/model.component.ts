@@ -152,6 +152,7 @@ export class ThuChiAddComponent implements OnInit {
   onCreateConfirm(e: any) {
     this.thuChiService.create(e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.thuChiService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -159,6 +160,7 @@ export class ThuChiAddComponent implements OnInit {
   onEditConfirm(e: any) {
     this.thuChiService.update(e?.newData?.key, e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.thuChiService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -166,7 +168,10 @@ export class ThuChiAddComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.thuChiService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.thuChiService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();
@@ -249,13 +254,18 @@ export class ThuChiAddComponent implements OnInit {
           o = o.shift();
           o.paid = true;
           // Update order
-          this.orderService.update(k, o);
+          this.orderService.update(k, o).then(
+            () =>
+              this.utilService.clearCache([this.orderService.lcKey])
+          );
         }
       });
     }
     this.thuChiService.create(this.thuChi).then(
       () => {
         this.thuChiService.cacheThuChi = null;
+        this.utilService.clearCache([this.thuChiService.lcKey]);
+        this.utilService.clearCache([this.uploadService.lcKey]);
         setTimeout(() => {
           this.router.navigate(['pages/chicken/thu-chi']);
         });
@@ -296,7 +306,8 @@ export class ThuChiAddComponent implements OnInit {
       }
       if (update) {
         // Call service to update wallet
-        this.walletService.update(this.wallet.key, this.wallet);
+        this.walletService.update(this.wallet.key, this.wallet)
+          .then(() => this.utilService.clearCache([this.walletService.lcKey]));
       }
     }
   }

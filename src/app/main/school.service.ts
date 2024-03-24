@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class School {
   key?: any;
@@ -22,8 +23,13 @@ export class SchoolService {
   private dbPath = '/School';
   cacheSchools: any;
   modelRef: AngularFireList<School>;
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(
+    private db: AngularFireDatabase,
+    private lc: LocalStorageService,
+  ) {
     this.modelRef = db.list(this.dbPath);
   }
 
@@ -39,6 +45,9 @@ export class SchoolService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -51,6 +60,11 @@ export class SchoolService {
         ),
       ),
     );
+  }
+
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, data);
   }
 
   create(o: School): any {

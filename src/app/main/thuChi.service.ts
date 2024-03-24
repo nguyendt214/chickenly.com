@@ -5,6 +5,7 @@ import { Observable, of } from 'rxjs';
 import { Customer } from './customer.service';
 import { Wallet } from './wallet.service';
 import { map } from 'rxjs/operators';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class ThuChi {
   key?: any;
@@ -41,8 +42,13 @@ export class ThuChiService {
   modelRef: AngularFireList<ThuChi>;
   public filterStartDate: any;
   public filterEndDate: any;
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(
+    private db: AngularFireDatabase,
+    private lc: LocalStorageService,
+  ) {
     this.modelRef = db.list(this.dbPath);
   }
 
@@ -57,6 +63,9 @@ export class ThuChiService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -64,6 +73,15 @@ export class ThuChiService {
         ),
       ),
     );
+  }
+
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, this.getLimitOrder(data));
+  }
+
+  getLimitOrder(data = [], number = 1000) {
+    return data.slice((data.length - number), data.length);
   }
 
   getThuChiByKey(key: string): Observable<any> {

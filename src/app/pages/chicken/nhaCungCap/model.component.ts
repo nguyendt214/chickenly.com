@@ -76,13 +76,8 @@ export class NhaCungCapComponent implements OnInit {
     private utilService: UtilService,
     private currencyPipe: CurrencyPipe,
   ) {
-    this.modelService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
+    this.modelService.getAll3().subscribe(all => {
+      this.modelService.storeData(all);
       this.all = all;
       this.source.load(this.all);
       this.utilService.loaded = true;
@@ -97,6 +92,7 @@ export class NhaCungCapComponent implements OnInit {
     ncc.price = +ncc?.price ?? 0;
     this.modelService.create(ncc)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -106,6 +102,7 @@ export class NhaCungCapComponent implements OnInit {
     ncc.price = +ncc?.price ?? 0;
     this.modelService.update(e?.newData?.key, ncc)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -113,7 +110,10 @@ export class NhaCungCapComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.modelService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.modelService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();

@@ -92,20 +92,12 @@ export class WalletComponent implements OnInit {
   }
 
   ngOnInit() {
-    // this.getAllProductTypes();
-    // this.getAllCategories();
-    // this.getAllProducts();
     this.initPageData();
   }
 
   initPageData() {
-    this.modelService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
+    this.modelService.getAll3().subscribe(all => {
+      this.modelService.storeData(all);
       this.all = this.allWallets = all;
       this.source.load(this.all);
       this.utilService.loaded = true;
@@ -113,74 +105,10 @@ export class WalletComponent implements OnInit {
 
   }
 
-  getAllCategories() {
-    if (this.categoryService.cacheCategory) {
-      this.categories = this.categoryService.cacheCategory;
-    } else {
-      this.categoryService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.categories = all;
-        this.categoryService.cacheCategory = all;
-      });
-    }
-  }
-
-  getAllProductTypes() {
-    if (this.productTypeService.cacheProductTypes) {
-      this.productTypes = this.productTypeService.cacheProductTypes;
-    } else {
-      this.productTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.productTypes = this.productTypeService.cacheProductTypes = all;
-      });
-    }
-  }
-
-  getAllProducts() {
-    if (this.productService.cacheProducts) {
-      this.products = this.productService.cacheProducts;
-      this.prepareProducts();
-
-    } else {
-      this.productService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.products = this.productService.cacheProducts = all;
-        this.prepareProducts();
-      });
-    }
-  }
-
-
-  prepareProducts() {
-    // Category
-    this.products.forEach((p: Product) => {
-      p.category = this.categories.find((c: Category) => c.key === p.categoryKey);
-    });
-    // Product Type
-    this.products.forEach((p: Product) => {
-      p.productType = this.productTypes.find((pt: ProductType) => pt.key === p.productTypeKey);
-    });
-    this.products = this.productService.sortByCategory(this.products);
-  }
-
   onCreateConfirm(e: any) {
     this.modelService.create(e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -191,6 +119,7 @@ export class WalletComponent implements OnInit {
     newData.cashTotal = +newData.cashTotal;
     this.modelService.update(e?.newData?.key, newData)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -198,37 +127,13 @@ export class WalletComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.modelService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.modelService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();
     }
-  }
-
-  userHasProduct(c: Customer, p: Product) {
-    return c.products && c.products.includes(p.key);
-  }
-
-  updateCustomerProduct(c: Customer, p: Product, checked: boolean) {
-    c.products = c.products ?? [];
-    if (checked) {
-      c.products.push(p.key);
-    } else {
-      c.products = c.products.filter((val: string) => val !== p.key);
-    }
-    c.products = [...new Set(c.products)];
-    this.modelService.update(c.key, c);
-  }
-
-  setCurrentCustomer(c: Customer) {
-    this.currenCustomerKey = c.key;
-  }
-
-  initFirstData() {
-    this.allWallets.forEach((c: Customer) => {
-      this.products.forEach((p: Product) => {
-        this.updateCustomerProduct(c, p, true);
-      });
-    });
   }
 }

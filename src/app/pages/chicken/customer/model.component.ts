@@ -93,10 +93,14 @@ export class CustomerComponent implements OnInit {
     ]).subscribe(
       (all) => {
         this.productTypes = this.productTypeService.cacheProductTypes = all[0];
+        this.productService.storeData(this.productTypes);
         this.categories = this.categoryService.cacheCategory = all[1];
+        this.categoryService.storeData(this.categories);
         this.products = this.productService.cacheProducts = all[2];
+        this.productService.storeData(this.products);
         this.prepareProducts();
         this.all = this.allCustomers = all[3];
+        this.customerService.storeData(this.all);
         this.source.load(this.all);
       },
       () => {
@@ -120,6 +124,7 @@ export class CustomerComponent implements OnInit {
   onCreateConfirm(e: any) {
     this.customerService.create(e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.customerService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -127,6 +132,7 @@ export class CustomerComponent implements OnInit {
   onEditConfirm(e: any) {
     this.customerService.update(e?.newData?.key, e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.customerService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -134,7 +140,10 @@ export class CustomerComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.customerService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.customerService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();
@@ -153,7 +162,9 @@ export class CustomerComponent implements OnInit {
       c.products = c.products.filter((val: string) => val !== p.key);
     }
     c.products = [...new Set(c.products)];
-    this.customerService.update(c.key, c);
+    this.customerService.update(c.key, c).then(
+      () => this.utilService.clearCache([this.customerService.lcKey])
+    );
   }
 
   setCurrentCustomer(c: Customer) {

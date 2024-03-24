@@ -4,6 +4,7 @@ import { map } from 'rxjs/operators';
 import { Product } from './product.service';
 import { Wallet } from './wallet.service';
 import { Observable, of } from 'rxjs';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class WalletTransfer {
   key?: any;
@@ -27,8 +28,13 @@ export class WalletTransferService {
   cacheWalletTransfer: any;
   modelRef: AngularFireList<WalletTransfer>;
   viCtyKey = '-NrdSKUVeKHqFX4l9UKi';
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(
+    private db: AngularFireDatabase,
+    private lc: LocalStorageService,
+  ) {
     this.modelRef = db.list(this.dbPath);
   }
 
@@ -43,6 +49,9 @@ export class WalletTransferService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -50,6 +59,15 @@ export class WalletTransferService {
         ),
       ),
     );
+  }
+
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, this.getLimitOrder(data));
+  }
+
+  getLimitOrder(data = [], number = 1000) {
+    return data.slice((data.length - number), data.length);
   }
 
   create(tutorial: WalletTransfer): any {

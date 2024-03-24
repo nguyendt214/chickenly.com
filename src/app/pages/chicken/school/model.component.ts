@@ -91,16 +91,12 @@ export class SchoolComponent implements OnInit {
     private customerService: CustomerService,
     private utilService: UtilService,
   ) {
-    this.schoolService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
-      this.all = all;
-      this.source.load(this.all);
-      this.utilService.loaded = true;
+    this.schoolService.getAll3()
+      .subscribe(all => {
+        this.schoolService.storeData(all);
+        this.all = all;
+        this.source.load(this.all);
+        this.utilService.loaded = true;
     });
   }
 
@@ -111,6 +107,7 @@ export class SchoolComponent implements OnInit {
   onCreateConfirm(e: any) {
     this.schoolService.create(e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.schoolService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -118,6 +115,7 @@ export class SchoolComponent implements OnInit {
   onEditConfirm(e: any) {
     this.schoolService.update(e?.newData?.key, e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.schoolService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -125,7 +123,10 @@ export class SchoolComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.schoolService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.schoolService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();
@@ -133,13 +134,7 @@ export class SchoolComponent implements OnInit {
   }
 
   getAllCustomers() {
-    this.customerService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
+    this.customerService.getAll3().subscribe(all => {
       this.customers = all;
       this.customers.forEach((c: Customer) => {
         this.settings.columns.owner.editor.config.list.push({

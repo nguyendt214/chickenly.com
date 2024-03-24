@@ -1,12 +1,12 @@
 import { Injectable } from '@angular/core';
-import { AngularFireDatabase, AngularFireList, SnapshotAction } from '@angular/fire/compat/database';
+import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { Product } from './product.service';
-import { UtilService } from './util.service';
 import { Employee } from './employee.service';
 import { Customer } from './customer.service';
 import { School } from './school.service';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class Order {
   key?: any;
@@ -75,10 +75,12 @@ export class OrderService {
   truyThuCongNo = null;
   thuCongNoBySchool = null;
   thuCongNoByCustomer = null;
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
   constructor(
     private db: AngularFireDatabase,
-    private utilService: UtilService,
+    private lc: LocalStorageService,
   ) {
     this.modelRef = db.list(this.dbPath);
   }
@@ -100,6 +102,9 @@ export class OrderService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -109,6 +114,14 @@ export class OrderService {
     );
   }
 
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, this.getLimitOrder(data));
+  }
+
+  getLimitOrder(data = [], number = 1000) {
+    return data.slice((data.length - number), data.length);
+  }
   create(o: Order): any {
     return this.modelRef.push(o);
   }
@@ -144,8 +157,20 @@ export class OrderService {
    * @param order
    */
   groupProductByCategory(order: Order): Order {
-    order.item = Object.values(this.utilService.groupItemBy(order.item, 'product.categoryKey'));
+    order.item = Object.values(this.groupItemBy(order.item, 'product.categoryKey'));
     return order;
+  }
+
+  groupItemBy(array, property) {
+    const hash = {}, props = property.split('.');
+    for (let i = 0; i < array.length; i++) {
+      const key = props.reduce(function (acc, prop) {
+        return acc && acc[prop];
+      }, array[i]);
+      if (!hash[key]) hash[key] = [];
+      hash[key].push(array[i]);
+    }
+    return hash;
   }
 
   sortCartByCategory(order: Order): Order {
