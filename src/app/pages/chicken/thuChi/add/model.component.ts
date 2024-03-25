@@ -262,6 +262,8 @@ export class ThuChiAddComponent implements OnInit {
       this.thuChiService.create(this.thuChi).then(
         () => {
           this.thuChiService.cacheThuChi = null;
+          this.utilService.clearCache([this.thuChiService.lcKey]);
+          this.utilService.clearCache([this.uploadService.lcKey]);
           setTimeout(() => {
             this.router.navigate(['pages/chicken/thu-chi']);
           });
@@ -270,16 +272,16 @@ export class ThuChiAddComponent implements OnInit {
     } catch (e) {
       console.log(e);
     }
-    this.thuChiService.create(this.thuChi).then(
-      () => {
-        this.thuChiService.cacheThuChi = null;
-        this.utilService.clearCache([this.thuChiService.lcKey]);
-        this.utilService.clearCache([this.uploadService.lcKey]);
-        setTimeout(() => {
-          this.router.navigate(['pages/chicken/thu-chi']);
-        });
-      },
-    );
+    // this.thuChiService.create(this.thuChi).then(
+    //   () => {
+    //     this.thuChiService.cacheThuChi = null;
+    //     this.utilService.clearCache([this.thuChiService.lcKey]);
+    //     this.utilService.clearCache([this.uploadService.lcKey]);
+    //     setTimeout(() => {
+    //       this.router.navigate(['pages/chicken/thu-chi']);
+    //     });
+    //   },
+    // );
   }
 
   updateWallet() {

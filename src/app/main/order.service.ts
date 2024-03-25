@@ -119,7 +119,7 @@ export class OrderService {
     this.lc.setObject(this.lcKey, this.getLimitOrder(data));
   }
 
-  getLimitOrder(data = [], number = 1000) {
+  getLimitOrder(data = [], number = 500) {
     return data.slice((data.length - number), data.length);
   }
   create(o: Order): any {

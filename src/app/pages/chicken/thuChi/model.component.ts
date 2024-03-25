@@ -360,6 +360,8 @@ export class ThuChiComponent implements OnInit {
   onCreateConfirm(e: any) {
     this.thuChiService.create(e?.newData)
       .then(() => {
+        this.thuChiService.cacheThuChi = null;
+        this.utilService.clearCache([this.thuChiService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -367,6 +369,8 @@ export class ThuChiComponent implements OnInit {
   onEditConfirm(e: any) {
     this.thuChiService.update(e?.newData?.key, e?.newData)
       .then(() => {
+        this.thuChiService.cacheThuChi = null;
+        this.utilService.clearCache([this.thuChiService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -375,9 +379,11 @@ export class ThuChiComponent implements OnInit {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.thuChiService.delete(key)
         .then(() => {
+          this.thuChiService.cacheThuChi = null;
+          this.utilService.clearCache([this.thuChiService.lcKey]);
           setTimeout(() => {
             window.location.reload();
-          }, 1000);
+          });
         })
         .catch(() => {
         });
@@ -432,6 +438,7 @@ export class ThuChiComponent implements OnInit {
       () => {
         this.thuChi = new ThuChi();
         this.thuChiService.cacheThuChi = null;
+        this.utilService.clearCache([this.thuChiService.lcKey]);
         this.initThuChi();
         this.showToa();
         this.getAllInParallel();
