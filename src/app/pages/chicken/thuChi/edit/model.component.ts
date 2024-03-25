@@ -193,24 +193,24 @@ export class ThuChiEditComponent implements OnInit {
       if (this.thuChi.paymentType === 1) {
         // Bank
         if (this.isChi) {
-          this.wallet.bankTotal -= price;
+          this.wallet.bankTotal += price;
           update = true;
         } else {
           // Thu
           if (this.thuChi.trangThaiTT === 2) {
-            this.wallet.bankTotal += price;
+            this.wallet.bankTotal -= price;
             update = true;
           }
         }
       } else if (this.thuChi.paymentType === 2) {
         // Cash
         if (this.isChi) {
-          this.wallet.cashTotal -= price;
+          this.wallet.cashTotal += price;
           update = true;
         } else {
           // Thu
           if (this.thuChi.trangThaiTT === 2) {
-            this.wallet.cashTotal += price;
+            this.wallet.cashTotal -= price;
             update = true;
           }
         }

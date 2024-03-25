@@ -100,21 +100,21 @@ export class ThuChiAddComponent implements OnInit {
     if (this.orderService.truyThuCongNo) {
       const congNo = this.orderService.truyThuCongNo;
       this.selectKH = congNo.order.customer.key;
-      this.khoanThu = 'Công nợ: ' + congNo.order.school.name + ' ' + congNo.time;
+      this.khoanThu = 'Doanh Thu: ' + congNo.order.school.name + ' ' + congNo.time;
       this.soTien = congNo.totalPrice;
       this.thuChi.price = this.soTien;
       this.thuChi.trangThaiTT = 2;
     } else if (this.orderService.thuCongNoBySchool) {
       const congNo: Order = this.orderService.thuCongNoBySchool.orders[0];
       this.selectKH = congNo.customer.key;
-      this.khoanThu = 'Công nợ: ' + congNo.school.name + ', ' + this.orderService.thuCongNoBySchool.time;
+      this.khoanThu = 'Doanh thu: ' + congNo.school.name + ', ' + this.orderService.thuCongNoBySchool.time;
       this.soTien = this.orderService.thuCongNoBySchool.totalPrice;
       this.thuChi.name = this.khoanThu;
       this.thuChi.price = this.soTien;
       this.thuChi.trangThaiTT = 2;
     } else if (this.orderService.thuCongNoByCustomer) {
       this.selectKH = this.orderService.thuCongNoByCustomer.congNoByCustomer.customer.key;
-      this.khoanThu = 'Công nợ: ' + this.orderService.thuCongNoByCustomer.congNoByCustomer.customer.name + ', ' + this.orderService.thuCongNoByCustomer.time;
+      this.khoanThu = 'Doanh thu: ' + this.orderService.thuCongNoByCustomer.congNoByCustomer.customer.name + ', ' + this.orderService.thuCongNoByCustomer.time;
       this.soTien = this.orderService.thuCongNoByCustomer.totalPrice;
       this.thuChi.name = this.khoanThu;
       this.thuChi.price = this.soTien;
@@ -215,52 +215,56 @@ export class ThuChiAddComponent implements OnInit {
   }
 
   addItem() {
-    this.thuChi.thuChiTypeKey = <string>this.thuChiType;
-    if (!this.isChi) {
-      this.thuChi.customerKey = this.selectKH;
-    }
-    if (this.thuChi.url) {
-      this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
-    }
-    this.thuChi.price = +this.thuChi.price || 0;
-
-    // Update wallet
-    this.updateWallet();
-    // Nếu là chi cho đối tác, thì cần cập nhật công nợ cho đối tác
-    if (this.selectNcc) {
-      const nhaCungCap = this.nhaCungCapService.getNhaCungCapByKey(this.nhaCungCaps, this.selectNcc);
-      nhaCungCap.price -= this.thuChi.price;
-      this.nhaCungCapService.update(nhaCungCap.key, nhaCungCap);
-    }
-    // Update order thành đã thu công nợ
-    if (this.orderService.truyThuCongNo || this.orderService.thuCongNoBySchool) {
-      let orderKeys = [];
-      if (this.orderService.truyThuCongNo) {
-        orderKeys = this.orderService.truyThuCongNo.order.orderKeys ?? [];
-      } else if (this.orderService.thuCongNoBySchool) {
-        orderKeys = this.orderService.thuCongNoBySchool.orders.map((order: Order) => order?.key);
-      } else if (this.orderService.thuCongNoByCustomer) {
-        orderKeys = this.orderService.thuCongNoByCustomer.orderKeys;
+    try {
+      this.thuChi.thuChiTypeKey = <string>this.thuChiType;
+      if (!this.isChi) {
+        this.thuChi.customerKey = this.selectKH;
       }
+      if (this.thuChi.url) {
+        this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
+      }
+      this.thuChi.price = +this.thuChi.price || 0;
 
-      orderKeys.forEach((k: any) => {
-        let o: any = this.orderService.cacheOrder.filter((order: Order) => order.key === k);
-        if (o.length) {
-          o = o.shift();
-          o.paid = true;
-          // Update order
-          this.orderService.update(k, o);
+      // Update wallet
+      this.updateWallet();
+      // Nếu là chi cho đối tác, thì cần cập nhật công nợ cho đối tác
+      if (this.selectNcc) {
+        this.thuChi.nhaCungCapKey = this.selectNcc;
+        const nhaCungCap = this.nhaCungCapService.getNhaCungCapByKey(this.nhaCungCaps, this.selectNcc);
+        nhaCungCap.price -= this.thuChi.price;
+        this.nhaCungCapService.update(nhaCungCap.key, nhaCungCap);
+      }
+      // Update order thành đã thu công nợ
+      if (this.orderService.truyThuCongNo || this.orderService.thuCongNoBySchool || this.orderService.thuCongNoByCustomer) {
+        let orderKeys = [];
+        if (this.orderService.truyThuCongNo) {
+          orderKeys = this.orderService.truyThuCongNo.order.orderKeys ?? [];
+        } else if (this.orderService.thuCongNoBySchool) {
+          orderKeys = this.orderService.thuCongNoBySchool.orders.map((order: Order) => order?.key);
+        } else if (this.orderService.thuCongNoByCustomer) {
+          orderKeys = this.orderService.thuCongNoByCustomer.orderKeys;
         }
-      });
-    }
-    this.thuChiService.create(this.thuChi).then(
-      () => {
-        this.thuChiService.cacheThuChi = null;
-        setTimeout(() => {
-          this.router.navigate(['pages/chicken/thu-chi']);
+        orderKeys.forEach((k: any) => {
+          let o: any = this.orderService.cacheOrder.filter((order: Order) => order.key === k);
+          if (o.length) {
+            o = o.shift();
+            o.paid = true;
+            // Update order
+            this.orderService.update(k, o);
+          }
         });
-      },
-    );
+      }
+      this.thuChiService.create(this.thuChi).then(
+        () => {
+          this.thuChiService.cacheThuChi = null;
+          setTimeout(() => {
+            this.router.navigate(['pages/chicken/thu-chi']);
+          });
+        },
+      );
+    } catch (e) {
+      console.log(e);
+    }
   }
 
   updateWallet() {

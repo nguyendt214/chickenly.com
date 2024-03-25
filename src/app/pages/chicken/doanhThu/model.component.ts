@@ -485,6 +485,7 @@ export class DoanhThuComponent implements OnInit {
       this.congNo.paid += o?.paidTotal;
       this.congNo.unpaid += o?.unpaidTotal;
     });
+    console.log(this.congNoByCustomer);
   }
 
   congNoTheoKhachHang() {
@@ -497,7 +498,6 @@ export class DoanhThuComponent implements OnInit {
       // congNo.orders = Object.assign({}, cnbs);
       congNo.orderKeys = [];
       cnbs.forEach((orders: Order[], index: number) => {
-        congNo.orderKeys = [...congNo.orderKeys, ...orders.map((o: Order) => o?.key)];
         if (orders[0].customer.key === c.key) {
           const congNoBySchool = new CongNoBySchool();
           congNoBySchool.school = Object.assign({}, orders[0].school);
@@ -505,6 +505,8 @@ export class DoanhThuComponent implements OnInit {
           congNoBySchool.paid = this.checkThuCongNo(orders);
           congNo.masterTotal += congNoBySchool.total;
           congNo.schools.push(congNoBySchool);
+          congNo.orderKeys = [...congNo.orderKeys, ...orders[0].master?.orderKeys];
+          congNo.orderKeys = [...new Set(congNo.orderKeys)];
         }
       });
       const paidInfo = this.paidAndUnpaidBySchool(congNo);
