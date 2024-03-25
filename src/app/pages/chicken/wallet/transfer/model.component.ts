@@ -239,6 +239,8 @@ export class WalletTransferComponent implements OnInit {
     this.walletService.update(this.transferWallet.fromWallet.key, this.transferWallet.fromWallet);
     this.walletService.update(this.transferWallet.toWallet.key, this.transferWallet.toWallet)
       .then(() => {
+        this.utilService.clearCache([this.walletService.lcKey]);
+        this.utilService.clearCache([this.walletTransferService.lcKey]);
         window.location.reload();
       });
   }
