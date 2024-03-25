@@ -49,11 +49,12 @@
           </mat-form-field>
         </div>
         <div class="reset-filter">
-          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(4)" [ngClass]="{'btn-current': cnTheoTuan === 4 }">4 Tuần trước</button>
-          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(3)" [ngClass]="{'btn-current': cnTheoTuan === 3 }">3 Tuần trước</button>
-          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(2)" [ngClass]="{'btn-current': cnTheoTuan === 2 }">2 Tuần trước</button>
-          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(1)" [ngClass]="{'btn-current': cnTheoTuan === 1 }">Tuần trước</button>
-          <button class="primary" mat-flat-button (click)="getPreviousWeek(0)" [ngClass]="{'btn-current': cnTheoTuan === 0 }">Tuần này</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(4)" [ngClass]="{'btn-current': cnTheoTuan === 4 }">4 Tuần Trước</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(3)" [ngClass]="{'btn-current': cnTheoTuan === 3 }">3 Tuần Trước</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(2)" [ngClass]="{'btn-current': cnTheoTuan === 2 }">2 Tuần Trước</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(1)" [ngClass]="{'btn-current': cnTheoTuan === 1 }">Tuần Trước</button>
+          <button class="primary mr-1" mat-flat-button (click)="getPreviousWeek(0)" [ngClass]="{'btn-current': cnTheoTuan === 0 }">Tuần Này</button>
+          <button class="primary" mat-flat-button (click)="getPreviousWeek(-1)" [ngClass]="{'btn-current': cnTheoTuan === -1 }">Tuần Tới</button>
         </div>
 <!--        <div (click)="resetFilter()" class="reset-filter">-->
 <!--          <button mat-button (click)="resetFilter()">LỌC MẶC ĐỊNH</button>-->

@@ -82,4 +82,11 @@ export class SchoolService {
   deleteAll(): Promise<void> {
     return this.modelRef.remove();
   }
+
+  getSchoolByKey(o: School[], key: string) {
+    const obj = o.filter((c: School) => c.key === key);
+    if (obj?.length) {
+      return obj.shift();
+    }
+  }
 }

@@ -176,7 +176,7 @@ export class DoanhThuComponent implements OnInit {
   cnTheoTuan = 0;
   congNo = {
     paid: 0,
-    unpaid: 0
+    unpaid: 0,
   };
 
   constructor(
@@ -220,7 +220,7 @@ export class DoanhThuComponent implements OnInit {
       },
       () => {
       },
-      () => this.utilService.loaded = true
+      () => this.utilService.loaded = true,
     );
   }
 
@@ -368,6 +368,9 @@ export class DoanhThuComponent implements OnInit {
 
   updateDoanhThuLabel(number) {
     switch (number) {
+      case -1:
+        this.doantThuLabel = 'Tuần tới';
+        break;
       case 0:
         this.doantThuLabel = 'Tuần này';
         break;
@@ -492,7 +495,6 @@ export class DoanhThuComponent implements OnInit {
       this.congNo.paid += o?.paidTotal;
       this.congNo.unpaid += o?.unpaidTotal;
     });
-    console.log(this.congNoByCustomer);
   }
 
   congNoTheoKhachHang() {
@@ -534,8 +536,8 @@ export class DoanhThuComponent implements OnInit {
       }
     });
     return {
-      paid, unpaid
-    }
+      paid, unpaid,
+    };
   }
 
 
@@ -632,7 +634,7 @@ export class DoanhThuComponent implements OnInit {
       orders: orders,
       totalPrice: this.tongTienByOrders(orders),
       time: 'Từ ' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd/MM/YYYY') +
-        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
+        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY'),
     };
     this.orderService.thuCongNoBySchool = dataCongNo;
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
@@ -644,7 +646,7 @@ export class DoanhThuComponent implements OnInit {
       orderKeys: congNoByCustomer.orderKeys,
       totalPrice: congNoByCustomer.masterTotal,
       time: 'Từ ' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd/MM/YYYY') +
-        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
+        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY'),
     };
     this.orderService.thuCongNoByCustomer = dataCongNo;
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');

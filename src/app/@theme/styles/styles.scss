@@ -310,12 +310,6 @@ button:focus {
   .cn-dathumotphan {
     color: blue;
   }
-  .btn-current {
-    background: orange !important;
-    color: white !important;
-    text-transform: uppercase;
-    border: orange !important;
-  }
 
   .cn-title {
     color: chocolate;
@@ -324,6 +318,13 @@ button:focus {
   .cn-kh {
     margin-top: 30px;
   }
+}
+
+.btn-current {
+  background: orange !important;
+  color: white !important;
+  text-transform: uppercase;
+  border: orange !important;
 }
 
 .edit-order-item {

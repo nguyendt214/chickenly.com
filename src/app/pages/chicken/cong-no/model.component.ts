@@ -171,6 +171,7 @@ export class CongNoComponent implements OnInit {
   source: LocalDataSource = new LocalDataSource();
   tongHopOrder: Order;
   thuCongNo = true;
+  cnTheoTuan = 0;
 
   constructor(
     private service: SmartTableData,
@@ -213,7 +214,7 @@ export class CongNoComponent implements OnInit {
       },
       () => {
       },
-      () => this.utilService.loaded = true
+      () => this.utilService.loaded = true,
     );
   }
 
@@ -347,6 +348,7 @@ export class CongNoComponent implements OnInit {
   }
 
   getPreviousWeek(previous: number) {
+    this.cnTheoTuan = previous;
     const date = this.orderService.getLastWeek(previous);
     this.thuCongNo = true;
     this.startDate = date[0];
@@ -563,7 +565,7 @@ export class CongNoComponent implements OnInit {
       order: this.tongHopOrder,
       totalPrice: this.calculatorOrderPrice(this.tongHopOrder),
       time: 'Từ ' + this.datePipe.transform(new Date(this.oFilter.startDate), 'dd/MM/YYYY') +
-        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY')
+        '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY'),
     };
     this.orderService.truyThuCongNo = dataCongNo;
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');

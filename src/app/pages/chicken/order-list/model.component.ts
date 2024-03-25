@@ -214,13 +214,17 @@ export class OrderListComponent implements OnInit {
       },
       () => {
       },
-      () => this.utilService.loaded = true
+      () => this.utilService.loaded = true,
     );
   }
 
   preparePageData(orders: Order[]) {
     orders.forEach((o: Order) => {
       o.sItem = this.utilService.groupItemBy(o.item, 'categoryKey');
+      const school = this.schoolService.getSchoolByKey(this.schools, o?.school?.key);
+      if (school) {
+        o.school.printNumber = school?.printNumber ?? 2;
+      }
     });
     this.all = orders;
     this.orderFilter = orders;
@@ -267,7 +271,7 @@ export class OrderListComponent implements OnInit {
 
   printOrder(e) {
     this.orderFilter.forEach((o: Order) => {
-      if(o?.key === e?.data?.key) {
+      if (o?.key === e?.data?.key) {
         o.printed = true;
       }
     });
