@@ -93,13 +93,7 @@ export class ThuChiEditComponent implements OnInit {
 
   getAllWallet() {
     if (!this.walletService.cacheWallets) {
-      this.walletService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.walletService.getAll3().subscribe(all => {
         this.wallets = this.walletService.cacheWallets = all;
       });
     } else {
@@ -113,12 +107,7 @@ export class ThuChiEditComponent implements OnInit {
 
   getAllUploadFiles() {
     if (!this.uploadService.cacheUploadFiles) {
-      this.uploadService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          // store the key
-          changes.map(c => ({key: c.payload.key, ...c.payload.val()})),
-        ),
-      ).subscribe(fileUploads => {
+      this.uploadService.getAll3().subscribe(fileUploads => {
         this.fileUploads = this.uploadService.cacheUploadFiles = fileUploads;
       });
     } else {
@@ -128,13 +117,7 @@ export class ThuChiEditComponent implements OnInit {
 
   getAllNhaCungCap() {
     if (!this.nhaCungCapService.cacheNhaCungCaps) {
-      this.nhaCungCapService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.nhaCungCapService.getAll3().subscribe(all => {
         this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all;
         this.nhaCungCap = this.nhaCungCaps[0].key;
       });
@@ -179,6 +162,7 @@ export class ThuChiEditComponent implements OnInit {
     this.thuChi.price = +this.thuChi.price;
     this.modelService.update(this.thuChiId, this.thuChi)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
         this.utilService.gotoPage('pages/chicken/thu-chi');
       });
   }
@@ -217,7 +201,10 @@ export class ThuChiEditComponent implements OnInit {
       }
       if (update) {
         // Call service to update wallet
-        this.walletService.update(this.wallet.key, this.wallet);
+        this.walletService.update(this.wallet.key, this.wallet).then(
+          () =>
+            this.utilService.clearCache([this.walletService.lcKey])
+        );
       }
     }
   }

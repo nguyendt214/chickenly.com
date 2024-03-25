@@ -485,6 +485,18 @@ nb-menu .menu-item a.active {
 .kprint {
   page-break-before: always;
 }
+.logo-container {
+  width: auto !important;
+  .load-all,
+  .load-all-order {
+    &:hover {
+      cursor: pointer;
+      font-weight: bold;
+      color: red;
+    }
+  }
+
+}
 @media screen and (max-width: 699px) {
   .mobile-zoom {
     zoom: 0.5;

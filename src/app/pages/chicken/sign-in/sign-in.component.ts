@@ -2,6 +2,7 @@ import { ChangeDetectorRef, Component, Inject } from '@angular/core';
 import { NB_AUTH_OPTIONS, NbAuthService, NbLoginComponent } from '@nebular/auth';
 import { Router } from '@angular/router';
 import { AuthService } from '../../../main/auth.service';
+import { UtilService } from "../../../main/util.service";
 
 @Component({
   selector: 'ngx-sign-in',
@@ -17,9 +18,11 @@ export class SignInComponent extends NbLoginComponent {
     @Inject(ChangeDetectorRef) cd: ChangeDetectorRef,
     @Inject(Router) router: Router,
     private authService: AuthService,
+    private utilService: UtilService,
   ) {
     super(service, options, cd, router);
     this.isLogged = this.authService.isLogged();
+    this.utilService.appLoaded();
     if(this.isLogged) {
       this.router.navigate(['pages/chicken/doanh-thu']);
     }

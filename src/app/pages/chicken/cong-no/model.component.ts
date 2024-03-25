@@ -202,9 +202,13 @@ export class CongNoComponent implements OnInit {
     ]).subscribe(
       (all) => {
         this.customers = this.customerService.cacheCustomers = all[0];
+        this.customerService.storeData(this.customers);
         this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.schoolService.storeData(this.schools);
         this.employees = this.employeeService.cacheEmployees = all[2];
+        this.employeeService.storeData(this.employees);
         this.orderService.cacheOrder = all[3];
+        this.orderService.storeData(all[3]);
         this.preparePageData(all[3]);
       },
       () => {
@@ -249,7 +253,10 @@ export class CongNoComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.orderService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.orderService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();

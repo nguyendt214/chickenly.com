@@ -87,9 +87,13 @@ export class BaoCaoComponent implements OnInit, AfterViewInit, OnDestroy {
     ]).subscribe(
       (all) => {
         this.customers = this.customerService.cacheCustomers = all[0];
+        this.customerService.storeData(this.customers);
         this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.schoolService.storeData(this.schools);
         this.employees = this.employeeService.cacheEmployees = all[2];
+        this.employeeService.storeData(this.employees);
         this.orderService.cacheOrder = all[3];
+        this.orderService.storeData(all[3]);
         this.preparePageData(all[3]);
       },
       () => {

@@ -68,13 +68,8 @@ export class EmployeeComponent implements OnInit {
     private toastrService: NbToastrService,
     private utilService: UtilService,
   ) {
-    this.modelService.getAll().snapshotChanges().pipe(
-      map(changes =>
-        changes.map(c =>
-          ({key: c.payload.key, ...c.payload.val()}),
-        ),
-      ),
-    ).subscribe(all => {
+    this.modelService.getAll3().subscribe(all => {
+      this.modelService.storeData(all);
       this.all = all;
       this.source.load(this.all);
       this.utilService.loaded = true;
@@ -94,6 +89,7 @@ export class EmployeeComponent implements OnInit {
   onCreateConfirm(e: any) {
     this.modelService.create(e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -101,6 +97,7 @@ export class EmployeeComponent implements OnInit {
   onEditConfirm(e: any) {
     this.modelService.update(e?.newData?.key, e?.newData)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
       })
       .catch(() => e.confirm.reject());
   }
@@ -108,7 +105,10 @@ export class EmployeeComponent implements OnInit {
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
       this.modelService.delete(e?.data?.key)
-        .then(() => e.confirm.resolve())
+        .then(() => {
+          this.utilService.clearCache([this.modelService.lcKey]);
+          e.confirm.resolve();
+        })
         .catch(() => e.confirm.reject());
     } else {
       e.confirm.reject();

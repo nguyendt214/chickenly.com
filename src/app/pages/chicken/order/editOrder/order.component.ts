@@ -304,6 +304,7 @@ export class OrderEdit2Component implements OnInit {
         this.showToa();
         // Clear order cache
         this.orderService.cacheOrder = null;
+        this.utilService.clearCache([this.orderService.lcKey]);
         setTimeout(() => {
           this.utilService.gotoPage('pages/chicken/order-list');
         }, 3000);

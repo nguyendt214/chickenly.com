@@ -39,6 +39,7 @@ import { COSMIC_THEME } from './styles/theme.cosmic';
 import { CORPORATE_THEME } from './styles/theme.corporate';
 import { DARK_THEME } from './styles/theme.dark';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MatTooltipModule } from "@angular/material/tooltip";
 
 const NB_MODULES = [
   NbLayoutModule,
@@ -54,6 +55,7 @@ const NB_MODULES = [
   NbIconModule,
   NbEvaIconsModule,
   MatProgressSpinnerModule,
+  MatTooltipModule,
 ];
 const COMPONENTS = [
   HeaderComponent,

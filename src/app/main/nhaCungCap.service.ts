@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
 import { Observable, of } from 'rxjs';
 import { map } from 'rxjs/operators';
+import { LocalStorageService } from "./local-storage.servise";
 
 export class NhaCungCap {
   key?: any;
@@ -20,8 +21,13 @@ export class NhaCungCapService {
   private dbPath = '/NhaCungCap';
   cacheNhaCungCaps: any;
   modelRef: AngularFireList<NhaCungCap>;
+  lcKey = this.dbPath.replace('/', '');
+  lcKeyForce = this.lcKey + 'Force';
 
-  constructor(private db: AngularFireDatabase) {
+  constructor(
+    private db: AngularFireDatabase,
+    private lc: LocalStorageService,
+  ) {
     this.modelRef = db.list(this.dbPath);
   }
 
@@ -37,6 +43,9 @@ export class NhaCungCapService {
   }
 
   getAll3() {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      return of(this.lc.getObject(this.lcKey));
+    }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
@@ -49,6 +58,11 @@ export class NhaCungCapService {
         ),
       ),
     );
+  }
+
+  storeData(data) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, data);
   }
 
   create(tutorial: NhaCungCap): any {

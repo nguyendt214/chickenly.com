@@ -192,13 +192,8 @@ export class ProductListComponent implements OnInit, OnChanges {
     if (this.categoryService.cacheCategory) {
       this.categories = this.categoryService.cacheCategory;
     } else {
-      this.categoryService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.categoryService.getAll3().
+      subscribe(all => {
         this.categories = all;
         this.categoryService.cacheCategory = all;
       });
@@ -209,13 +204,8 @@ export class ProductListComponent implements OnInit, OnChanges {
     if (this.productTypeService.cacheProductTypes) {
       this.productTypes = this.productTypeService.cacheProductTypes;
     } else {
-      this.productTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.productTypeService.getAll3()
+        .subscribe(all => {
         this.productTypes = this.productTypeService.cacheProductTypes = all;
       });
     }
@@ -227,13 +217,7 @@ export class ProductListComponent implements OnInit, OnChanges {
       this.prepareProducts();
 
     } else {
-      this.productService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
+      this.productService.getAll3().subscribe(all => {
         this.allProducts = this.productService.cacheProducts = all;
         this.prepareProducts();
       });
