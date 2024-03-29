@@ -23,7 +23,9 @@
         "@angular-eslint/no-input-rename": [
           "warn",
           {
-            "allowedNames": ["name"]
+            "allowedNames": [
+              "name"
+            ]
           }
         ],
         "@angular-eslint/component-selector": [
