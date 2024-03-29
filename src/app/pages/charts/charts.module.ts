@@ -53,7 +53,6 @@ const components = [
   imports: [
     ThemeModule,
     ChartsRoutingModule,
-    NgxEchartsModule,
     NgxChartsModule,
     ChartModule,
     NbCardModule,

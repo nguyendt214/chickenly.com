@@ -16,7 +16,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
     ThemeModule,
     NbMenuModule,
     DashboardModule,
-    ECommerceModule,
     MiscellaneousModule,
     MatProgressSpinnerModule,
   ],

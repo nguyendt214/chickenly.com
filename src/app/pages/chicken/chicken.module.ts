@@ -78,7 +78,6 @@ import { NgxEchartsModule } from 'ngx-echarts';
     ChickenRoutingModule,
     Ng2SmartTableModule,
     MatRadioModule,
-    NgxEchartsModule,
   ],
   declarations: [
     ...routedComponents,
