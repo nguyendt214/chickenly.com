@@ -42,6 +42,7 @@
     "@angular/platform-browser": "^15.2.10",
     "@angular/platform-browser-dynamic": "^15.2.10",
     "@angular/router": "^15.2.10",
+    "@angular/service-worker": "^15.2.10",
     "@asymmetrik/ngx-leaflet": "3.0.1",
     "@nebular/auth": "11.0.1",
     "@nebular/date-fns": "^11.0.1",
