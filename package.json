@@ -67,6 +67,7 @@
     "ionicons": "^2.0.1",
     "leaflet": "^1.9.4",
     "lodash": "^4.17.21",
+    "lodash-es": "^4.17.21",
     "nebular-icons": "^1.1.0",
     "ng2-ckeditor": "~1.2.9",
     "ng2-completer": "^9.0.1",
