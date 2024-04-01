@@ -1,5 +1,5 @@
 {
-  "name": "ngx-admin",
+  "name": "PHONG THỊNH ĐỖ",
   "version": "11.0.0",
   "license": "MIT",
   "repository": {
@@ -26,7 +26,6 @@
     "docs": "compodoc -p src/tsconfig.app.json -d docs",
     "docs:serve": "compodoc -p src/tsconfig.app.json -d docs -s",
     "release:changelog": "npm run conventional-changelog -- -p angular -i CHANGELOG.md -s",
-    "postinstall": "ngcc --properties es2015 es5 browser module main --first-only --create-ivy-entry-points --tsconfig \"./src/tsconfig.app.json\"",
     "deploy": "firebase deploy --only hosting"
   },
   "dependencies": {
@@ -43,12 +42,12 @@
     "@angular/router": "^17.3.2",
     "@angular/service-worker": "^17.3.2",
     "@asymmetrik/ngx-leaflet": "^17.0.0",
-    "@nebular/auth": "^11.0.1",
-    "@nebular/date-fns": "^11.0.1",
-    "@nebular/eva-icons": "^11.0.1",
-    "@nebular/moment": "^11.0.1",
-    "@nebular/security": "^11.0.1",
-    "@nebular/theme": "^11.0.1",
+    "@nebular/auth": "^13.0.0",
+    "@nebular/date-fns": "^13.0.0",
+    "@nebular/eva-icons": "^13.0.0",
+    "@nebular/moment": "^13.0.0",
+    "@nebular/security": "^13.0.0",
+    "@nebular/theme": "^13.0.0",
     "@swimlane/ngx-charts": "^14.0.0",
     "angular2-chartjs": "^0.4.1",
     "angular2-smart-table": "^3.2.0",
