@@ -1,5 +1,18 @@
 {
   "projects": {
     "default": "chickenly"
-  }
+  },
+  "targets": {
+    "chickenly": {
+      "hosting": {
+        "phongthinhdo": [
+          "phongthinhdo"
+        ],
+        "chickenly": [
+          "chickenly"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }
