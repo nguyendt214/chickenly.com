@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { LocalDataSource } from 'ng2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
 import { map, take } from 'rxjs/operators';
@@ -14,6 +13,7 @@ import { UtilService } from '../../../main/util.service';
 import { CategoryService } from '../../../main/category.service';
 import { ExportCsvService } from '../../../main/exportCsv.service';
 import { forkJoin } from 'rxjs';
+import { LocalDataSource } from 'angular2-smart-table';
 
 @Component({
   selector: 'ngx-smart-table-cong-no',

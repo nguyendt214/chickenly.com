@@ -9,7 +9,6 @@ import {
   NbTabsetModule,
   NbTreeGridModule, NbUserModule,
 } from '@nebular/theme';
-import { Ng2SmartTableModule } from 'ng2-smart-table';
 
 import { ThemeModule } from '../../@theme/theme.module';
 import { ChickenRoutingModule, routedComponents } from './chicken-routing.module';
@@ -35,6 +34,7 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ExportCsvService } from '../../main/exportCsv.service';
 import { MatRadioModule } from '@angular/material/radio';
 import { NgxEchartsModule } from 'ngx-echarts';
+import { Angular2SmartTableModule } from 'angular2-smart-table';
 
 @NgModule({
   imports: [
@@ -76,8 +76,10 @@ import { NgxEchartsModule } from 'ngx-echarts';
     MatExpansionModule,
     MatDialogModule,
     ChickenRoutingModule,
-    Ng2SmartTableModule,
+    // Ng2SmartTableModule,
     MatRadioModule,
+    Angular2SmartTableModule,
+    // NgxEchartsModule,
   ],
   declarations: [
     ...routedComponents,

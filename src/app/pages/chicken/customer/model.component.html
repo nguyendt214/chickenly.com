@@ -3,11 +3,11 @@
     Danh Sách Khách Hàng ( <b>{{ source?.count() }}</b> )
   </nb-card-header>
   <nb-card-body>
-    <ng2-smart-table [settings]="settings" [source]="source"
+    <angular2-smart-table [settings]="settings" [source]="source"
                      (createConfirm)="onCreateConfirm($event)"
                      (editConfirm)="onEditConfirm($event)"
                      (deleteConfirm)="onDeleteConfirm($event)" class="mobile-zoom">
-    </ng2-smart-table>
+    </angular2-smart-table>
   </nb-card-body>
   <div class="customer-product pt-4">
     <h4 class="text-center">KHÁCH HÀNG VÀ SẢN PHẨM</h4>

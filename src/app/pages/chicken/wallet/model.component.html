@@ -3,10 +3,10 @@
     QUẢN LÝ VÍ ( <b>{{ source?.count() }}</b> )
   </nb-card-header>
   <nb-card-body>
-    <ng2-smart-table [settings]="settings" [source]="source"
+    <angular2-smart-table [settings]="settings" [source]="source"
                      (createConfirm)="onCreateConfirm($event)"
                      (editConfirm)="onEditConfirm($event)"
                      (deleteConfirm)="onDeleteConfirm($event)" class="mobile-zoom">
-    </ng2-smart-table>
+    </angular2-smart-table>
   </nb-card-body>
 </nb-card>

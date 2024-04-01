@@ -273,13 +273,13 @@
     <div class="danh-sach-hoa-don pt-4">
       <h6>Danh sách đơn hàng</h6>
     </div>
-    <ng2-smart-table [settings]="settings" [source]="source"
+    <angular2-smart-table [settings]="settings" [source]="source"
                      (createConfirm)="onCreateConfirm($event)"
                      (editConfirm)="onEditConfirm($event)"
                      (deleteConfirm)="onDeleteConfirm($event)"
                      (userRowSelect)="printOrder($event)"
                      (custom)="onCustom($event)" class="d-none2 mobile-zoom">
-    </ng2-smart-table>
+    </angular2-smart-table>
     <div class="indonchobep d-none">
       <div class="text-right">Tổng đơn hàng: <b>{{ source?.count() }}</b></div>
     </div>

@@ -1,5 +1,5 @@
 import { Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges, ViewChild } from '@angular/core';
-import { LocalDataSource, Ng2SmartTableComponent } from 'ng2-smart-table';
+import { LocalDataSource } from 'angular2-smart-table';
 
 import { SmartTableData } from '../../../../@core/data/smart-table';
 import { map } from 'rxjs/operators';
@@ -124,7 +124,7 @@ export class ProductListComponent implements OnInit, OnChanges {
     },
   };
   source: LocalDataSource = new LocalDataSource();
-  @ViewChild('table') table: Ng2SmartTableComponent;
+  @ViewChild('table') table: any;
 
   constructor(
     private service: SmartTableData,

@@ -1,10 +1,10 @@
 <nb-card *ngIf="order?.item?.length">
   <nb-card-body>
-    <ng2-smart-table #table [settings]="settings" [source]="source"
+    <angular2-smart-table #table [settings]="settings" [source]="source"
                      (delete)="onDeleteConfirm($event)"
                      (edit)="editProduct($event)"
                      (userRowSelect)="editProduct($event)" class="d-none2 mobile-zoom">
-    </ng2-smart-table>
+    </angular2-smart-table>
   </nb-card-body>
   <div class="tong-hop mt-3 mb-3">
     <div class="row">
