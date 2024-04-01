@@ -245,7 +245,7 @@ export class ThuChiComponent implements OnInit {
 
   cnNhaCungCap() {
     this.nhaCungCaps.forEach((ncc: NhaCungCap) => {
-      this.cnNcc += +ncc.price || 0;
+      this.cnNcc += (+ncc.price > 0) ?  +ncc.price : 0;
     });
   }
 
@@ -271,7 +271,6 @@ export class ThuChiComponent implements OnInit {
   prepareThuChi() {
     this.tongThu = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey === 'thu');
     this.tongChi = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey !== 'thu');
-    console.log(this.tongChi);
     this.tongThu.forEach((tc: ThuChi) => {
       if (tc.trangThaiTT === 1) {
         this.price.tienChuaThu += +tc.price;
