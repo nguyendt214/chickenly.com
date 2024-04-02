@@ -147,13 +147,14 @@ export class DoanhThuComponent implements OnInit {
         },
       },
       orderTotal: {
-        title: 'Tổng tiền',
+        title: 'Tổng tiền ( VNĐ )',
+        type: 'string',
         valuePrepareFunction: (cell, row) => {
           let total = 0;
           row.item.forEach((item: Cart) => {
             total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
           });
-          return this.currencyPipe.transform(total, '', '', '1.0-0') + ' VNĐ';
+          return this.currencyPipe.transform(total, '', '', '1.0-0');
         },
         filter: false,
       },
