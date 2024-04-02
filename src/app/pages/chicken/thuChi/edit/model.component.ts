@@ -107,7 +107,8 @@ export class ThuChiEditComponent implements OnInit {
 
   getAllUploadFiles() {
     if (!this.uploadService.cacheUploadFiles) {
-      this.uploadService.getAll3().subscribe(fileUploads => {
+      this.uploadService.getLastData().subscribe(fileUploads => {
+        this.uploadService.storeData(fileUploads);
         this.fileUploads = this.uploadService.cacheUploadFiles = fileUploads;
       });
     } else {
@@ -158,7 +159,7 @@ export class ThuChiEditComponent implements OnInit {
   submitThuChi() {
     // Update wallet
     this.updateWallet();
-    this.thuChi.updateAt = (new Date()).toString();
+    this.thuChi.updateAt = (new Date()).toLocaleDateString();
     this.thuChi.price = +this.thuChi.price;
     this.modelService.update(this.thuChiId, this.thuChi)
       .then(() => {

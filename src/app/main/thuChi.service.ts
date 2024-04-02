@@ -55,6 +55,7 @@ export class ThuChiService {
   getAll(): AngularFireList<ThuChi> {
     return this.modelRef;
   }
+
   getAll2(): Observable<any> {
     if (this.cacheThuChi) {
       return of(this.cacheThuChi);
@@ -73,6 +74,33 @@ export class ThuChiService {
         ),
       ),
     );
+  }
+
+  getLastData(startDate: string, endDate: string): Observable<any> {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      const lcData: any = this.lc.getObject(this.lcKey);
+      if (lcData?.date?.startDate &&
+        (new Date(startDate)).toISOString() === (new Date(lcData?.date?.startDate)).toISOString() &&
+        (new Date(endDate)).toISOString() === (new Date(lcData?.date?.endDate)).toISOString()) {
+        console.log('Use Thu Chi Cache');
+        return of(lcData?.thuChi);
+      }
+    }
+    console.log('Get Thu Chi from: ' + new Date(startDate).toLocaleDateString() + ', to: ' + new Date(endDate).toLocaleDateString());
+    return this.db.list(this.dbPath, ref =>
+      // ref.limitToLast(1000)
+      ref.orderByChild('date')
+        .startAt(new Date(startDate).toLocaleDateString())
+        .endAt((new Date(endDate).toLocaleDateString()))
+    ).valueChanges();
+  }
+
+  storeThuChiData(data, dates: any = {}) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, {
+      date: dates,
+      thuChi: this.getLimitOrder(data)
+    });
   }
 
   storeData(data) {

@@ -200,6 +200,12 @@ export class ThuChiComponent implements OnInit {
     private exportCsvService: ExportCsvService,
   ) {
     this.utilService.loaded = false;
+    const date = this.thuChiService.getCurrentMonth();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    // this.filterByDate(this.startDate, this.endDate);
     this.getAllInParallel();
   }
 
@@ -208,39 +214,53 @@ export class ThuChiComponent implements OnInit {
 
     forkJoin([
       this.nhaCungCapService.getAll3().pipe(take(1)),
-      this.uploadService.getAll3().pipe(take(1)),
+      this.uploadService.getLastData().pipe(take(1)),
       this.customerService.getAll3().pipe(take(1)),
       this.walletService.getAll3().pipe(take(1)),
-      this.thuChiService.getAll3().pipe(take(1)),
+      this.thuChiService.getLastData(this.oFilter.startDate, this.oFilter.endDate).pipe(take(1)),
     ]).subscribe(
       (all) => {
-        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[0];
+        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = <NhaCungCap[]>all[0];
         this.nhaCungCapService.storeData(this.nhaCungCaps);
         this.nhaCungCap = this.nhaCungCaps[0].key;
         this.cnNhaCungCap();
-        this.fileUploads = this.uploadService.cacheUploadFiles = all[1];
+        this.fileUploads = this.uploadService.cacheUploadFiles = <FileUpload[]>all[1];
         this.uploadService.storeData(this.fileUploads);
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = <Customer[]>all[2];
         this.customerService.storeData(this.customers);
-        this.wallets = this.walletService.cacheWallets = all[3];
+        this.wallets = this.walletService.cacheWallets = <Wallet[]>all[3];
         this.walletService.storeData(this.wallets);
         this.wallets.forEach((w: Wallet) => {
           w.cashTotal = +w.cashTotal;
           w.bankTotal = +w.bankTotal;
         });
         this.wallet = this.wallets[0].key;
-        this.all = this.thuChiService.cacheThuChi = all[4];
-        this.thuChiService.storeData(this.all);
+        this.all = this.thuChiService.cacheThuChi = <ThuChi[]>all[4];
+        this.thuChiService.storeThuChiData(this.all, {
+          startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
+          endDate: (new Date(this.oFilter.endDate)).toLocaleDateString()
+        });
         this.utilService.sortListByDate(this.all);
         this.mapCustomer();
         this.mapWallet();
         this.preparePageData(this.all);
         this.initThuChi();
+        this.globalFilter();
       },
       () => {
       },
       () => this.utilService.loaded = true
     );
+  }
+
+  getThuChiByDate() {
+    this.thuChiService.getLastData(this.oFilter.startDate, this.oFilter.endDate)
+      .subscribe(
+        all => {
+          this.all = all;
+          this.globalFilter();
+        }
+      );
   }
 
   cnNhaCungCap() {
@@ -252,12 +272,6 @@ export class ThuChiComponent implements OnInit {
   preparePageData(all: ThuChi[]) {
     this.thuChiFilter = all;
     this.source.load(this.all);
-    const date = this.thuChiService.getCurrentMonth();
-    this.startDate = date[0];
-    this.endDate = date[1];
-    this.oFilter.startDate = this.startDate;
-    this.oFilter.endDate = this.endDate;
-    this.filterByDate(this.startDate, this.endDate);
     // Prepare files
     this.all.forEach((tc: ThuChi) => {
       tc.files = this.fileUploads.filter((file: FileUpload) => {
@@ -299,7 +313,7 @@ export class ThuChiComponent implements OnInit {
   }
 
   initThuChi() {
-    this.thuChi.date = this.today.toString();
+    this.thuChi.date = this.today.toLocaleDateString();
     this.thuChi.fileKeys = [];
     this.thuChi.thuChiTypeKey = '';
     this.thuChi.nhaCungCapKey = '';
@@ -412,7 +426,7 @@ export class ThuChiComponent implements OnInit {
   }
 
   createDateChooice(t: string, e: any) {
-    this.thuChi.date = e.value.toString();
+    this.thuChi.date = e.value.toLocaleDateString();
   }
 
   getLastUploadFile() {
@@ -477,8 +491,8 @@ export class ThuChiComponent implements OnInit {
       this.oFilter.endDate = this.thuChiService.filterEndDate;
       this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
         this.thuChiService.filterStartDate.getTime() === this.thuChiService.filterEndDate.getTime();
+      this.getThuChiByDate();
     }
-    this.globalFilter();
   }
 
   globalFilter() {

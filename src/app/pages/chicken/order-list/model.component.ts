@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'angular2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
-import { map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Cart, Order, OrderService } from '../../../main/order.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { School, SchoolService } from '../../../main/school.service';
@@ -120,7 +120,7 @@ export class OrderListComponent implements OnInit {
         title: 'Nhân Viên Giao',
         type: 'string',
         valuePrepareFunction: (c: Employee) => {
-          return c.name;
+          return c?.name ?? '';
         },
         compareFunction: (direction: any, c1: Employee, c2: Employee) => {
           if (direction === 1) {
@@ -139,9 +139,11 @@ export class OrderListComponent implements OnInit {
       },
       orderTotal: {
         title: 'Tổng tiền (VNĐ)',
+        type: 'string',
         valuePrepareFunction: (cell, row) => {
+          const rowData = row.row.data;
           let total = 0;
-          row.item.forEach((item: Cart) => {
+          rowData?.item.forEach((item: Cart) => {
             total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
           });
           return this.currencyPipe.transform(total, '', '', '1.0-0');
@@ -191,6 +193,12 @@ export class OrderListComponent implements OnInit {
     private categoryService: CategoryService,
   ) {
     this.utilService.loaded = false;
+    // Lấy order cho từ T2-T7 của tuần này
+    const date = this.orderService.getCurrentWeek();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
     this.getAllInParallel();
   }
 
@@ -199,23 +207,36 @@ export class OrderListComponent implements OnInit {
       this.customerService.getAll3().pipe(take(1)),
       this.schoolService.getAll3().pipe(take(1)),
       this.employeeService.getAll3().pipe(take(1)),
-      this.orderService.getAll3().pipe(take(1)),
+      this.orderService.getLastData(this.oFilter.startDate, this.oFilter.endDate).pipe(take(1)),
     ]).subscribe(
       (all) => {
-        this.customers = this.customerService.cacheCustomers = all[0];
+        this.customers = this.customerService.cacheCustomers = <Customer[]>all[0];
         this.customerService.storeData(this.customers);
-        this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.schools = this.schoolService.cacheSchools = this.allSchools = <School[]>all[1];
         this.schoolService.storeData(this.schools);
-        this.employees = this.employeeService.cacheEmployees = all[2];
+        this.employees = this.employeeService.cacheEmployees = <Employee[]>all[2];
         this.employeeService.storeData(this.employees);
         this.orderService.cacheOrder = all[3];
-        this.orderService.storeData(all[3]);
-        this.preparePageData(all[3]);
+        this.orderService.storeOrderData(all[3], {
+          startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
+          endDate: (new Date(this.oFilter.endDate)).toLocaleDateString()
+        });
+        this.preparePageData(<Order[]>all[3]);
       },
       () => {
       },
       () => this.utilService.loaded = true,
     );
+  }
+
+  getOrdersByDate() {
+    this.orderService.getLastData(this.oFilter.startDate, this.oFilter.endDate)
+      .subscribe(
+        all => {
+          this.all = all;
+          this.globalFilter();
+        }
+      );
   }
 
   preparePageData(orders: Order[]) {
@@ -229,13 +250,7 @@ export class OrderListComponent implements OnInit {
     this.all = orders;
     this.orderFilter = orders;
     this.source.load(this.orderFilter);
-    // Lấy order cho từ T2-T7 của tuần này
-    const date = this.orderService.getCurrentWeek();
-    this.startDate = date[0];
-    this.endDate = date[1];
-    this.oFilter.startDate = this.startDate;
-    this.oFilter.endDate = this.endDate;
-    this.filterByDate(this.startDate, this.endDate);
+    // this.filterByDate(this.startDate, this.endDate);
     this.utilService.loaded = true;
   }
 
@@ -291,8 +306,8 @@ export class OrderListComponent implements OnInit {
       this.orderService.filterEndDate = this.utilService.getDateFromString(endDate.value);
       this.oFilter.startDate = this.orderService.filterStartDate;
       this.oFilter.endDate = this.orderService.filterEndDate;
+      this.getOrdersByDate();
     }
-    this.globalFilter();
   }
 
   indonchobep() {

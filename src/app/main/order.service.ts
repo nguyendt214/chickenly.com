@@ -94,6 +94,7 @@ export class OrderService {
     //   return this.modelRef;
     // }
   }
+
   getAll2(): Observable<any> {
     if (this.cacheOrder) {
       return of(this.cacheOrder);
@@ -119,9 +120,37 @@ export class OrderService {
     this.lc.setObject(this.lcKey, this.getLimitOrder(data));
   }
 
+  storeOrderData(data, dates: any = {}) {
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, {
+      date: dates,
+      orders: this.getLimitOrder(data)
+    });
+  }
+
   getLimitOrder(data = [], number = 500) {
     return data.slice((data.length - number), data.length);
   }
+
+  getLastData(startDate: string, endDate: string): Observable<any> {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      const lcData: any = this.lc.getObject(this.lcKey);
+      if (lcData?.date?.startDate &&
+        (new Date(startDate)).toISOString() === (new Date(lcData?.date?.startDate)).toISOString() &&
+        (new Date(endDate)).toISOString() === (new Date(lcData?.date?.endDate)).toISOString()) {
+        console.log('Use Order Cache');
+        return of(lcData?.orders);
+      }
+    }
+    console.log('Get orders from: ' + new Date(startDate).toLocaleDateString() + ', to: ' + new Date(endDate).toLocaleDateString());
+    return this.db.list(this.dbPath, ref =>
+      // ref.limitToLast(1000)
+      ref.orderByChild('date')
+        .startAt(new Date(startDate).toLocaleDateString())
+        .endAt((new Date(endDate).toLocaleDateString()))
+    ).valueChanges();
+  }
+
   create(o: Order): any {
     return this.modelRef.push(o);
   }
@@ -142,7 +171,7 @@ export class OrderService {
     return this.db.object(this.dbPath + '/' + key).valueChanges();
   }
 
-  getAllOrders() : Observable<any[]> {
+  getAllOrders(): Observable<any[]> {
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>

@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { AngularFireDatabase, AngularFireList } from '@angular/fire/compat/database';
-import { Observable, of } from 'rxjs';
+import { Observable, of, tap } from 'rxjs';
 import { map } from 'rxjs/operators';
 import { LocalStorageService } from "./local-storage.servise";
 
@@ -63,6 +63,13 @@ export class NhaCungCapService {
   storeData(data) {
     this.lc.setBool(this.lcKeyForce, false);
     this.lc.setObject(this.lcKey, data);
+  }
+
+  getLastData(): Observable<any> {
+    return this.db.list(this.dbPath, ref =>
+      ref.orderByChild('name')
+        .limitToLast(500))
+      .valueChanges();
   }
 
   create(tutorial: NhaCungCap): any {

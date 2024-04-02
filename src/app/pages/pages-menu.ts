@@ -11,11 +11,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'archive',
     link: '/pages/chicken/order-list',
   },
-  {
-    title: 'CÔNG NỢ',
-    icon: 'heart',
-    link: '/pages/chicken/cong-no',
-  },
+  // {
+  //   title: 'CÔNG NỢ',
+  //   icon: 'heart',
+  //   link: '/pages/chicken/cong-no',
+  // },
   {
     title: 'DOANH THU',
     icon: 'bulb',
@@ -61,11 +61,11 @@ export const MENU_ITEMS: NbMenuItem[] = [
     icon: 'twitter-outline',
     link: '/pages/chicken/thu-chi',
   },
-  {
-    title: 'BÁO CÁO',
-    icon: 'loader-outline',
-    link: '/pages/chicken/bao-cao',
-  },
+  // {
+  //   title: 'BÁO CÁO',
+  //   icon: 'loader-outline',
+  //   link: '/pages/chicken/bao-cao',
+  // },
   // {
   //   title: 'LOẠI THU CHI',
   //   icon: 'heart-outline',

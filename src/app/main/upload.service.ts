@@ -105,6 +105,20 @@ export class FileUploadService {
     );
   }
 
+  getLastData(): Observable<any> {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      console.log('Use getFiles from Cache');
+      return of(this.lc.getObject(this.lcKey));
+    }
+    console.log('Get Files');
+    return this.db.list(this.dbPath, ref =>
+      ref.limitToLast(100)
+      // ref.orderByChild('date')
+      //   .startAt(new Date(startDate).toLocaleDateString())
+      //   .endAt((new Date(endDate).toLocaleDateString()))
+    ).valueChanges();
+  }
+
   storeData(data) {
     this.lc.setBool(this.lcKeyForce, false);
     this.lc.setObject(this.lcKey, this.getLimitOrder(data));

@@ -129,7 +129,7 @@ export class DoanhThuComponent implements OnInit {
         title: 'Nhân Viên Giao',
         type: 'string',
         valuePrepareFunction: (c: Employee) => {
-          return c.name;
+          return c.name ?? '';
         },
         compareFunction: (direction: any, c1: Employee, c2: Employee) => {
           if (direction === 1) {
@@ -150,8 +150,9 @@ export class DoanhThuComponent implements OnInit {
         title: 'Tổng tiền ( VNĐ )',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
+          const rowData = row.row.data;
           let total = 0;
-          row.item.forEach((item: Cart) => {
+          rowData.item.forEach((item: Cart) => {
             total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
           });
           return this.currencyPipe.transform(total, '', '', '1.0-0');
@@ -194,6 +195,13 @@ export class DoanhThuComponent implements OnInit {
     private exportCsvService: ExportCsvService,
   ) {
     this.utilService.loaded = false;
+    // Lấy order cho 7 ngày gần nhất
+    const date = this.orderService.getCurrentWeek();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    // this.filterByDate(this.startDate, this.endDate);
     this.getAllInParallel();
   }
 
@@ -201,7 +209,7 @@ export class DoanhThuComponent implements OnInit {
     const getAllCustomers = this.customerService.getAll3();
     const getAllSchools = this.schoolService.getAll3();
     const getAllEmployees = this.employeeService.getAll3();
-    const getAllOrders = this.orderService.getAll3();
+    const getAllOrders = this.orderService.getLastData(this.oFilter.startDate, this.oFilter.endDate);
     forkJoin([
       getAllCustomers.pipe(take(1)),
       getAllSchools.pipe(take(1)),
@@ -209,20 +217,33 @@ export class DoanhThuComponent implements OnInit {
       getAllOrders.pipe(take(1)),
     ]).subscribe(
       (all) => {
-        this.customers = this.customerService.cacheCustomers = all[0];
+        this.customers = this.customerService.cacheCustomers = <Customer[]>all[0];
         this.customerService.storeData(this.customers);
-        this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.schools = this.schoolService.cacheSchools = this.allSchools = <School[]>all[1];
         this.schoolService.storeData(this.schools);
-        this.employees = this.employeeService.cacheEmployees = all[2];
+        this.employees = this.employeeService.cacheEmployees = <Employee[]>all[2];
         this.employeeService.storeData(this.employees);
         this.orderService.cacheOrder = all[3];
-        this.orderService.storeData(all[3]);
-        this.preparePageData(all[3]);
+        this.orderService.storeOrderData(all[3], {
+          startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
+          endDate: (new Date(this.oFilter.endDate)).toLocaleDateString()
+        });
+        this.preparePageData(<Order[]>all[3]);
       },
       () => {
       },
       () => this.utilService.loaded = true,
     );
+  }
+
+  getOrdersByDate() {
+    this.orderService.getLastData(this.oFilter.startDate, this.oFilter.endDate)
+      .subscribe(
+        all => {
+          this.all = all;
+          this.globalFilter();
+        }
+      );
   }
 
   preparePageData(orders: Order[]) {
@@ -231,14 +252,7 @@ export class DoanhThuComponent implements OnInit {
     });
     this.all = orders;
     this.orderFilter = orders;
-    this.source.load(this.orderFilter);
-    // Lấy order cho 7 ngày gần nhất
-    const date = this.orderService.getCurrentWeek();
-    this.startDate = date[0];
-    this.endDate = date[1];
-    this.oFilter.startDate = this.startDate;
-    this.oFilter.endDate = this.endDate;
-    this.filterByDate(this.startDate, this.endDate);
+    this.source.load(this.orderFilter)
     this.utilService.loaded = true;
   }
 
@@ -291,8 +305,8 @@ export class DoanhThuComponent implements OnInit {
       this.oFilter.endDate = this.orderService.filterEndDate;
       this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
         this.orderService.filterStartDate.getTime() === this.orderService.filterEndDate.getTime();
+      this.getOrdersByDate();
     }
-    this.globalFilter();
   }
 
   onCustom(event) {
@@ -363,7 +377,7 @@ export class DoanhThuComponent implements OnInit {
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
     this.oFilter.endDate = this.endDate;
-    this.globalFilter();
+    this.getOrdersByDate();
     this.updateDoanhThuLabel(previous);
   }
 
