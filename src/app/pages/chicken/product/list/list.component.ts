@@ -56,7 +56,8 @@ export class ProductListComponent implements OnInit, OnChanges {
         title: 'Nhóm Sản Phẩm',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
-          return row.product.category.name;
+          const rowData = row.row.data;
+          return rowData.product.category.name;
         },
         editable: false,
         filter: false,
@@ -65,7 +66,8 @@ export class ProductListComponent implements OnInit, OnChanges {
         title: 'Sản Phẩm',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
-          return row.product.name;
+          const rowData = row.row.data;
+          return rowData.product.name;
         },
         editable: false,
         filter: false,
@@ -74,7 +76,8 @@ export class ProductListComponent implements OnInit, OnChanges {
         title: 'Qui cách',
         type: 'html',
         valuePrepareFunction: (cell, row) => {
-          return '<span class="text-center d-block">' + row.product.productType.name + '</span>';
+          const rowData = row.row.data;
+          return '<span class="text-center d-block">' + rowData.product.productType.name + '</span>';
         },
         editable: true,
         filter: false,
@@ -83,7 +86,8 @@ export class ProductListComponent implements OnInit, OnChanges {
         title: 'Số Lượng Giao',
         type: 'html',
         valuePrepareFunction: (cell, row) => {
-          return '<span class="text-center d-block">' + row.qty + '</span>';
+          const rowData = row.row.data;
+          return '<span class="text-center d-block">' + rowData.qty + '</span>';
         },
         editable: true,
         filter: false,
@@ -92,8 +96,9 @@ export class ProductListComponent implements OnInit, OnChanges {
         title: 'Số Lượng Trả',
         type: 'html',
         valuePrepareFunction: (cell, row) => {
-          if (row.qtyReturn) {
-            return '<span class="text-center d-block">' + row.qtyReturn + '</span>';
+          const rowData = row.row.data;
+          if (rowData.qtyReturn) {
+            return '<span class="text-center d-block">' + rowData.qtyReturn + '</span>';
           }
         },
         filter: false,
@@ -102,7 +107,8 @@ export class ProductListComponent implements OnInit, OnChanges {
         title: 'Giá',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
-          return this.currencyPipe.transform(row.price, '', '', '1.0-0') + ' VNĐ';
+          const rowData = row.row.data;
+          return this.currencyPipe.transform(rowData.price, '', '', '1.0-0') + ' VNĐ';
         },
         editable: true,
         filter: false,

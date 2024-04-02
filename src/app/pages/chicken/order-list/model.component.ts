@@ -99,7 +99,7 @@ export class OrderListComponent implements OnInit {
         title: 'ĐỊA ĐIỂM',
         type: 'string',
         valuePrepareFunction: (c: School) => {
-          return c.name;
+          return c.name ?? '';
         },
         compareFunction: (direction: any, c1: School, c2: School) => {
           if (direction === 1) {
@@ -120,7 +120,7 @@ export class OrderListComponent implements OnInit {
         title: 'Nhân Viên Giao',
         type: 'string',
         valuePrepareFunction: (c: Employee) => {
-          return c.name;
+          return c?.name ?? '';
         },
         compareFunction: (direction: any, c1: Employee, c2: Employee) => {
           if (direction === 1) {
@@ -140,8 +140,9 @@ export class OrderListComponent implements OnInit {
       orderTotal: {
         title: 'Tổng tiền (VNĐ)',
         valuePrepareFunction: (cell, row) => {
+          const rowData = row.row.data;
           let total = 0;
-          row.item.forEach((item: Cart) => {
+          rowData.item.forEach((item: Cart) => {
             total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
           });
           return this.currencyPipe.transform(total, '', '', '1.0-0');

@@ -150,8 +150,9 @@ export class DoanhThuComponent implements OnInit {
         title: 'Tổng tiền ( VNĐ )',
         type: 'string',
         valuePrepareFunction: (cell, row) => {
+          const rowData = row.row.data;
           let total = 0;
-          row.item.forEach((item: Cart) => {
+          rowData.item.forEach((item: Cart) => {
             total += (item.qty - (item.qtyReturn ?? 0)) * item.price;
           });
           return this.currencyPipe.transform(total, '', '', '1.0-0');
