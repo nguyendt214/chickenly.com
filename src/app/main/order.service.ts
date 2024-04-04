@@ -94,6 +94,7 @@ export class OrderService {
     //   return this.modelRef;
     // }
   }
+
   getAll2(): Observable<any> {
     if (this.cacheOrder) {
       return of(this.cacheOrder);
@@ -102,7 +103,9 @@ export class OrderService {
   }
 
   getAll3() {
-    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+    if (this.lc.getItem(this.lcKey) === 'undefined') {
+      this.lc.removeItem(this.lcKey);
+    } else if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
       return of(this.lc.getObject(this.lcKey));
     }
     return this.modelRef.snapshotChanges().pipe(
@@ -119,9 +122,17 @@ export class OrderService {
     this.lc.setObject(this.lcKey, this.getLimitOrder(data));
   }
 
-  getLimitOrder(data = [], number = 500) {
-    return data.slice((data.length - number), data.length);
+  getLimitOrder(data: any, number = 500) {
+    console.log(data);
+    if (data?.date) {
+      console.log('1');
+      return data?.date?.slice((data.length - number), data.length) ?? [];
+    } else {
+      console.log('2');
+      return data?.slice((data.length - number), data.length) ?? [];
+    }
   }
+
   create(o: Order): any {
     return this.modelRef.push(o);
   }
@@ -142,7 +153,7 @@ export class OrderService {
     return this.db.object(this.dbPath + '/' + key).valueChanges();
   }
 
-  getAllOrders() : Observable<any[]> {
+  getAllOrders(): Observable<any[]> {
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
         changes.map(c =>
