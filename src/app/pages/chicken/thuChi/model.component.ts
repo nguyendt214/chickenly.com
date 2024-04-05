@@ -219,6 +219,13 @@ export class ThuChiComponent implements OnInit {
         this.nhaCungCap = this.nhaCungCaps[0].key;
         this.cnNhaCungCap();
         this.fileUploads = this.uploadService.cacheUploadFiles = all[1];
+        // Update Files date format
+        // this.fileUploads.forEach((tc: FileUpload) => {
+        //   tc.date = (new Date()).toLocaleDateString();
+        //   this.uploadService.update(tc.key, tc).then(
+        //     () => console.log('update Files', tc)
+        //   );
+        // });
         this.uploadService.storeData(this.fileUploads);
         this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
         this.customerService.storeData(this.customers);
@@ -269,6 +276,14 @@ export class ThuChiComponent implements OnInit {
   }
 
   prepareThuChi() {
+    // console.log('all ThuChi', this.all);
+    // Update ThuChi date format
+    // this.all.forEach((tc: ThuChi) => {
+    //   tc.date = (new Date(tc.date)).toLocaleDateString();
+    //   this.thuChiService.update(tc.key, tc).then(
+    //     () => console.log('update ThuCHi', tc)
+    //   );
+    // });
     this.tongThu = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey === 'thu');
     this.tongChi = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey !== 'thu');
     this.tongThu.forEach((tc: ThuChi) => {
@@ -299,7 +314,7 @@ export class ThuChiComponent implements OnInit {
   }
 
   initThuChi() {
-    this.thuChi.date = this.today.toString();
+    this.thuChi.date = this.today.toLocaleDateString();
     this.thuChi.fileKeys = [];
     this.thuChi.thuChiTypeKey = '';
     this.thuChi.nhaCungCapKey = '';
@@ -412,7 +427,7 @@ export class ThuChiComponent implements OnInit {
   }
 
   createDateChooice(t: string, e: any) {
-    this.thuChi.date = e.value.toString();
+    this.thuChi.date = e.value.toLocaleDateString();
   }
 
   getLastUploadFile() {

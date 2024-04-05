@@ -96,7 +96,7 @@ export class OrderComponent implements OnInit {
   }
   preparePageData() {
     this.order.item = [];
-    this.order.date = this.tomorrow.toString();
+    this.order.date = this.tomorrow.toLocaleDateString();
     this.utilService.loaded = true;
     this.toastrConfig();
     if (this.orderService.orderClone) {
@@ -142,7 +142,7 @@ export class OrderComponent implements OnInit {
   }
 
   createDateChooice(t: string, e: any) {
-    this.order.date = e.value.toString();
+    this.order.date = e.value.toLocaleDateString();
   }
 
   prepareProducts() {

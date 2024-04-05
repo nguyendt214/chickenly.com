@@ -158,7 +158,6 @@ export class ThuChiEditComponent implements OnInit {
   submitThuChi() {
     // Update wallet
     this.updateWallet();
-    this.thuChi.updateAt = (new Date()).toString();
     this.thuChi.price = +this.thuChi.price;
     this.modelService.update(this.thuChiId, this.thuChi)
       .then(() => {

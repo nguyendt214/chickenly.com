@@ -10,6 +10,8 @@ export class FileUpload {
   name: string;
   url: string;
   file: File;
+  date?: string;
+  update?: string;
 
   constructor(file: File) {
     this.file = file;
@@ -113,21 +115,20 @@ export class FileUploadService {
   }
 
   getLimitOrder(data: any, number = 500) {
-    console.log(data);
     if (data?.date) {
-      console.log('1');
       return data?.date?.slice((data.length - number), data.length) ?? [];
     } else {
-      console.log('2');
       return data?.slice((data.length - number), data.length) ?? [];
     }
   }
 
   create(o: FileUpload): any {
+    o.date = (new Date()).toLocaleDateString();
     return this.modelRef.push(o);
   }
 
   update(key: string, value: any): Promise<void> {
+    value.update = (new Date()).toLocaleDateString();
     return this.modelRef.update(key, value);
   }
 

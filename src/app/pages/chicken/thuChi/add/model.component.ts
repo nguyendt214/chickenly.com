@@ -131,7 +131,7 @@ export class ThuChiAddComponent implements OnInit {
   }
 
   initThuChi() {
-    this.thuChi.date = this.today.toString();
+    this.thuChi.date = this.today.toLocaleDateString();
     this.thuChi.fileKeys = [];
     this.thuChi.thuChiTypeKey = this.thuChiType;
     this.thuChi.nhaCungCapKey = '';
@@ -200,7 +200,7 @@ export class ThuChiAddComponent implements OnInit {
   }
 
   createDateChooice(t: string, e: any) {
-    this.thuChi.date = e.value.toString();
+    this.thuChi.date = e.value.toLocaleDateString();
   }
 
   getLastUploadFile() {

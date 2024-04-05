@@ -203,7 +203,7 @@ export class WalletTransferComponent implements OnInit {
   }
 
   transfer() {
-    this.transferWallet.date = (new Date()).toString();
+    this.transferWallet.date = (new Date()).toLocaleDateString();
     this.transferWallet.soTien = +this.transferWallet.soTien;
     this.transferWallet.name = this.transferWallet.paymentType === 1 ? 'BANK ' : 'CASH ';
     this.transferWallet.name += this.transferWallet.fromWallet.name + ' => ' + this.transferWallet.toWallet.name

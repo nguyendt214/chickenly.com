@@ -18,6 +18,7 @@ export class WalletTransfer {
   note?: string;
   disable?: boolean;
   date?: string;
+  update?: string;
 }
 
 @Injectable({
@@ -70,11 +71,13 @@ export class WalletTransferService {
     return data.slice((data.length - number), data.length);
   }
 
-  create(tutorial: WalletTransfer): any {
-    return this.modelRef.push(tutorial);
+  create(o: WalletTransfer): any {
+    o.date = (new Date()).toLocaleDateString();
+    return this.modelRef.push(o);
   }
 
   update(key: string, value: any): Promise<void> {
+    value.update = (new Date()).toLocaleDateString();
     return this.modelRef.update(key, value);
   }
 
