@@ -66,7 +66,8 @@ export class ThuChiService {
     if (this.lc.getItem(this.lcKey) === 'undefined') {
       this.lc.removeItem(this.lcKey);
     } else if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
-      return of(this.lc.getObject(this.lcKey));
+      const data = this.getLimitOrder(this.lc.getObject(this.lcKey));
+      return of(data);
     }
     return this.modelRef.snapshotChanges().pipe(
       map(changes =>
@@ -83,12 +84,9 @@ export class ThuChiService {
   }
 
   getLimitOrder(data: any, number = 500) {
-    console.log(data);
     if (data?.date) {
-      console.log('1');
-      return data?.date?.slice((data.length - number), data.length) ?? [];
+      return data?.thuChi?.slice((data.length - number), data.length) ?? [];
     } else {
-      console.log('2');
       return data?.slice((data.length - number), data.length) ?? [];
     }
   }
@@ -98,10 +96,12 @@ export class ThuChiService {
   }
 
   create(o: ThuChi): any {
+    o.date = (new Date()).toLocaleDateString();
     return this.modelRef.push(o);
   }
 
   update(key: string, value: any): Promise<void> {
+    value.updateAt = (new Date()).toLocaleDateString();
     return this.modelRef.update(key, value);
   }
 

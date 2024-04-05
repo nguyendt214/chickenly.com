@@ -212,6 +212,15 @@ export class OrderListComponent implements OnInit {
         this.orderService.cacheOrder = all[3];
         this.orderService.storeData(all[3]);
         this.preparePageData(all[3]);
+        // Update order date format
+        // this.orderService.cacheOrder.forEach((o: Order) => {
+        //   if (!o?.key) {
+        //     console.log(o);
+        //   } else {
+        //     o.date = (new Date(o.date)).toLocaleDateString();
+        //     this.orderService.update(o.key, o);
+        //   }
+        // });
       },
       () => {
       },

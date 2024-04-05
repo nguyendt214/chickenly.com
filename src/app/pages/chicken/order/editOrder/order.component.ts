@@ -105,7 +105,7 @@ export class OrderEdit2Component implements OnInit {
   }
 
   createDateChooice(t: string, e: any) {
-    this.order.date = e.value.toString();
+    this.order.date = e.value.toLocaleDateString();
   }
 
   getAllCategories() {
