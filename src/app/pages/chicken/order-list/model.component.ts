@@ -203,6 +203,7 @@ export class OrderListComponent implements OnInit {
       this.orderService.getAll3().pipe(take(1)),
     ]).subscribe(
       (all) => {
+        console.log(all);
         this.customers = this.customerService.cacheCustomers = all[0];
         this.customerService.storeData(this.customers);
         this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
@@ -296,6 +297,7 @@ export class OrderListComponent implements OnInit {
   }
 
   filterByDate(startDate: any, endDate: any) {
+    console.log(startDate);
     if (!(startDate instanceof Date)) {
       this.orderService.filterStartDate = this.utilService.getDateFromString(startDate.value);
       this.orderService.filterEndDate = this.utilService.getDateFromString(endDate.value);
@@ -382,11 +384,12 @@ export class OrderListComponent implements OnInit {
   }
 
   globalFilter() {
+    console.log(this.oFilter);
     // Always filter by date
-    this.orderFilter = this.all.filter((o: Order) => {
-      const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
-      return this.orderService.filterStartDate <= orderDate && orderDate <= this.orderService.filterEndDate;
-    });
+    // this.orderFilter = this.all.filter((o: Order) => {
+    //   const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
+    //   return this.orderService.filterStartDate <= orderDate && orderDate <= this.orderService.filterEndDate;
+    // });
 
     if (this.oFilter.customer) {
       this.orderFilter = this.orderFilter.filter((o: Order) => o.customer.key === this.oFilter.customer.key);
