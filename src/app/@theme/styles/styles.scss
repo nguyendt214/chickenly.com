@@ -498,6 +498,17 @@ nb-menu .menu-item a.active {
   }
 
 }
+angular2-smart-table {
+  i {
+    font-size: 2em;
+    &:hover {
+      color: red;
+    }
+  }
+}
+.cdk-global-overlay-wrapper {
+  justify-content: center !important;
+}
 @media screen and (max-width: 699px) {
   .mobile-zoom {
     zoom: 0.5;

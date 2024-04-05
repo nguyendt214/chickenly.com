@@ -26,6 +26,7 @@ export class CartDialog implements OnInit {
   productTypes?: ProductType[] = [];
   all?: Product[] = [];
   orderDate: string;
+  chiLinhKey = '-NiLEWbxAR_J42ncXqL0';
 
   constructor(
     public dialogRef: MatDialogRef<CartDialog>,
@@ -41,6 +42,7 @@ export class CartDialog implements OnInit {
 
   ngOnInit() {
     this.order = this.data.order;
+    console.log(this.order);
     this.orderDate = this.datePipe.transform(new Date(this.order.date), 'dd/MM/YYYY');
   }
 
