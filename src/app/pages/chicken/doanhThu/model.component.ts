@@ -647,6 +647,7 @@ export class DoanhThuComponent implements OnInit {
         '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd/MM/YYYY'),
     };
     this.orderService.thuCongNoByCustomer = dataCongNo;
+    console.log(dataCongNo);
     this.utilService.gotoPage('pages/chicken/thu-chi/add/thu');
   }
 

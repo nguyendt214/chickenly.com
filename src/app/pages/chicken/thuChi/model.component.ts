@@ -99,7 +99,7 @@ export class ThuChiComponent implements OnInit {
 
     forkJoin([
       this.nhaCungCapService.getAll3().pipe(take(1)),
-      this.uploadService.getAll3().pipe(take(1)),
+      this.uploadService.getLastData().pipe(take(1)),
       this.customerService.getAll3().pipe(take(1)),
       this.walletService.getAll3().pipe(take(1)),
       this.thuChiService.getLastData(this.dateFilter).pipe(take(1)),

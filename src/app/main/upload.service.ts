@@ -11,7 +11,9 @@ export class FileUpload {
   url: string;
   file: File;
   date?: string;
+  dateTimestamp?: number;
   update?: string;
+  updated?: string;
 
   constructor(file: File) {
     this.file = file;
@@ -27,6 +29,7 @@ export class FileUploadService {
   modelRef: AngularFireList<FileUpload>;
   lcKey = this.dbPath.replace('/', '');
   lcKeyForce = this.lcKey + 'Force';
+  lcKeyDate = this.lcKey + 'Date';
 
   constructor(
     private db: AngularFireDatabase,
@@ -46,6 +49,8 @@ export class FileUploadService {
         storageRef.getDownloadURL().subscribe(downloadURL => {
           fileUpload.url = downloadURL;
           fileUpload.name = fileUpload.file.name;
+          fileUpload.date = (new Date()).toLocaleDateString();
+          fileUpload.dateTimestamp = new Date().getTime();
           this.saveFileData(fileUpload);
         });
       }),
@@ -115,11 +120,24 @@ export class FileUploadService {
   }
 
   getLimitLocalStorageCache(data: any, number = 500) {
-    if (data?.date) {
-      return data?.date?.slice((data.length - number), data.length) ?? [];
-    } else {
-      return data?.slice((data.length - number), data.length) ?? [];
+    return data?.slice((data.length - number), data.length) ?? [];
+  }
+
+  getLastData(): Observable<any> {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      const lcData: any = this.lc.getObject(this.lcKey);
+      console.log('Use FILEs Cache!!!');
+      return of(lcData);
     }
+    console.log('Get last 500 Files!!!');
+    return this.db.list(this.dbPath, ref =>
+      ref.orderByChild('dateTimestamp')
+        .limitToLast(500)
+    ).valueChanges();
+  }
+
+  getDataFromCache() {
+    return this.lc.getObject(this.lcKey) ?? [];
   }
 
   create(o: FileUpload): any {

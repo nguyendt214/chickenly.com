@@ -489,7 +489,6 @@ nb-menu .menu-item a.active {
 }
 .logo-container {
   width: auto !important;
-  .load-all,
   .load-all-order {
     &:hover {
       cursor: pointer;
@@ -532,6 +531,19 @@ angular2-st-tbody-edit-delete {
 }
 .angular2-smart-th {
   padding: 15px 2px 0 !important;
+}
+.load-all {
+  position: fixed;
+  right: 10px;
+  background: black;
+  color: white;
+  padding: 2px 8px;
+  border-radius: 6px;
+  opacity: 0.5;
+  &:hover {
+    opacity: 1;
+    cursor: pointer;
+  }
 }
 @media screen and (max-width: 699px) {
   .mobile-zoom {

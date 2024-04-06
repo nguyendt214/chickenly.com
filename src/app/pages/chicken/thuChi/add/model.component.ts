@@ -217,6 +217,7 @@ export class ThuChiAddComponent implements OnInit {
       if (this.thuChi.url) {
         this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
       }
+      this.thuChi.soLuong = this.thuChi?.soLuong ?? '';
       this.thuChi.price = +this.thuChi.price || 0;
       // Nếu là chi cho đối tác, thì cần cập nhật công nợ cho đối tác
       if (this.selectNcc) {
@@ -252,6 +253,8 @@ export class ThuChiAddComponent implements OnInit {
       this.thuChiService.create(this.thuChi).then(
         () => {
           console.log('Thu DONE');
+          this.orderService.thuCongNoByCustomer = null;
+          this.utilService.clearCache([this.uploadService.lcKey]);
           setTimeout(() => {
             this.router.navigate(['pages/chicken/thu-chi']);
           });
