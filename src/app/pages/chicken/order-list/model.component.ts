@@ -258,7 +258,7 @@ export class OrderListComponent implements OnInit {
           console.log('Total', orders.length);
           orders.forEach((o: Order) => {
             if (o?.key) {
-              o.date = (new Date(o.date)).toLocaleDateString();
+              o.date = (new Date(o.date)).toISOString();
               o.dateTimestamp = new Date(o.date).getTime();
               this.orderService.update(o?.key, o).then(
                 () => console.log('Update done', o)
@@ -273,8 +273,8 @@ export class OrderListComponent implements OnInit {
 
   updateDateFilterObject() {
     this.dateFilter = {
-      startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
-      endDate: (new Date(this.oFilter.endDate)).toLocaleDateString(),
+      startDate: (new Date(this.oFilter.startDate)).toISOString(),
+      endDate: (new Date(this.oFilter.endDate)).toISOString(),
     };
   }
 

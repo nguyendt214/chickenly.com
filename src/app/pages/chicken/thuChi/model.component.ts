@@ -136,8 +136,8 @@ export class ThuChiComponent implements OnInit {
 
   updateDateFilterObject() {
     this.dateFilter = {
-      startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
-      endDate: (new Date(this.oFilter.endDate)).toLocaleDateString(),
+      startDate: (new Date(this.oFilter.startDate)).toISOString(),
+      endDate: (new Date(this.oFilter.endDate)).toISOString(),
     };
   }
 
@@ -196,7 +196,7 @@ export class ThuChiComponent implements OnInit {
           console.log('Total', o.length);
           o.forEach((_o: ThuChi) => {
             if (_o?.key) {
-              _o.date = (new Date(_o.date)).toLocaleDateString();
+              _o.date = (new Date(_o.date)).toISOString();
               _o.dateTimestamp = new Date(_o.date).getTime();
               this.thuChiService.update(_o?.key, _o).then(
                 () => console.log('Update done', _o)
@@ -225,7 +225,7 @@ export class ThuChiComponent implements OnInit {
   }
 
   initThuChi() {
-    this.thuChi.date = this.today.toLocaleDateString();
+    this.thuChi.date = this.today.toISOString();
     this.thuChi.fileKeys = [];
     this.thuChi.thuChiTypeKey = '';
     this.thuChi.nhaCungCapKey = '';
@@ -304,7 +304,7 @@ export class ThuChiComponent implements OnInit {
   }
 
   createDateChooice(t: string, e: any) {
-    this.thuChi.date = e.value.toLocaleDateString();
+    this.thuChi.date = e.value.toISOString();
   }
 
   getLastUploadFile() {

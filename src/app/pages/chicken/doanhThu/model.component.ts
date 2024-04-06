@@ -246,8 +246,8 @@ export class DoanhThuComponent implements OnInit {
 
   updateDateFilterObject() {
     this.dateFilter = {
-      startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
-      endDate: (new Date(this.oFilter.endDate)).toLocaleDateString(),
+      startDate: (new Date(this.oFilter.startDate)).toISOString(),
+      endDate: (new Date(this.oFilter.endDate)).toISOString(),
     };
   }
 

@@ -135,7 +135,7 @@ export class OrderEdit2Component implements OnInit {
   }
 
   createDateChooice(t: string, e: any) {
-    this.order.date = e.value.toLocaleDateString();
+    this.order.date = e.value.toISOString();
   }
 
   prepareProducts() {
@@ -244,7 +244,7 @@ export class OrderEdit2Component implements OnInit {
 
   capNhatDonHang() {
     this.order = this.orderService.removePropertiesBeforeSave(this.order);
-    this.order.updated = (new Date()).toLocaleDateString();
+    this.order.updated = (new Date()).toISOString();
     this.orderService.update(this.orderId, this.order).then(
       () => {
         this.showToa();

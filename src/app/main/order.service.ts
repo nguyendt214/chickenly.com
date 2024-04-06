@@ -139,7 +139,7 @@ export class OrderService {
         ref.orderByChild('dateTimestamp')
           .startAt(startAtTimestamp)
       // .limitToLast(200)
-      // .endAt((new Date(endDate).toLocaleDateString()))
+      // .endAt((new Date(endDate).toISOString()))
     ).valueChanges();
   }
 
@@ -161,7 +161,7 @@ export class OrderService {
     // }
 
     data = data.filter((o: any) => {
-      const orderDate = (new Date((new Date(o?.date)).setHours(0, 0, 0, 0))).toLocaleDateString();
+      const orderDate = (new Date((new Date(o?.date)).setHours(0, 0, 0, 0))).toISOString();
       return date?.startDate <= orderDate;
       // return dates?.startDate <= orderDate && orderDate <= dates?.endDate;
     });
@@ -200,7 +200,7 @@ export class OrderService {
   }
 
   update(key: string, value: any): Promise<void> {
-    value.updated = (new Date()).toLocaleDateString();
+    value.updated = (new Date()).toISOString();
     this.lc.setBool(this.lcKeyForce, true);
     return this.modelRef.update(key, value);
   }

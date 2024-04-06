@@ -95,8 +95,8 @@
         <p class="kokay">Công ty còn: <strong>{{ price.tienDaThu - price.chi | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
       </div>
     </div>
-    <h4 class="text-center" *ngIf="dateFilter?.startDate !== 'Invalid Date' && dateFilter?.endDate !== 'Invalid Date'">Chi Tiết Thu Chi. Từ {{ dateFilter?.startDate | date : 'dd/MM/YYYY' }}
-      - {{ dateFilter?.endDate | date : 'dd/MM/YYYY' }}</h4>
+    <h4 class="text-center" *ngIf="dateFilter?.startDate !== 'Invalid Date' && dateFilter?.endDate !== 'Invalid Date'">Chi Tiết Thu Chi. Từ {{ dateFilter?.startDate }}
+      - {{ dateFilter?.endDate }}</h4>
     <mat-accordion class="mb-5">
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>

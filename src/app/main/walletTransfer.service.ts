@@ -72,12 +72,12 @@ export class WalletTransferService {
   }
 
   create(o: WalletTransfer): any {
-    o.date = (new Date()).toLocaleDateString();
+    o.date = (new Date()).toISOString();
     return this.modelRef.push(o);
   }
 
   update(key: string, value: any): Promise<void> {
-    value.update = (new Date()).toLocaleDateString();
+    value.update = (new Date()).toISOString();
     return this.modelRef.update(key, value);
   }
 

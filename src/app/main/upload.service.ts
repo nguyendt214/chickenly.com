@@ -49,7 +49,7 @@ export class FileUploadService {
         storageRef.getDownloadURL().subscribe(downloadURL => {
           fileUpload.url = downloadURL;
           fileUpload.name = fileUpload.file.name;
-          fileUpload.date = (new Date()).toLocaleDateString();
+          fileUpload.date = (new Date()).toISOString();
           fileUpload.dateTimestamp = new Date().getTime();
           this.saveFileData(fileUpload);
         });
@@ -141,12 +141,12 @@ export class FileUploadService {
   }
 
   create(o: FileUpload): any {
-    o.date = (new Date()).toLocaleDateString();
+    o.date = (new Date()).toISOString();
     return this.modelRef.push(o);
   }
 
   update(key: string, value: any): Promise<void> {
-    value.update = (new Date()).toLocaleDateString();
+    value.update = (new Date()).toISOString();
     return this.modelRef.update(key, value);
   }
 

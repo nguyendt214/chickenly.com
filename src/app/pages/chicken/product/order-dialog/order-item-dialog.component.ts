@@ -96,7 +96,7 @@ export class OrderItemDialog implements OnInit {
   submit() {
     this.onNoClick();
     this.order = this.orderService.removePropertiesBeforeSave(this.order);
-    this.order.updated = (new Date()).toLocaleDateString();
+    this.order.updated = (new Date()).toISOString();
     this.order.item.forEach((cart: Cart) => {
       if (cart.product.key === this.cart.product.key) {
         cart.qty = +this.qty;
