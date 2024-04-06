@@ -1,5 +1,5 @@
 <nb-card>
-  <nb-card-header>DANH SÁCH THU CHI ( <b>{{ source?.count() }}</b> )</nb-card-header>
+  <nb-card-header>DANH SÁCH THU CHI TRONG THÁNG HIỆN TẠI</nb-card-header>
   <nb-card-body class="list-order cong-no">
     <div class="order-date-filter">
       <div class="row">
@@ -95,13 +95,13 @@
         <p class="kokay">Công ty còn: <strong>{{ price.tienDaThu - price.chi | currency : '' : '' : '1.0-0' }} VNĐ</strong></p>
       </div>
     </div>
-    <h4 class="text-center">Chi Tiết Thu Chi. Từ {{ oFilter.startDate | date : 'dd/MM/YYYY' }}
-      - {{ oFilter.endDate | date : 'dd/MM/YYYY' }}</h4>
+    <h4 class="text-center" *ngIf="dateFilter?.startDate !== 'Invalid Date' && dateFilter?.endDate !== 'Invalid Date'">Chi Tiết Thu Chi. Từ {{ dateFilter?.startDate | date : 'dd/MM/YYYY' }}
+      - {{ dateFilter?.endDate | date : 'dd/MM/YYYY' }}</h4>
     <mat-accordion class="mb-5">
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            THU
+            THU ({{ tongThuFilter?.length }})
           </mat-panel-title>
         </mat-expansion-panel-header>
         <nb-card-body>
@@ -111,7 +111,7 @@
             <table class="table table-striped table-hover">
               <thead>
               <tr>
-                <th scope="col" class=" d-none1"></th>
+                <th scope="col" class=" d-none1" *ngIf="isAdminRole"></th>
                 <th scope="col"></th>
                 <th scope="col">NGÀY</th>
                 <th scope="col">KHOẢN THU</th>
@@ -126,7 +126,7 @@
               </thead>
               <tbody>
               <tr *ngFor="let tc of tongThuFilter">
-                <td (click)="onDeleteConfirm(tc.key)" class="delete d-none1">XÓA</td>
+                <td (click)="onDeleteConfirm(tc.key)" class="delete d-none1" *ngIf="isAdminRole">XÓA</td>
                 <td (click)="suaKhoanThu(tc.key)" class="delete">SỬA</td>
                 <td>{{ tc.date | date : 'dd/MM/YYYY' }}</td>
                 <td>{{ tc?.name }}</td>
@@ -163,7 +163,7 @@
       <mat-expansion-panel [expanded]="false">
         <mat-expansion-panel-header>
           <mat-panel-title>
-            CHI
+            CHI ({{ tongChiFilter?.length }})
           </mat-panel-title>
         </mat-expansion-panel-header>
         <nb-card-body>
@@ -176,7 +176,7 @@
             <table class="table table-striped table-hover">
               <thead>
               <tr>
-                <th scope="col" class=" d-none1"></th>
+                <th scope="col" class=" d-none1" *ngIf="isAdminRole"></th>
                 <th scope="col"></th>
                 <th scope="col">NGÀY</th>
                 <th scope="col">KHOẢN CHI</th>
@@ -191,7 +191,7 @@
               </thead>
               <tbody>
               <tr *ngFor="let tc of tongChiFilter">
-                <td (click)="onDeleteConfirm(tc.key)" class="delete d-none1">XÓA</td>
+                <td (click)="onDeleteConfirm(tc.key)" class="delete d-none1" *ngIf="isAdminRole">XÓA</td>
                 <td (click)="suaKhoanThu(tc.key)" class="delete">SỬA</td>
                 <td>{{ tc.date | date : 'dd/MM/YYYY' }}</td>
                 <td>{{ tc.name }}</td>
@@ -221,15 +221,8 @@
             </table>
           </div>
         </nb-card-body>
-
       </mat-expansion-panel>
     </mat-accordion>
-    <angular2-smart-table [settings]="settings" [source]="source"
-                     (createConfirm)="onCreateConfirm($event)"
-                     (editConfirm)="onEditConfirm($event)"
-                     (deleteConfirm)="onDeleteConfirm($event)" class="d-none mobile-zoom"
-                     (custom)="onCustom($event)">
-    </angular2-smart-table>
 
     <!--    <div class="file-upload d-none">-->
     <!--      <ul class="list-group list-group-flush"-->

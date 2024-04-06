@@ -36,7 +36,7 @@ export class ThuChiAddComponent implements OnInit {
   customers: Customer[] = [];
   thanhToanTypes = this.thuChiTypeService.thanhToanTypes;
   khoanThu: string = '';
-  soTien: number;
+  soTien: number = 0;
 
   selectedFiles: FileList;
   currentFileUpload: FileUpload;
@@ -79,13 +79,11 @@ export class ThuChiAddComponent implements OnInit {
       this.walletService.getAll3().pipe(take(1)),
       this.customerService.getAll3().pipe(take(1)),
       this.nhaCungCapService.getAll3().pipe(take(1)),
-      this.thuChiService.getAll3().pipe(take(1)),
     ]).subscribe(
       (all) => {
-        this.wallets = this.walletService.cacheWallets = all[0];
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all[1];
-        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[2];
-        this.all = this.thuChiService.cacheThuChi = all[3];
+        this.wallets = this.walletService.cacheWallets = <Wallet[]>all[0];
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = <Customer[]>all[1];
+        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = <NhaCungCap[]>all[2];
         this.initThuChi();
         this.truyThuCongNo();
       },
@@ -119,7 +117,6 @@ export class ThuChiAddComponent implements OnInit {
       this.thuChi.name = this.khoanThu;
       this.thuChi.price = this.soTien;
       this.thuChi.trangThaiTT = 2;
-      console.log(this.orderService.thuCongNoByCustomer);
     }
   }
 
@@ -147,14 +144,6 @@ export class ThuChiAddComponent implements OnInit {
   }
 
   ngOnInit() {
-  }
-
-  onCreateConfirm(e: any) {
-    this.thuChiService.create(e?.newData)
-      .then(() => {
-        this.utilService.clearCache([this.thuChiService.lcKey]);
-      })
-      .catch(() => e.confirm.reject());
   }
 
   onEditConfirm(e: any) {
@@ -222,16 +211,13 @@ export class ThuChiAddComponent implements OnInit {
   addItem() {
     try {
       this.thuChi.thuChiTypeKey = <string>this.thuChiType;
-      if (!this.isChi) {
+      if (!this.isChi && this.selectKH) {
         this.thuChi.customerKey = this.selectKH;
       }
       if (this.thuChi.url) {
         this.thuChi.url = this.utilService.getImageURLFromGoogleDrive(this.thuChi.url);
       }
       this.thuChi.price = +this.thuChi.price || 0;
-
-      // Update wallet
-      this.updateWallet();
       // Nếu là chi cho đối tác, thì cần cập nhật công nợ cho đối tác
       if (this.selectNcc) {
         this.thuChi.nhaCungCapKey = this.selectNcc;
@@ -254,16 +240,18 @@ export class ThuChiAddComponent implements OnInit {
           if (o.length) {
             o = o.shift();
             o.paid = true;
+            o.thuLevel = 1;
             // Update order
             this.orderService.update(k, o);
           }
         });
       }
+      console.log(this.thuChi);
+      // Update wallet
+      this.updateWallet();
       this.thuChiService.create(this.thuChi).then(
         () => {
-          this.thuChiService.cacheThuChi = null;
-          this.utilService.clearCache([this.thuChiService.lcKey]);
-          this.utilService.clearCache([this.uploadService.lcKey]);
+          console.log('Thu DONE');
           setTimeout(() => {
             this.router.navigate(['pages/chicken/thu-chi']);
           });
@@ -271,17 +259,8 @@ export class ThuChiAddComponent implements OnInit {
       );
     } catch (e) {
       console.log(e);
+      alert('CÓ LỖI!!! LIÊN HỆ ADMIN!!!');
     }
-    // this.thuChiService.create(this.thuChi).then(
-    //   () => {
-    //     this.thuChiService.cacheThuChi = null;
-    //     this.utilService.clearCache([this.thuChiService.lcKey]);
-    //     this.utilService.clearCache([this.uploadService.lcKey]);
-    //     setTimeout(() => {
-    //       this.router.navigate(['pages/chicken/thu-chi']);
-    //     });
-    //   },
-    // );
   }
 
   updateWallet() {
@@ -337,7 +316,12 @@ export class ThuChiAddComponent implements OnInit {
   }
 
   updateThuChi(event, type) {
-    this.thuChi[type] = event?.target?.value ?? event?.value;
+    if (type === 'fileKeys') {
+      this.thuChi.fileKeys.push(event?.target?.value ?? event?.value);
+      this.thuChi.fileKeys = [this.thuChi.fileKeys[0]];
+    } else {
+      this.thuChi[type] = event?.target?.value ?? event?.value;
+    }
     this.disableAddChi();
   }
 

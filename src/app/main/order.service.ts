@@ -28,6 +28,7 @@ export class Order {
   orderKeys?: Array<string>;
   printed?: boolean;
   clone?: string;
+  thuLevel?: number;
 }
 
 export class Cart {
@@ -116,7 +117,7 @@ export class OrderService {
 
   sortListByDate(list: Array<any>) {
     return list.sort((a: any, b: any) => {
-      return b.dateTimestamp - a.dateTimestamp;
+      return a.dateTimestamp - b.dateTimestamp;
     });
   }
 

@@ -36,6 +36,11 @@
         <input type="text" nbInput fullWidth id="exampleInputThu" placeholder="Khoản THU"
                (keyup)="updateThuChi($event, 'name')" [value]="khoanThu">
       </div>
+      <div class="form-group d-none">
+        <label for="exampleInputFile" class="label">FILE</label>
+        <input type="text" nbInput fullWidth id="exampleInputFile" placeholder="FILE"
+               (keyup)="updateThuChi($event, 'fileKeys')" [value]="">
+      </div>
       <div class="form-group" *ngIf="isChi">
         <label for="exampleInputSL" class="label">Số Lượng</label>
         <input type="text" nbInput fullWidth id="exampleInputSL" placeholder="Số Lượng"

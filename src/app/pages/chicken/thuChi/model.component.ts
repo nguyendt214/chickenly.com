@@ -16,6 +16,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { Wallet, WalletService } from '../../../main/wallet.service';
 import { ExportCsvService } from '../../../main/exportCsv.service';
 import { forkJoin } from 'rxjs';
+import { AuthService } from '../../../main/auth.service';
 
 @Component({
   selector: 'ngx-smart-table-school',
@@ -49,125 +50,6 @@ export class ThuChiComponent implements OnInit {
     tienChuaThu: 0,
     chi: 0,
   };
-  settings = {
-    add: {
-      confirmCreate: true,
-      addButtonContent: '<i class="nb-plus"></i>',
-      createButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-    },
-    edit: {
-      confirmSave: true,
-      editButtonContent: '<i class="nb-edit"></i>',
-      saveButtonContent: '<i class="nb-checkmark"></i>',
-      cancelButtonContent: '<i class="nb-close"></i>',
-    },
-    delete: {
-      deleteButtonContent: '<i class="nb-trash"></i>',
-      confirmDelete: true,
-    },
-    columns: {
-      date: {
-        title: 'NGÀY',
-        type: 'string',
-        valuePrepareFunction: (c, row) => {
-          return this.datePipe.transform(new Date(c), 'dd/MM/YYYY');
-        },
-        sort: true,
-        sortDirection: 'desc',
-        compareFunction: (direction: any, c1: string, c2: string) => {
-          const first = (new Date(c1)).getTime();
-          const second = (new Date(c2)).getTime();
-          if (first < second) {
-            return -1 * direction;
-          }
-          if (first > second) {
-            return direction;
-          }
-          return 0;
-        },
-        filter: false,
-      },
-      thuChiTypeKey: {
-        title: 'LOẠI',
-        valuePrepareFunction: (cell) => {
-          const c: ThuChiType = this.thuChiTypeService.getThuChiTypeByKey(this.thuChiTypes, cell);
-          return c ? c.name : '';
-        },
-        editor: {
-          type: 'list',
-          config: {
-            list: [],
-          },
-        },
-        sort: false,
-        sortDirection: 'asc',
-        compareFunction: (direction: any, c1: string, c2: string) => {
-          if (c1 < c2) {
-            return -1 * direction;
-          }
-          if (c1 > c2) {
-            return direction;
-          }
-          return 0;
-        },
-      },
-      nhaCungCapKey: {
-        title: 'NHÀ CUNG CẤP',
-        valuePrepareFunction: (cell) => {
-          const c: NhaCungCap = this.nhaCungCapService.getNhaCungCapByKey(this.nhaCungCaps, cell);
-          return c ? c.name : '';
-        },
-        editor: {
-          type: 'list',
-          config: {
-            list: [],
-          },
-        },
-        sort: false,
-        sortDirection: 'asc',
-        compareFunction: (direction: any, c1: string, c2: string) => {
-          if (c1 < c2) {
-            return -1 * direction;
-          }
-          if (c1 > c2) {
-            return direction;
-          }
-          return 0;
-        },
-      },
-      name: {
-        title: 'Tên',
-        type: 'string',
-      },
-      price: {
-        title: '(VNĐ)',
-        valuePrepareFunction: (cell, row) => {
-          return this.currencyPipe.transform(cell, '', '', '1.0-0');
-        },
-      },
-      note: {
-        title: 'Ghi Chú',
-      },
-    },
-    pager: {
-      perPage: 550,
-    },
-    actions: {
-      edit: false,
-      add: false,
-      delete: true,
-      custom: [
-        {
-          name: 'sua-thu-chi',
-          title: '<span class="custom-action">CHI TIẾT</span>',
-        },
-      ],
-      columnTitle: '',
-    },
-  };
-
-  source: LocalDataSource = new LocalDataSource();
 
   selectedFiles: FileList;
   currentFileUpload: FileUpload;
@@ -183,7 +65,8 @@ export class ThuChiComponent implements OnInit {
   allCustomers: Customer[] = [];
   customers: Customer[] = [];
   cnNcc = 0;
-
+  dateFilter: any = {};
+  isAdminRole = this.authService.isAdminRole();
   constructor(
     private service: SmartTableData,
     private thuChiService: ThuChiService,
@@ -198,12 +81,20 @@ export class ThuChiComponent implements OnInit {
     private dialog: MatDialog,
     private walletService: WalletService,
     private exportCsvService: ExportCsvService,
+    private authService: AuthService,
   ) {
     this.utilService.loaded = false;
+    const date = this.thuChiService.getCurrentMonth();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    // this.filterByDate(this.startDate, this.endDate);
     this.getAllInParallel();
   }
 
   getAllInParallel() {
+    this.updateDateFilterObject();
     this.getAllThuChiType();
 
     forkJoin([
@@ -211,34 +102,27 @@ export class ThuChiComponent implements OnInit {
       this.uploadService.getAll3().pipe(take(1)),
       this.customerService.getAll3().pipe(take(1)),
       this.walletService.getAll3().pipe(take(1)),
-      this.thuChiService.getAll3().pipe(take(1)),
+      this.thuChiService.getLastData(this.dateFilter).pipe(take(1)),
     ]).subscribe(
       (all) => {
-        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = all[0];
+        this.nhaCungCaps = this.nhaCungCapService.cacheNhaCungCaps = <NhaCungCap[]>all[0];
         this.nhaCungCapService.storeData(this.nhaCungCaps);
         this.nhaCungCap = this.nhaCungCaps[0].key;
         this.cnNhaCungCap();
-        this.fileUploads = this.uploadService.cacheUploadFiles = all[1];
-        // Update Files date format
-        // this.fileUploads.forEach((tc: FileUpload) => {
-        //   tc.date = (new Date()).toLocaleDateString();
-        //   this.uploadService.update(tc.key, tc).then(
-        //     () => console.log('update Files', tc)
-        //   );
-        // });
+        this.fileUploads = this.uploadService.cacheUploadFiles = <FileUpload[]>all[1];
         this.uploadService.storeData(this.fileUploads);
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = <Customer[]>all[2];
         this.customerService.storeData(this.customers);
-        this.wallets = this.walletService.cacheWallets = all[3];
+        this.wallets = this.walletService.cacheWallets = <Wallet[]>all[3];
         this.walletService.storeData(this.wallets);
         this.wallets.forEach((w: Wallet) => {
           w.cashTotal = +w.cashTotal;
           w.bankTotal = +w.bankTotal;
         });
         this.wallet = this.wallets[0].key;
-        this.all = this.thuChiService.cacheThuChi = all[4];
-        this.thuChiService.storeData(this.all);
-        this.utilService.sortListByDate(this.all);
+        this.all = this.thuChiService.cacheThuChi = <ThuChi[]>all[4];
+        this.thuChiService.storeCacheData(this.thuChiService.cacheThuChi, this.dateFilter);
+        this.utilService.sortListByDate(this.thuChiService.cacheThuChi);
         this.mapCustomer();
         this.mapWallet();
         this.preparePageData(this.all);
@@ -250,6 +134,26 @@ export class ThuChiComponent implements OnInit {
     );
   }
 
+  updateDateFilterObject() {
+    this.dateFilter = {
+      startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
+      endDate: (new Date(this.oFilter.endDate)).toLocaleDateString(),
+    };
+  }
+
+  getLastDataByDate() {
+    if (this.dateFilter.startDate !== 'Invalid Date' && this.dateFilter.endDate !== 'Invalid Date') {
+      this.utilService.loaded = false;
+      this.thuChiService.getLastData(this.dateFilter)
+        .subscribe(
+          all => {
+            this.all = all;
+            this.globalFilter();
+          }
+        );
+    }
+  }
+
   cnNhaCungCap() {
     this.nhaCungCaps.forEach((ncc: NhaCungCap) => {
       this.cnNcc += (+ncc.price > 0) ?  +ncc.price : 0;
@@ -258,13 +162,6 @@ export class ThuChiComponent implements OnInit {
 
   preparePageData(all: ThuChi[]) {
     this.thuChiFilter = all;
-    this.source.load(this.all);
-    const date = this.thuChiService.getCurrentMonth();
-    this.startDate = date[0];
-    this.endDate = date[1];
-    this.oFilter.startDate = this.startDate;
-    this.oFilter.endDate = this.endDate;
-    this.filterByDate(this.startDate, this.endDate);
     // Prepare files
     this.all.forEach((tc: ThuChi) => {
       tc.files = this.fileUploads.filter((file: FileUpload) => {
@@ -276,14 +173,6 @@ export class ThuChiComponent implements OnInit {
   }
 
   prepareThuChi() {
-    // console.log('all ThuChi', this.all);
-    // Update ThuChi date format
-    // this.all.forEach((tc: ThuChi) => {
-    //   tc.date = (new Date(tc.date)).toLocaleDateString();
-    //   this.thuChiService.update(tc.key, tc).then(
-    //     () => console.log('update ThuCHi', tc)
-    //   );
-    // });
     this.tongThu = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey === 'thu');
     this.tongChi = this.all.filter((tc: ThuChi) => tc.thuChiTypeKey !== 'thu');
     this.tongThu.forEach((tc: ThuChi) => {
@@ -296,6 +185,28 @@ export class ThuChiComponent implements OnInit {
     this.tongChi.forEach((tc: ThuChi) => {
       this.price.chi += +tc.price;
     });
+    this.globalFilter();
+  }
+
+  forceUpdateDate() {
+    this.thuChiService.getAll3()
+      .subscribe(
+        (o: ThuChi[]) => {
+          console.log(o);
+          console.log('Total', o.length);
+          o.forEach((_o: ThuChi) => {
+            if (_o?.key) {
+              _o.date = (new Date(_o.date)).toLocaleDateString();
+              _o.dateTimestamp = new Date(_o.date).getTime();
+              this.thuChiService.update(_o?.key, _o).then(
+                () => console.log('Update done', _o)
+              );
+            } else {
+              console.log('order without key', _o);
+            }
+          });
+        }
+      );
   }
 
   prepareThuChiFilter() {
@@ -369,41 +280,7 @@ export class ThuChiComponent implements OnInit {
   }
 
 
-  ngOnInit() {
-  }
-
-  onCreateConfirm(e: any) {
-    this.thuChiService.create(e?.newData)
-      .then(() => {
-        this.thuChiService.cacheThuChi = null;
-        this.utilService.clearCache([this.thuChiService.lcKey]);
-      })
-      .catch(() => e.confirm.reject());
-  }
-
-  onEditConfirm(e: any) {
-    this.thuChiService.update(e?.newData?.key, e?.newData)
-      .then(() => {
-        this.thuChiService.cacheThuChi = null;
-        this.utilService.clearCache([this.thuChiService.lcKey]);
-      })
-      .catch(() => e.confirm.reject());
-  }
-
-  onDeleteConfirm(key: string): void {
-    if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.thuChiService.delete(key)
-        .then(() => {
-          this.thuChiService.cacheThuChi = null;
-          this.utilService.clearCache([this.thuChiService.lcKey]);
-          setTimeout(() => {
-            window.location.reload();
-          });
-        })
-        .catch(() => {
-        });
-    }
-  }
+  ngOnInit() { }
 
   selectFile(event): void {
     this.selectedFiles = event.target.files;
@@ -492,8 +369,9 @@ export class ThuChiComponent implements OnInit {
       this.oFilter.endDate = this.thuChiService.filterEndDate;
       this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
         this.thuChiService.filterStartDate.getTime() === this.thuChiService.filterEndDate.getTime();
+      this.updateDateFilterObject();
+      this.getLastDataByDate();
     }
-    this.globalFilter();
   }
 
   globalFilter() {
@@ -509,8 +387,8 @@ export class ThuChiComponent implements OnInit {
     if (this.oFilter.nhaCungCap) {
       this.thuChiFilter = this.thuChiFilter.filter((o: ThuChi) => o.nhaCungCapKey === this.oFilter.nhaCungCap.key);
     }
-    this.source.load(this.thuChiFilter);
     this.prepareThuChiFilter();
+    this.utilService.loaded = true;
   }
 
   filterByThuChiType(c: ThuChiType) {
@@ -592,6 +470,19 @@ export class ThuChiComponent implements OnInit {
       '-' + this.datePipe.transform(new Date(this.oFilter.endDate), 'dd-MM-YYYY');
 
     this.exportCsvService.exportThuChi(dataExport, fileName);
+  }
+
+  onDeleteConfirm(key: string): void {
+    if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
+      if (!key) {
+        alert('LIÊN HỆ ADMIN ĐỂ XÓA');
+        return;
+      } else {
+        this.thuChiService.delete(key).then(
+          () => window.location.reload()
+        );
+      }
+    }
   }
 
 }

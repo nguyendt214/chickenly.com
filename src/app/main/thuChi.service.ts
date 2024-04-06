@@ -15,6 +15,7 @@ export class ThuChi {
   disable?: boolean;
   url?: string;
   date?: string;
+  dateTimestamp?: number;
   updateAt?: string;
   files?: FileUpload[];
   fileKeys?: Array<string>;
@@ -31,6 +32,7 @@ export class ThuChi {
   paymentTypeLabel?: string;
   walletKey?: string;
   wallet?: Wallet | null;
+  updated?: string;
 }
 
 @Injectable({
@@ -44,6 +46,7 @@ export class ThuChiService {
   public filterEndDate: any;
   lcKey = this.dbPath.replace('/', '');
   lcKeyForce = this.lcKey + 'Force';
+  lcKeyDate = this.lcKey + 'Date';
 
   constructor(
     private db: AngularFireDatabase,
@@ -84,28 +87,104 @@ export class ThuChiService {
   }
 
   getLimitLocalStorageCache(data: any, number = 500) {
-    if (data?.date) {
-      return data?.thuChi?.slice((data.length - number), data.length) ?? [];
-    } else {
-      return data?.slice((data.length - number), data.length) ?? [];
-    }
+    data = this.sortListByDate(data);
+    return data?.slice((data.length - number), data.length) ?? [];
+  }
+
+  sortListByDate(list: Array<any>) {
+    return list.sort((a: any, b: any) => {
+      return a.dateTimestamp - b.dateTimestamp;
+    });
   }
 
   getThuChiByKey(key: string): Observable<any> {
     return this.db.object(this.dbPath + '/' + key).valueChanges();
   }
 
+  getLastData(date: any): Observable<any> {
+    if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
+      const lcData: any = this.lc.getObject(this.lcKey);
+      const lcDate: any = this.lc.getObject(this.lcKeyDate);
+      if (lcDate?.startDate &&
+        new Date(date?.startDate).getTime() >= new Date(lcDate?.startDate).getTime() &&
+        new Date(date?.startDate).getTime() <= new Date(lcDate?.endDate).getTime()) {
+        console.log('Use ThuChi Cache From: ' + lcDate?.startDate);
+        return of(lcData);
+      }
+    }
+    console.log('Get Thu Chi from: ' + date?.startDate + ', to: ' + date?.endDate);
+    const startAtTimestamp = new Date(date?.startDate).getTime();
+    return this.db.list(this.dbPath, ref =>
+        // ref.limitToLast(1000)
+        ref.orderByChild('dateTimestamp')
+          .startAt(startAtTimestamp)
+    ).valueChanges();
+  }
+
+  getDataFromCache() {
+    return this.lc.getObject(this.lcKey) ?? [];
+  }
+
+  storeCacheData(data: any = [], date: any = {}) {
+    // const oldDate = this.lc.getObject(this.lcKeyDate);
+    // if (oldDate) {
+    //   date.startDate = (oldDate['startDate'] <= date.startDate) ? oldDate['startDate'] : date?.startDate;
+    //   date.endDate = (oldDate['endDate'] >= date.endDate) ? oldDate['endDate'] : date?.endDate;
+    // }
+    // // Merge data
+    // const oldData = this.lc.getObject(this.lcKey);
+    // if (oldData) {
+    //   data = [...oldData, ...data];
+    //   data = this.getUniqueListBy(data, 'key');
+    // }
+
+    data = data.filter((o: any) => {
+      const orderDate = (new Date((new Date(o?.date)).setHours(0, 0, 0, 0))).toLocaleDateString();
+      return date?.startDate <= orderDate;
+      // return dates?.startDate <= orderDate && orderDate <= dates?.endDate;
+    });
+    this.lc.setBool(this.lcKeyForce, false);
+    this.lc.setObject(this.lcKey, this.getLimitLocalStorageCache(data));
+    this.lc.setObject(this.lcKeyDate, date);
+  }
+
+  getUniqueListBy(arr, key) {
+    return [...new Map(arr.map(item => [item[key], item])).values()];
+  }
+
+  getLastItemKey() {
+    return this.db.database.ref(this.dbPath).orderByKey().limitToLast(1)
+      .on('child_added', (snapshot) => snapshot.key);
+  }
+
   create(o: ThuChi): any {
-    o.date = (new Date()).toLocaleDateString();
-    return this.modelRef.push(o);
+    o.dateTimestamp = new Date(o?.date).getTime();
+    return this.modelRef.push(o).then(
+      () => {
+        const order = Object.assign({}, o);
+        this.lc.setBool(this.lcKeyForce, true);
+        // Get last record then update KEY
+        this.db.database.ref(this.dbPath).orderByKey().limitToLast(1)
+          .on('child_added', (snapshot) => {
+            order.key = snapshot.key;
+            this.update(snapshot.key, order).then(
+              () => console.log('Create done', order)
+            );
+          });
+      }
+    ).catch(
+      () => alert('Tạo thu chi lỗi, liên hệ ADMIN ngay!!! Cám ơn!')
+    );
   }
 
   update(key: string, value: any): Promise<void> {
-    value.updateAt = (new Date()).toLocaleDateString();
+    value.updated = (new Date()).toLocaleDateString();
+    this.lc.setBool(this.lcKeyForce, true);
     return this.modelRef.update(key, value);
   }
 
   delete(key: string): Promise<void> {
+    this.lc.setBool(this.lcKeyForce, true);
     return this.modelRef.remove(key);
   }
 
