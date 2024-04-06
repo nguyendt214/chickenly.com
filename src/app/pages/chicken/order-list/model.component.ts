@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { LocalDataSource } from 'angular2-smart-table';
 
 import { SmartTableData } from '../../../@core/data/smart-table';
-import { map, take } from 'rxjs/operators';
+import { take } from 'rxjs/operators';
 import { Cart, Order, OrderService } from '../../../main/order.service';
 import { Customer, CustomerService } from '../../../main/customer.service';
 import { School, SchoolService } from '../../../main/school.service';
@@ -178,6 +178,9 @@ export class OrderListComponent implements OnInit {
   };
 
   source: LocalDataSource = new LocalDataSource();
+  doantThuLabel = 'Tuần này';
+  cnTheoTuan = 0;
+  dateFilter: any = {};
 
   constructor(
     private service: SmartTableData,
@@ -192,38 +195,38 @@ export class OrderListComponent implements OnInit {
     private categoryService: CategoryService,
   ) {
     this.utilService.loaded = false;
+    // Lấy order cho từ T2-T7 của tuần này
+    const date = this.orderService.getCurrentWeek();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    // this.filterByDate(this.startDate, this.endDate);
     this.getAllInParallel();
   }
 
   getAllInParallel() {
+    this.updateDateFilterObject();
     forkJoin([
       this.customerService.getAll3().pipe(take(1)),
       this.schoolService.getAll3().pipe(take(1)),
       this.employeeService.getAll3().pipe(take(1)),
-      this.orderService.getAll3().pipe(take(1)),
+      this.orderService.getLastData(this.dateFilter).pipe(take(1)),
     ]).subscribe(
       (all) => {
-        console.log(all);
-        this.customers = this.customerService.cacheCustomers = all[0];
+        this.customers = this.customerService.cacheCustomers = <Customer[]>all[0];
         this.customerService.storeData(this.customers);
-        this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.schools = this.schoolService.cacheSchools = this.allSchools = <School[]>all[1];
         this.schoolService.storeData(this.schools);
-        this.employees = this.employeeService.cacheEmployees = all[2];
+        this.employees = this.employeeService.cacheEmployees = <Employee[]>all[2];
         this.employeeService.storeData(this.employees);
-        this.orderService.cacheOrder = all[3];
-        this.orderService.storeData(all[3]);
-        this.preparePageData(all[3]);
-        // Update order date format
-        // this.orderService.cacheOrder.forEach((o: Order) => {
-        //   if (!o?.key) {
-        //     console.log(o);
-        //   } else {
-        //     o.date = (new Date(o.date)).toLocaleDateString();
-        //     this.orderService.update(o.key, o);
-        //   }
-        // });
+        this.orderService.cacheOrder = <Order[]>all[3];
+        this.orderService.storeCacheData(this.orderService.cacheOrder, this.dateFilter);
+        this.orderService.cacheOrder = this.orderService.getDataFromCache();
+        this.preparePageData(this.orderService.cacheOrder);
       },
-      () => {
+      (err) => {
+        console.log('Order error', err);
       },
       () => this.utilService.loaded = true,
     );
@@ -239,42 +242,103 @@ export class OrderListComponent implements OnInit {
     });
     this.all = orders;
     this.orderFilter = orders;
+    this.globalFilter();
     this.source.load(this.orderFilter);
-    // Lấy order cho từ T2-T7 của tuần này
-    const date = this.orderService.getCurrentWeek();
-    this.startDate = date[0];
-    this.endDate = date[1];
-    this.oFilter.startDate = this.startDate;
-    this.oFilter.endDate = this.endDate;
-    this.filterByDate(this.startDate, this.endDate);
     this.utilService.loaded = true;
   }
 
   ngOnInit() {
   }
 
-  onCreateConfirm(e: any) {
-    this.orderService.create(e?.newData)
-      .then(() => {
-      })
-      .catch(() => e.confirm.reject());
+  forceUpdateOrderDate() {
+    this.orderService.getAll3()
+      .subscribe(
+        (orders: Order[]) => {
+          console.log(orders);
+          console.log('Total', orders.length);
+          orders.forEach((o: Order) => {
+            if (o?.key) {
+              o.date = (new Date(o.date)).toLocaleDateString();
+              o.dateTimestamp = new Date(o.date).getTime();
+              this.orderService.update(o?.key, o).then(
+                () => console.log('Update done', o)
+              );
+            } else {
+              console.log('order without key', o);
+            }
+          });
+        }
+      );
   }
 
-  onEditConfirm(e: any) {
-    this.orderService.update(e?.newData?.key, e?.newData)
-      .then(() => {
-      })
-      .catch(() => e.confirm.reject());
+  updateDateFilterObject() {
+    this.dateFilter = {
+      startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
+      endDate: (new Date(this.oFilter.endDate)).toLocaleDateString(),
+    };
+  }
+
+  getLastDataByDate() {
+    if (this.dateFilter.startDate !== 'Invalid Date' && this.dateFilter.endDate !== 'Invalid Date') {
+      this.utilService.loaded = false;
+      this.orderService.getLastData(this.dateFilter)
+        .subscribe(
+          all => {
+            this.all = all;
+            this.globalFilter();
+          }
+        );
+    }
+  }
+
+  getPreviousWeek(previous: number) {
+    this.cnTheoTuan = previous;
+    const date = this.orderService.getLastWeek(previous);
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    this.updateDateFilterObject();
+    this.getLastDataByDate();
+    this.updateDoanhThuLabel(previous);
+  }
+
+  updateDoanhThuLabel(number) {
+    switch (number) {
+      case -1:
+        this.doantThuLabel = 'Tuần tới';
+        break;
+      case 0:
+        this.doantThuLabel = 'Tuần này';
+        break;
+      case 1:
+        this.doantThuLabel = 'Tuần trước';
+        break;
+      case 2:
+        this.doantThuLabel = '2 Tuần trước';
+        break;
+      case 3:
+        this.doantThuLabel = '3 Tuần trước';
+        break;
+      case 4:
+        this.doantThuLabel = '4 Tuần trước';
+        break;
+      default:
+        this.doantThuLabel = 'Tuần này';
+        break;
+    }
   }
 
   onDeleteConfirm(e): void {
     if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.orderService.delete(e?.data?.key)
-        .then(() => {
-          this.utilService.clearCache([this.orderService.lcKey]);
-          e.confirm.resolve();
-        })
-        .catch(() => e.confirm.reject());
+      if (!e?.data?.key) {
+        alert('LIÊN HỆ ADMIN ĐỂ XÓA');
+        e.confirm.reject();
+      } else {
+        this.orderService.delete(e?.data?.key)
+          .then(() => e.confirm.resolve())
+          .catch(() => e.confirm.reject());
+      }
     } else {
       e.confirm.reject();
     }
@@ -292,19 +356,19 @@ export class OrderListComponent implements OnInit {
       position: {top: '10px'},
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
     });
   }
 
   filterByDate(startDate: any, endDate: any) {
-    console.log(startDate);
     if (!(startDate instanceof Date)) {
       this.orderService.filterStartDate = this.utilService.getDateFromString(startDate.value);
       this.orderService.filterEndDate = this.utilService.getDateFromString(endDate.value);
       this.oFilter.startDate = this.orderService.filterStartDate;
       this.oFilter.endDate = this.orderService.filterEndDate;
+      this.updateDateFilterObject();
+      this.getLastDataByDate();
     }
-    this.globalFilter();
   }
 
   indonchobep() {
@@ -384,12 +448,11 @@ export class OrderListComponent implements OnInit {
   }
 
   globalFilter() {
-    console.log(this.oFilter);
     // Always filter by date
-    // this.orderFilter = this.all.filter((o: Order) => {
-    //   const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
-    //   return this.orderService.filterStartDate <= orderDate && orderDate <= this.orderService.filterEndDate;
-    // });
+    this.orderFilter = this.all.filter((o: Order) => {
+      const orderDate = new Date((new Date(o?.date)).setHours(0, 0, 0, 0));
+      return this.orderService.filterStartDate <= orderDate && orderDate <= this.orderService.filterEndDate;
+    });
 
     if (this.oFilter.customer) {
       this.orderFilter = this.orderFilter.filter((o: Order) => o.customer.key === this.oFilter.customer.key);
@@ -401,6 +464,7 @@ export class OrderListComponent implements OnInit {
       this.orderFilter = this.orderFilter.filter((o: Order) => o.employee.key === this.oFilter.employee.key);
     }
     this.source.load(this.orderFilter);
+    this.utilService.loaded = true;
   }
 
   resetFilter() {

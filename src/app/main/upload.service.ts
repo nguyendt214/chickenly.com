@@ -111,10 +111,10 @@ export class FileUploadService {
 
   storeData(data) {
     this.lc.setBool(this.lcKeyForce, false);
-    this.lc.setObject(this.lcKey, this.getLimitOrder(data));
+    this.lc.setObject(this.lcKey, this.getLimitLocalStorageCache(data));
   }
 
-  getLimitOrder(data: any, number = 500) {
+  getLimitLocalStorageCache(data: any, number = 500) {
     if (data?.date) {
       return data?.date?.slice((data.length - number), data.length) ?? [];
     } else {

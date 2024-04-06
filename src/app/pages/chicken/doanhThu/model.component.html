@@ -324,9 +324,6 @@
       <h6>Danh sách đơn hàng</h6>
     </div>
     <angular2-smart-table [settings]="settings" [source]="source"
-                     (createConfirm)="onCreateConfirm($event)"
-                     (editConfirm)="onEditConfirm($event)"
-                     (deleteConfirm)="onDeleteConfirm($event)"
                      (userRowSelect)="printOrder($event)"
                      (custom)="onCustom($event)" class="d-none2 mobile-zoom">
     </angular2-smart-table>

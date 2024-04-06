@@ -66,7 +66,7 @@ export class ThuChiService {
     if (this.lc.getItem(this.lcKey) === 'undefined') {
       this.lc.removeItem(this.lcKey);
     } else if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
-      const data = this.getLimitOrder(this.lc.getObject(this.lcKey));
+      const data = this.getLimitLocalStorageCache(this.lc.getObject(this.lcKey));
       return of(data);
     }
     return this.modelRef.snapshotChanges().pipe(
@@ -80,10 +80,10 @@ export class ThuChiService {
 
   storeData(data) {
     this.lc.setBool(this.lcKeyForce, false);
-    this.lc.setObject(this.lcKey, this.getLimitOrder(data));
+    this.lc.setObject(this.lcKey, this.getLimitLocalStorageCache(data));
   }
 
-  getLimitOrder(data: any, number = 500) {
+  getLimitLocalStorageCache(data: any, number = 500) {
     if (data?.date) {
       return data?.thuChi?.slice((data.length - number), data.length) ?? [];
     } else {

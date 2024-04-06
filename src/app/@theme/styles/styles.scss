@@ -243,6 +243,7 @@ ng2-st-tbody-custom a.ng2-smart-action.ng2-smart-action-custom-custom {
 
   button {
     border: 1px solid grey;
+    margin-bottom: 10px;
   }
 }
 
@@ -508,6 +509,29 @@ angular2-smart-table {
 }
 .cdk-global-overlay-wrapper {
   justify-content: center !important;
+}
+.angular2-smart-actions {
+  display: flex;
+  align-items: center;
+  padding: 4px 0 !important;
+  min-width: 90px;
+  angular2-st-tbody-custom {
+    display: ruby;
+  }
+  a {
+    display: flex;
+    &:hover {
+      text-decoration: none !important;
+      color: red;
+    }
+  }
+}
+angular2-st-tbody-edit-delete {
+  display: flex;
+  align-items: center;
+}
+.angular2-smart-th {
+  padding: 15px 2px 0 !important;
 }
 @media screen and (max-width: 699px) {
   .mobile-zoom {

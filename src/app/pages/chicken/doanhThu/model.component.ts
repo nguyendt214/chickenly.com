@@ -180,6 +180,7 @@ export class DoanhThuComponent implements OnInit {
     paid: 0,
     unpaid: 0,
   };
+  dateFilter: any = {};
 
   constructor(
     private service: SmartTableData,
@@ -195,30 +196,36 @@ export class DoanhThuComponent implements OnInit {
     private exportCsvService: ExportCsvService,
   ) {
     this.utilService.loaded = false;
+    // Lấy order cho 7 ngày gần nhất
+    const date = this.orderService.getCurrentWeek();
+    this.startDate = date[0];
+    this.endDate = date[1];
+    this.oFilter.startDate = this.startDate;
+    this.oFilter.endDate = this.endDate;
+    // this.filterByDate(this.startDate, this.endDate);
     this.getAllInParallel();
   }
 
   getAllInParallel() {
-    const getAllCustomers = this.customerService.getAll3();
-    const getAllSchools = this.schoolService.getAll3();
-    const getAllEmployees = this.employeeService.getAll3();
-    const getAllOrders = this.orderService.getAll3();
+    this.updateDateFilterObject();
+
     forkJoin([
-      getAllCustomers.pipe(take(1)),
-      getAllSchools.pipe(take(1)),
-      getAllEmployees.pipe(take(1)),
-      getAllOrders.pipe(take(1)),
+      this.customerService.getAll3().pipe(take(1)),
+      this.schoolService.getAll3().pipe(take(1)),
+      this.employeeService.getAll3().pipe(take(1)),
+      this.orderService.getLastData(this.dateFilter).pipe(take(1)),
     ]).subscribe(
-      (all) => {
-        this.customers = this.customerService.cacheCustomers = all[0];
+      (all: any) => {
+        this.customers = this.customerService.cacheCustomers = <Customer[]>all[0];
         this.customerService.storeData(this.customers);
-        this.schools = this.schoolService.cacheSchools = this.allSchools = all[1];
+        this.schools = this.schoolService.cacheSchools = this.allSchools = <School[]>all[1];
         this.schoolService.storeData(this.schools);
-        this.employees = this.employeeService.cacheEmployees = all[2];
+        this.employees = this.employeeService.cacheEmployees = <Employee[]>all[2];
         this.employeeService.storeData(this.employees);
-        this.orderService.cacheOrder = all[3];
-        this.orderService.storeData(all[3]);
-        this.preparePageData(all[3]);
+        this.orderService.cacheOrder = <Order[]>all[3];
+        this.orderService.storeCacheData(this.orderService.cacheOrder, this.dateFilter);
+        this.orderService.cacheOrder = this.orderService.getDataFromCache();
+        this.preparePageData(this.orderService.cacheOrder);
       },
       () => {
       },
@@ -232,45 +239,32 @@ export class DoanhThuComponent implements OnInit {
     });
     this.all = orders;
     this.orderFilter = orders;
+    this.globalFilter();
     this.source.load(this.orderFilter);
-    // Lấy order cho 7 ngày gần nhất
-    const date = this.orderService.getCurrentWeek();
-    this.startDate = date[0];
-    this.endDate = date[1];
-    this.oFilter.startDate = this.startDate;
-    this.oFilter.endDate = this.endDate;
-    this.filterByDate(this.startDate, this.endDate);
     this.utilService.loaded = true;
   }
 
-  ngOnInit() {
+  updateDateFilterObject() {
+    this.dateFilter = {
+      startDate: (new Date(this.oFilter.startDate)).toLocaleDateString(),
+      endDate: (new Date(this.oFilter.endDate)).toLocaleDateString(),
+    };
   }
 
-  onCreateConfirm(e: any) {
-    this.orderService.create(e?.newData)
-      .then(() => {
-      })
-      .catch(() => e.confirm.reject());
-  }
-
-  onEditConfirm(e: any) {
-    this.orderService.update(e?.newData?.key, e?.newData)
-      .then(() => {
-      })
-      .catch(() => e.confirm.reject());
-  }
-
-  onDeleteConfirm(e): void {
-    if (window.confirm('CHẮC CHẮN MUỐN XÓA KHÔNG?')) {
-      this.orderService.delete(e?.data?.key)
-        .then(() => {
-          this.utilService.clearCache([this.orderService.lcKey]);
-          e.confirm.resolve();
-        })
-        .catch(() => e.confirm.reject());
-    } else {
-      e.confirm.reject();
+  getLastDataByDate() {
+    if (this.dateFilter.startDate !== 'Invalid Date' && this.dateFilter.endDate !== 'Invalid Date') {
+      this.utilService.loaded = false;
+      this.orderService.getLastData(this.dateFilter)
+        .subscribe(
+          all => {
+            this.all = all;
+            this.globalFilter();
+          }
+        );
     }
+  }
+
+  ngOnInit() {
   }
 
   printOrder(e) {
@@ -280,7 +274,7 @@ export class DoanhThuComponent implements OnInit {
       position: {top: '10px'},
     });
 
-    dialogRef.afterClosed().subscribe(result => {
+    dialogRef.afterClosed().subscribe(() => {
     });
   }
 
@@ -292,8 +286,8 @@ export class DoanhThuComponent implements OnInit {
       this.oFilter.endDate = this.orderService.filterEndDate;
       this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
         this.orderService.filterStartDate.getTime() === this.orderService.filterEndDate.getTime();
+      this.getLastDataByDate();
     }
-    this.globalFilter();
   }
 
   onCustom(event) {
@@ -353,6 +347,7 @@ export class DoanhThuComponent implements OnInit {
     // Cong no
     setTimeout(() => {
       this.tongHopCongNo();
+      this.utilService.loaded = true;
     });
   }
 
@@ -364,7 +359,8 @@ export class DoanhThuComponent implements OnInit {
     this.endDate = date[1];
     this.oFilter.startDate = this.startDate;
     this.oFilter.endDate = this.endDate;
-    this.globalFilter();
+    this.updateDateFilterObject();
+    this.getLastDataByDate();
     this.updateDoanhThuLabel(previous);
   }
 

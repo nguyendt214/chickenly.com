@@ -73,19 +73,19 @@ export class OrderComponent implements OnInit {
       this.schoolService.getAll3().pipe(take(1)),
     ]).subscribe(
       (all) => {
-        this.productTypes = this.productTypeService.cacheProductTypes = all[0];
+        this.productTypes = this.productTypeService.cacheProductTypes = <ProductType[]>all[0];
         this.productTypeService.storeData(this.productTypes);
-        this.categories = this.categoryService.cacheCategory = all[1];
+        this.categories = this.categoryService.cacheCategory = <Category[]>all[1];
         this.categoryService.storeData(this.categories);
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all[2];
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = <Customer[]>all[2];
         this.customerService.storeData(this.customers);
         this.selectKH = this.customers[0].key;
-        this.employees = this.employeeService.cacheEmployees = all[3];
+        this.employees = this.employeeService.cacheEmployees = <Employee[]>all[3];
         this.employeeService.storeData(this.employees);
-        this.products = this.allProducts = this.productService.cacheProducts = all[4];
-        this.productService.storeData(this.products);
+        this.products = this.allProducts = this.productService.cacheProducts = <Product[]>all[4];
+        this.productService.storeData(this.productService.cacheProducts);
         this.prepareProducts();
-        this.schools = this.allSchools = this.schoolService.cacheSchools = all[5];
+        this.schools = this.allSchools = this.schoolService.cacheSchools = <School[]>all[5];
         this.schoolService.storeData(this.schools);
         this.preparePageData();
       },
@@ -94,25 +94,27 @@ export class OrderComponent implements OnInit {
       () => this.utilService.loaded = true
     );
   }
+
   preparePageData() {
     this.order.item = [];
     this.order.date = this.tomorrow.toLocaleDateString();
     this.utilService.loaded = true;
     this.toastrConfig();
     if (this.orderService.orderClone) {
+      delete this.orderService.orderClone['key'];
       this.order = Object.assign({}, this.orderService.orderClone);
       this.selectKH = this.order.customer.key;
       this.selectSchool = this.order.school.key;
       this.selectEmployee = this.order?.employee?.key ?? '';
       this.tomorrow = new Date(this.order?.date ?? '');
-      delete this.order.key;
       this.order.note = '';
       this.order.updated = this.order.date;
-      this.orderService.orderClone = null;
       this.order.item.forEach((item: Cart) => {
         item.qtyReturn = 0;
         item.product.note = '';
       });
+      this.order.clone = 'Clone from ' + this.orderService.orderClone.customer.name + ', '
+        + this.orderService.orderClone.school.name + ', ' + this.orderService.orderClone.date;
       this.checkButtonTaoDonHang();
     }
   }
@@ -147,15 +149,14 @@ export class OrderComponent implements OnInit {
 
   prepareProducts() {
     // Category
-    this.products.forEach((p: Product) => {
+    this.productService.cacheProducts.forEach((p: Product) => {
       p.category = this.categories.find((c: Category) => c.key === p.categoryKey);
     });
     // Product Type
-    this.products.forEach((p: Product) => {
+    this.productService.cacheProducts.forEach((p: Product) => {
       p.productType = this.productTypes.find((pt: ProductType) => pt.key === p.productTypeKey);
     });
-    this.topProducts = this.products.filter((p: Product) => p.topProduct);
-    this.products = this.productService.groupProductByCategory(this.products);
+    this.products = this.productService.groupProductByCategory(this.productService.cacheProducts);
   }
 
   addToCart(p: Product) {
@@ -269,6 +270,10 @@ export class OrderComponent implements OnInit {
         this.utilService.clearCache([this.orderService.lcKey]);
         this.showToa();
         this.checkButtonTaoDonHang();
+        if (this.orderService.orderClone) {
+          this.orderService.orderClone = null;
+          this.utilService.gotoPage('pages/chicken/order-list');
+        }
       },
     );
   }

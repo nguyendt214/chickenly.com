@@ -64,10 +64,10 @@ export class WalletTransferService {
 
   storeData(data) {
     this.lc.setBool(this.lcKeyForce, false);
-    this.lc.setObject(this.lcKey, this.getLimitOrder(data));
+    this.lc.setObject(this.lcKey, this.getLimitLocalStorageCache(data));
   }
 
-  getLimitOrder(data = [], number = 500) {
+  getLimitLocalStorageCache(data = [], number = 500) {
     return data.slice((data.length - number), data.length);
   }
 

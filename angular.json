@@ -99,6 +99,7 @@
           "options": {
             "buildTarget": "ngx-admin-demo:build"
           },
+          "outputHashing": "all",
           "configurations": {
             "production": {
               "buildTarget": "ngx-admin-demo:build:production"

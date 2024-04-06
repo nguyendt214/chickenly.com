@@ -5,7 +5,7 @@ import { School, SchoolService } from '../../../../main/school.service';
 import { Customer, CustomerService } from '../../../../main/customer.service';
 import { Employee, EmployeeService } from '../../../../main/employee.service';
 import { Product, ProductService } from '../../../../main/product.service';
-import { map } from 'rxjs/operators';
+import { map, take } from 'rxjs/operators';
 import { Category, CategoryService } from '../../../../main/category.service';
 import { ProductType, ProductTypeService } from '../../../../main/product-type.service';
 import { MatDialog } from '@angular/material/dialog';
@@ -13,6 +13,7 @@ import { CartDialog } from '../cart-dialog/cart-dialog.component';
 import { UtilService } from '../../../../main/util.service';
 import { NbToastrService } from '@nebular/theme';
 import { ActivatedRoute } from '@angular/router';
+import { forkJoin } from 'rxjs';
 
 @Component({
   selector: 'ngx-order-edit',
@@ -58,38 +59,67 @@ export class OrderEdit2Component implements OnInit {
     private activatedRoute: ActivatedRoute,
   ) {
     this.orderId = this.activatedRoute.snapshot.paramMap.get('orderId');
-    this.getAllProductTypes();
-    this.getAllCategories();
-    this.getAllCustomer();
-    this.getAllEmployee();
-    this.getAllProducts();
-    this.getAllSchools();
-    this.getOrderDetail();
+    this.utilService.loaded = false;
+    this.getAllInParallel();
   }
 
   ngOnInit() {
   }
 
+  getAllInParallel() {
+    forkJoin([
+      this.productTypeService.getAll3().pipe(take(1)),
+      this.categoryService.getAll3().pipe(take(1)),
+      this.customerService.getAll3().pipe(take(1)),
+      this.employeeService.getAll3().pipe(take(1)),
+      this.productService.getAll3().pipe(take(1)),
+      this.schoolService.getAll3().pipe(take(1)),
+    ]).subscribe(
+      (all) => {
+        console.log(all);
+        this.productTypes = this.productTypeService.cacheProductTypes = <ProductType[]>all[0];
+        this.productTypeService.storeData(this.productTypes);
+        this.categories = this.categoryService.cacheCategory = <Category[]>all[1];
+        this.categoryService.storeData(this.categories);
+        this.customers = this.allCustomers = this.customerService.cacheCustomers = <Customer[]>all[2];
+        this.customerService.storeData(this.customers);
+        this.selectKH = this.customers[0].key;
+        this.employees = this.employeeService.cacheEmployees = <Employee[]>all[3];
+        this.employeeService.storeData(this.employees);
+        this.products = this.productService.cacheProducts = <Product[]>all[4];
+        this.productService.storeData(this.productService.cacheProducts);
+        this.prepareProducts();
+        this.schools = this.allSchools = this.schoolService.cacheSchools = <School[]>all[5];
+        this.schoolService.storeData(this.schools);
+        this.getOrderDetail();
+      },
+      () => {
+      },
+      () => this.utilService.loaded = true
+    );
+  }
+
   getOrderDetail() {
-    this.orderService.getOrderByKey(this.orderId)
-      .subscribe(order => {
-        this.order = order;
-        this.selectKH = this.order?.customer?.key ?? '';
-        this.selectSchool = this.order?.school?.key ?? '';
-        this.selectEmployee = this.order?.employee?.key ?? '';
-        this.today = new Date(this.order?.date ?? '');
-        this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
-        this.order = Object.assign({}, this.order);
-        this.checkButtonTaoDonHang();
-        this.utilService.loaded = true;
-      });
+    this.order = this.orderService.getOrderByKeyKevin(this.orderId);
+    if (this.order) {
+      this.selectKH = this.order?.customer?.key ?? '';
+      this.selectSchool = this.order?.school?.key ?? '';
+      this.selectEmployee = this.order?.employee?.key ?? '';
+      this.today = new Date(this.order?.date ?? '');
+      this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
+      this.order = Object.assign({}, this.order);
+      this.checkButtonTaoDonHang();
+      this.utilService.loaded = true;
+    } else {
+      this.utilService.gotoPage('pages/chicken/order-list');
+    }
   }
 
   toastrConfig() {
     this.toaConfig = {
       status: 'success',
       destroyByClick: true,
-      duration: 3000,
+      duration: 1000,
       hasIcon: true,
       position: 'bottom-right',
       preventDuplicates: true,
@@ -108,68 +138,16 @@ export class OrderEdit2Component implements OnInit {
     this.order.date = e.value.toLocaleDateString();
   }
 
-  getAllCategories() {
-    if (this.categoryService.cacheCategory) {
-      this.categories = this.categoryService.cacheCategory;
-    } else {
-      this.categoryService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.categories = all;
-        this.categoryService.cacheCategory = all;
-      });
-    }
-  }
-
-  getAllProductTypes() {
-    if (this.productTypeService.cacheProductTypes) {
-      this.productTypes = this.productTypeService.cacheProductTypes;
-    } else {
-      this.productTypeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.productTypes = this.productTypeService.cacheProductTypes = all;
-      });
-    }
-  }
-
-  getAllProducts() {
-    if (this.productService.cacheProducts) {
-      this.products = this.productService.cacheProducts;
-      this.prepareProducts();
-
-    } else {
-      this.productService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.products = this.productService.cacheProducts = all;
-        this.prepareProducts();
-      });
-    }
-  }
-
   prepareProducts() {
     // Category
-    this.products.forEach((p: Product) => {
+    this.productService.cacheProducts.forEach((p: Product) => {
       p.category = this.categories.find((c: Category) => c.key === p.categoryKey);
     });
     // Product Type
-    this.products.forEach((p: Product) => {
+    this.productService.cacheProducts.forEach((p: Product) => {
       p.productType = this.productTypes.find((pt: ProductType) => pt.key === p.productTypeKey);
     });
-    this.products = this.productService.groupProductByCategory(this.products);
+    this.products = this.productService.groupProductByCategory(this.productService.cacheProducts);
   }
 
   getAllCustomer() {
@@ -184,38 +162,6 @@ export class OrderEdit2Component implements OnInit {
         ),
       ).subscribe(all => {
         this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
-      });
-    }
-  }
-
-  getAllEmployee() {
-    if (this.employeeService.cacheEmployees) {
-      this.employees = this.employeeService.cacheEmployees;
-    } else {
-      this.employeeService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.employees = this.employeeService.cacheEmployees = all;
-      });
-    }
-  }
-
-  getAllSchools() {
-    if (this.schoolService.cacheSchools) {
-      this.schools = this.allSchools = this.schoolService.cacheSchools;
-    } else {
-      this.schoolService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.schools = this.allSchools = this.schoolService.cacheSchools = all;
       });
     }
   }
@@ -307,7 +253,7 @@ export class OrderEdit2Component implements OnInit {
         this.utilService.clearCache([this.orderService.lcKey]);
         setTimeout(() => {
           this.utilService.gotoPage('pages/chicken/order-list');
-        }, 3000);
+        }, 1000);
       },
     );
   }
