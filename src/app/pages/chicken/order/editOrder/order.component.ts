@@ -111,6 +111,7 @@ export class OrderEdit2Component implements OnInit {
       this.checkButtonTaoDonHang();
       this.utilService.loaded = true;
     } else {
+      alert('LỖI, Liên hệ Admin!');
       this.utilService.gotoPage('pages/chicken/order-list');
     }
   }
@@ -148,22 +149,6 @@ export class OrderEdit2Component implements OnInit {
       p.productType = this.productTypes.find((pt: ProductType) => pt.key === p.productTypeKey);
     });
     this.products = this.productService.groupProductByCategory(this.productService.cacheProducts);
-  }
-
-  getAllCustomer() {
-    if (this.customerService.cacheCustomers) {
-      this.customers = this.allCustomers = this.customerService.cacheCustomers;
-    } else {
-      this.customerService.getAll().snapshotChanges().pipe(
-        map(changes =>
-          changes.map(c =>
-            ({key: c.payload.key, ...c.payload.val()}),
-          ),
-        ),
-      ).subscribe(all => {
-        this.customers = this.allCustomers = this.customerService.cacheCustomers = all;
-      });
-    }
   }
 
   addToCart(p: Product) {

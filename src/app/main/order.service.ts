@@ -125,10 +125,11 @@ export class OrderService {
     if (this.lc.getItem(this.lcKey) && !this.lc.getBool(this.lcKeyForce)) {
       const lcData: any = this.lc.getObject(this.lcKey);
       const lcDate: any = this.lc.getObject(this.lcKeyDate);
+      console.log('Date filter', date);
       if (lcDate?.startDate &&
         new Date(date?.startDate).getTime() >= new Date(lcDate?.startDate).getTime() &&
         new Date(date?.startDate).getTime() <= new Date(lcDate?.endDate).getTime()) {
-        console.log('Use Order Cache From: ' + lcDate?.startDate);
+        console.log('Use Order Cache From: ' + lcDate?.startDate + ', to: ' + date?.endDate);
         return of(lcData);
       }
     }
