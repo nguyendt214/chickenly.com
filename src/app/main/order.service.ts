@@ -27,6 +27,7 @@ export class Order {
   paid?: boolean;
   orderKeys?: Array<string>;
   printed?: boolean;
+  printed1?: boolean;
   clone?: string;
   thuLevel?: number;
 }

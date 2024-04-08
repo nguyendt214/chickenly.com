@@ -100,17 +100,26 @@ export class OrderEdit2Component implements OnInit {
   }
 
   getOrderDetail() {
-    this.order = this.orderService.getOrderByKeyKevin(this.orderId);
-    if (this.order) {
-      this.selectKH = this.order?.customer?.key ?? '';
-      this.selectSchool = this.order?.school?.key ?? '';
-      this.selectEmployee = this.order?.employee?.key ?? '';
-      this.today = new Date(this.order?.date ?? '');
-      this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
-      this.order = Object.assign({}, this.order);
-      this.checkButtonTaoDonHang();
-      this.utilService.loaded = true;
-    } else {
+    try {
+      this.orderService.getOrderByKey(this.orderId)
+        .subscribe(
+          (o: Order) => {
+            console.log('Order detail', o);
+            this.order = o;
+            this.selectKH = this.order?.customer?.key ?? '';
+            this.selectSchool = this.order?.school?.key ?? '';
+            this.selectEmployee = this.order?.employee?.key ?? '';
+            this.today = new Date(this.order?.date ?? '');
+            this.order.sItem = this.utilService.groupItemBy(this.order.item, 'categoryKey');
+            this.order = Object.assign({}, this.order);
+            this.checkButtonTaoDonHang();
+            this.utilService.loaded = true
+          },
+          () => alert('LỖI, Liên hệ Admin!!!'),
+          () => this.utilService.loaded = true
+        )
+    } catch (e) {
+      console.log(e);
       alert('LỖI, Liên hệ Admin!');
       this.utilService.gotoPage('pages/chicken/order-list');
     }
