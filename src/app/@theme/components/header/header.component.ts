@@ -21,6 +21,7 @@ import { FileUploadService } from "../../../main/upload.service";
 import { WalletService } from "../../../main/wallet.service";
 import { WalletTransferService } from "../../../main/walletTransfer.service";
 import { LocalStorageService } from "../../../main/local-storage.servise";
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'ngx-header',
@@ -56,6 +57,7 @@ export class HeaderComponent implements OnInit, OnDestroy {
 
   userMenu = [{title: 'Profile'}, {title: 'Log out'}];
   isLogged = false;
+  taiLaiLabel = 'TẢI LẠI DỮ LIỆU!';
 
   constructor(private sidebarService: NbSidebarService,
               private menuService: NbMenuService,
@@ -79,8 +81,10 @@ export class HeaderComponent implements OnInit, OnDestroy {
               private walletService: WalletService,
               private transferWalletService: WalletTransferService,
               private lc: LocalStorageService,
+              private router: Router,
   ) {
     this.isLogged = this.authService.isLogged();
+    // this.reloadLabel();
   }
 
   ngOnInit() {
@@ -128,8 +132,83 @@ export class HeaderComponent implements OnInit, OnDestroy {
   }
 
   loadAllData(forceLoad = false) {
-    this.utilService.clearCache(this.utilService.allCacheKeys);
+    const url = this.router.url;
+    switch (url) {
+      case '/pages/chicken/thu-chi':
+        this.utilService.clearCache([this.thuChiService.lcKey, this.nccService.lcKey, this.transferWalletService.lcKey, this.walletService.lcKey]);
+        break;
+      case '/pages/chicken/wallet/transfer':
+        this.utilService.clearCache([this.transferWalletService.lcKey, this.walletService.lcKey]);
+        break;
+      case '/pages/chicken/nha-cung-cap':
+        this.utilService.clearCache([this.nccService.lcKey]);
+        break;
+      case '/pages/chicken/employee':
+        this.utilService.clearCache([this.employeeService.lcKey]);
+        break;
+      case '/pages/chicken/product-type':
+        this.utilService.clearCache([this.productTypeService.lcKey]);
+        break;
+      case '/pages/chicken/product':
+        this.utilService.clearCache([this.productService.lcKey, this.customerService.lcKey]);
+        break;
+      case '/pages/chicken/category':
+        this.utilService.clearCache([this.categoryService.lcKey]);
+        break;
+      case '/pages/chicken/school':
+        this.utilService.clearCache([this.schoolService.lcKey, this.customerService.lcKey]);
+        break;
+      case '/pages/chicken/customer':
+        this.utilService.clearCache([this.customerService.lcKey]);
+        break;
+      case '/pages/chicken/doanh-thu':
+      case '/pages/chicken/order-list':
+        this.utilService.clearCache([this.orderService.lcKey]);
+        break;
+      default:
+        break;
+    }
+    console.log(this.router.url);
     window.location.reload();
+  }
+
+  reloadLabel() {
+    const url = this.router.url;
+    switch (url) {
+      case '/pages/chicken/thu-chi':
+        this.taiLaiLabel = 'TẢI LẠI THU CHI';
+        break;
+      case '/pages/chicken/wallet/transfer':
+        this.taiLaiLabel = 'TẢI LẠI TRANSFER';
+        break;
+      case '/pages/chicken/nha-cung-cap':
+        this.taiLaiLabel = 'TẢI LẠI NHÀ CUNG CẤP';
+        break;
+      case '/pages/chicken/employee':
+        this.taiLaiLabel = 'TẢI LẠI NHÂN VIÊN';
+        break;
+      case '/pages/chicken/product-type':
+        this.taiLaiLabel = 'TẢI LẠI LOẠI SẢN PHẨM';
+        break;
+      case '/pages/chicken/product':
+        this.taiLaiLabel = 'TẢI LẠI SẢN PHẨM';
+        break;
+      case '/pages/chicken/category':
+        this.taiLaiLabel = 'TẢI LẠI NHÓM SẢN PHẨM';
+        break;
+      case '/pages/chicken/school':
+        this.taiLaiLabel = 'TẢI LẠI ĐỊA ĐIỂM';
+        break;
+      case '/pages/chicken/customer':
+        this.taiLaiLabel = 'TẢI LẠI KHÁCH HÀNG';
+        break;
+      case '/pages/chicken/doanh-thu':
+      case '/pages/chicken/order-list':
+        this.taiLaiLabel = 'TẢI LẠI DOANH THU';
+        break;
+      default:
+        break;
+    }
   }
 
   loadAllOrder() {
