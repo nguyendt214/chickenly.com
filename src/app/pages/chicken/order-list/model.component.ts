@@ -171,7 +171,7 @@ export class OrderListComponent implements OnInit {
     },
     noDataMessage: 'Không thấy ĐƠN HÀNG nào!',
     rowClassFunction: (row) => {
-      if (row?.data?.printed1 && this.manualPrint) {
+      if (this.manualPrint && this.orderPrinted.includes(row?.data?.key)) {
         return 'kopacity kprinted';
       }
     },
@@ -182,6 +182,7 @@ export class OrderListComponent implements OnInit {
   cnTheoTuan = 0;
   dateFilter: any = {};
   manualPrint = false;
+  orderPrinted = [];
   constructor(
     private service: SmartTableData,
     private orderService: OrderService,
@@ -346,11 +347,12 @@ export class OrderListComponent implements OnInit {
 
   printOrder(e) {
     this.manualPrint = true;
-    this.orderFilter.forEach((o: Order) => {
-      if (o?.key === e?.data?.key) {
-        o.printed1 = true;
-      }
-    });
+    this.orderPrinted.push(e?.data?.key);
+    // this.orderFilter.forEach((o: Order) => {
+    //   if (o?.key === e?.data?.key) {
+    //     o.printed1 = true;
+    //   }
+    // });
     const dialogRef = this.dialog.open(CartDialog, {
       width: '100%',
       data: {order: e.data},
