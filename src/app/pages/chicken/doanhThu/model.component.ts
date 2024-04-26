@@ -87,7 +87,7 @@ export class DoanhThuComponent implements OnInit {
         title: 'KHÁCH HÀNG',
         type: 'string',
         valuePrepareFunction: (c: Customer) => {
-          return c.name;
+          return c?.name;
         },
         compareFunction: (direction: any, c1: Customer, c2: Customer) => {
           if (direction === 1) {
@@ -108,7 +108,7 @@ export class DoanhThuComponent implements OnInit {
         title: 'ĐỊA ĐIỂM',
         type: 'string',
         valuePrepareFunction: (c: School) => {
-          return c.name;
+          return c?.name;
         },
         compareFunction: (direction: any, c1: School, c2: School) => {
           if (direction === 1) {
@@ -129,7 +129,7 @@ export class DoanhThuComponent implements OnInit {
         title: 'Nhân Viên Giao',
         type: 'string',
         valuePrepareFunction: (c: Employee) => {
-          return c.name;
+          return c?.name ?? 'NO ONE';
         },
         compareFunction: (direction: any, c1: Employee, c2: Employee) => {
           if (direction === 1) {
@@ -216,6 +216,7 @@ export class DoanhThuComponent implements OnInit {
       this.orderService.getLastData(this.dateFilter).pipe(take(1)),
     ]).subscribe(
       (all: any) => {
+        console.log(all);
         this.customers = this.customerService.cacheCustomers = <Customer[]>all[0];
         this.customerService.storeData(this.customers);
         this.schools = this.schoolService.cacheSchools = this.allSchools = <School[]>all[1];
@@ -235,7 +236,12 @@ export class DoanhThuComponent implements OnInit {
 
   preparePageData(orders: Order[]) {
     orders.forEach((o: Order) => {
-      o.sItem = this.utilService.groupItemBy(o.item, 'categoryKey');
+      if (o?.item) {
+        o.sItem = this.utilService.groupItemBy(o.item, 'categoryKey');
+      } else {
+        o.sItem = {};
+        o.item = [];
+      }
     });
     this.all = orders;
     this.orderFilter = orders;

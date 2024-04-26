@@ -235,7 +235,12 @@ export class OrderListComponent implements OnInit {
 
   preparePageData(orders: Order[]) {
     orders.forEach((o: Order) => {
-      o.sItem = this.utilService.groupItemBy(o.item, 'categoryKey');
+      if (o.item) {
+        o.sItem = this.utilService.groupItemBy(o.item, 'categoryKey');
+      } else {
+        o.item = [];
+        o.sItem = {};
+      }
       const school = this.schoolService.getSchoolByKey(this.schools, o?.school?.key);
       if (school) {
         o.school.printNumber = school?.printNumber ?? 2;
