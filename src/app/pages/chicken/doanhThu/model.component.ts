@@ -44,6 +44,7 @@ export class DoanhThuComponent implements OnInit {
   showSellPrice = true;
   showAllCongNo = false;
   numberCongNo = 500;
+  showTableTotal = false;
   settings = {
     add: {
       confirmCreate: true,

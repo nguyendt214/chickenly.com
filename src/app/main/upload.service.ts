@@ -11,6 +11,7 @@ export class FileUpload {
   url: string;
   file: File;
   date?: string;
+  dateLocale?: string;
   dateTimestamp?: number;
   update?: string;
   updated?: string;
@@ -50,6 +51,7 @@ export class FileUploadService {
           fileUpload.url = downloadURL;
           fileUpload.name = fileUpload.file.name;
           fileUpload.date = (new Date()).toISOString();
+          fileUpload.dateLocale = new Date().toLocaleDateString();
           fileUpload.dateTimestamp = new Date().getTime();
           this.saveFileData(fileUpload);
         });

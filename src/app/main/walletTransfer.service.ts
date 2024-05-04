@@ -18,6 +18,7 @@ export class WalletTransfer {
   note?: string;
   disable?: boolean;
   date?: string;
+  dateLocale?: string;
   update?: string;
 }
 
@@ -59,6 +60,11 @@ export class WalletTransferService {
           ({key: c.payload.key, ...c.payload.val()}),
         ),
       ),
+      map(changes =>
+        changes.map(c =>
+          ({...c, note: c?.note || ''}),
+        ),
+      ),
     );
   }
 
@@ -73,11 +79,15 @@ export class WalletTransferService {
 
   create(o: WalletTransfer): any {
     o.date = (new Date()).toISOString();
+    o.dateLocale = new Date().toLocaleDateString();
     return this.modelRef.push(o);
   }
 
   update(key: string, value: any): Promise<void> {
     value.update = (new Date()).toISOString();
+    value.date = (new Date(value?.date)).toISOString();
+    value.dateLocale = new Date(value?.date).toLocaleDateString();
+    console.log(value);
     return this.modelRef.update(key, value);
   }
 

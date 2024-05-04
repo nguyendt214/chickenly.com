@@ -126,6 +126,7 @@ export class WalletTransferComponent implements OnInit {
     this.walletTransferService.getAll3().subscribe(all => {
       this.walletTransferService.storeData(all);
       this.allWalletTransfer = all;
+      this.allWalletTransfer = this.utilService.sortListByDate(this.allWalletTransfer);
       this.source.load(this.allWalletTransfer);
       this.transferWallet.soTien = 0;
       this.utilService.loaded = true;
