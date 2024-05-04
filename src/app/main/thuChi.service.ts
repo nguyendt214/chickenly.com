@@ -15,6 +15,7 @@ export class ThuChi {
   disable?: boolean;
   url?: string;
   date?: string;
+  dateLocale?: string;
   dateTimestamp?: number;
   updateAt?: string;
   files?: FileUpload[];
@@ -159,6 +160,7 @@ export class ThuChiService {
 
   create(o: ThuChi): any {
     o.dateTimestamp = new Date(o?.date).getTime();
+    o.dateLocale = new Date(o?.date).toLocaleDateString();
     return this.modelRef.push(o).then(
       () => {
         const order = Object.assign({}, o);

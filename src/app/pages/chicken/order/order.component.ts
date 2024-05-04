@@ -103,6 +103,7 @@ export class OrderComponent implements OnInit {
     if (this.orderService.orderClone) {
       delete this.orderService.orderClone['key'];
       this.order = Object.assign({}, this.orderService.orderClone);
+      this.order.paid = false;
       this.selectKH = this.order.customer.key;
       this.selectSchool = this.order.school.key;
       this.selectEmployee = this.order?.employee?.key ?? '';

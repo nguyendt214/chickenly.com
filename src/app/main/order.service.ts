@@ -14,6 +14,7 @@ export class Order {
   note?: string;
   disable?: boolean;
   date?: string;
+  dateLocale?: string;
   dateTimestamp?: number;
   closeDate?: string;
   status?: string;
@@ -183,6 +184,7 @@ export class OrderService {
 
   create(o: Order): any {
     o.dateTimestamp = new Date(o?.date).getTime();
+    o.dateLocale = new Date(o?.date).toLocaleDateString();
     return this.modelRef.push(o).then(
       () => {
         const order = Object.assign({}, o);

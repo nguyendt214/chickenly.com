@@ -28,6 +28,7 @@ export class ThuChiComponent implements OnInit {
   thuChi: ThuChi = new ThuChi();
   thuChiTypes: ThuChiType[];
   nhaCungCaps: NhaCungCap[];
+  nhaCungCapsFilter: NhaCungCap[];
   nhaCungCap: NhaCungCap;
   wallets: Wallet[];
   wallet: Wallet;
@@ -109,6 +110,7 @@ export class ThuChiComponent implements OnInit {
         this.nhaCungCapService.storeData(this.nhaCungCaps);
         this.nhaCungCap = this.nhaCungCaps[0].key;
         this.cnNhaCungCap();
+        this.nhaCungCapsFilter = this.nhaCungCaps.filter((ncc: NhaCungCap) => ncc.price !== 0);
         this.fileUploads = this.uploadService.cacheUploadFiles = <FileUpload[]>all[1];
         this.uploadService.storeData(this.fileUploads);
         this.customers = this.allCustomers = this.customerService.cacheCustomers = <Customer[]>all[2];
