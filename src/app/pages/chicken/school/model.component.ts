@@ -77,6 +77,14 @@ export class SchoolComponent implements OnInit {
         title: 'Số bản in',
         type: 'string',
       },
+      showOrderPrice: {
+        title: 'Hiển thị giá',
+        type: 'string',
+      },
+      showQRCode: {
+        title: 'Hiển thị QRCode',
+        type: 'string',
+      },
     },
     pager: {
       perPage: 50,
@@ -116,6 +124,7 @@ export class SchoolComponent implements OnInit {
     this.schoolService.update(e?.newData?.key, e?.newData)
       .then(() => {
         this.utilService.clearCache([this.schoolService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }

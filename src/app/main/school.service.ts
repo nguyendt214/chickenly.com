@@ -14,6 +14,8 @@ export class School {
   owner?: any;
   disable?: boolean;
   printNumber?: number;
+  showOrderPrice?: number;
+  showQRCode?: number;
 }
 
 @Injectable({
@@ -57,6 +59,16 @@ export class SchoolService {
       map(changes =>
         changes.map(c =>
           ({...c, printNumber: c?.printNumber || 2}),
+        ),
+      ),
+      map(changes =>
+        changes.map(c =>
+          ({...c, showOrderPrice: c?.showOrderPrice || 0}),
+        ),
+      ),
+      map(changes =>
+        changes.map(c =>
+          ({...c, showQRCode: c?.showQRCode || 0}),
         ),
       ),
     );

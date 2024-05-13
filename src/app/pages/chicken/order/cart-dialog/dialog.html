@@ -28,7 +28,7 @@
   <div class="klh">
     <strong>Liên hệ người nhận:</strong> ........
   </div>
-  <div class="qrcode">
+  <div class="qrcode" *ngIf="showQRCode">
     <img src="{{ qrcode }}" width="120px"/>
   </div>
   <div class="ktable">
@@ -40,7 +40,9 @@
         <th scope="col" class="text-center align-middle">Đơn vị tính</th>
         <th scope="col" class="text-center align-middle">Số Lượng Giao</th>
         <th scope="col" class="text-center align-middle">Số Lượng Trả</th>
-        <th scope="col" class="text-center align-middle">Ghi Chú</th>
+        <th scope="col" class="text-center align-middle" *ngIf="!showPrice">Ghi Chú</th>
+        <th scope="col" class="text-center align-middle" *ngIf="showPrice">Giá</th>
+        <th scope="col" class="text-center align-middle" *ngIf="showPrice">Tổng</th>
       </tr>
       </thead>
       <tbody *ngFor="let item of order.sItem | keyvalue; let idx = index;">
@@ -55,14 +57,17 @@
         <th class="text-center align-middle ">{{ sp?.product?.productType?.name }}</th>
         <th class="text-center align-middle">{{ sp?.qty }}</th>
         <th class="text-center align-middle">{{ getReturnByProductKey(sp?.product?.key) }}</th>
-        <th class="text-left align-middle">{{ sp?.product?.note }}</th>
+        <th class="text-left align-middle" *ngIf="!showPrice">{{ sp?.product?.note }}</th>
+        <th scope="col" class="text-right align-middle" *ngIf="showPrice">{{ sp?.price | currency : '' : '' : '1.0-0' }}</th>
+        <th scope="col" class="text-right align-middle" *ngIf="showPrice">{{ getTotalByItem(sp) | currency : '' : '' : '1.0-0' }}</th>
       </tr>
       </tbody>
       <tbody *ngIf="order?.note?.length">
       <th class="align-middle" colspan="7">Ghi chú: {{ order?.note }}</th>
       </tbody>
       <tbody>
-      <th class="align-middle" colspan="7">Tổng cộng:</th>
+      <th class="align-middle" colspan="7">Tổng cộng:
+      <span class="cart-total" *ngIf="showPrice">{{ calculatorOrderPrice(order) | currency : '' : '' : '1.0-0' }} VNĐ</span></th>
       </tbody>
     </table>
   </div>

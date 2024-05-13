@@ -244,6 +244,8 @@ export class OrderListComponent implements OnInit {
       const school = this.schoolService.getSchoolByKey(this.schools, o?.school?.key);
       if (school) {
         o.school.printNumber = school?.printNumber ?? 2;
+        o.school.showOrderPrice = school?.showOrderPrice ?? 0;
+        o.school.showQRCode = school?.showQRCode ?? 0;
       }
     });
     this.all = orders;
