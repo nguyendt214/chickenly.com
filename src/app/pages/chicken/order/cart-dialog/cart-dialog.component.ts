@@ -27,6 +27,7 @@ export class CartDialog implements OnInit {
   all?: Product[] = [];
   orderDate: string;
   chiLinhKey = '-NiLEWbxAR_J42ncXqL0';
+  qrcode = 'https://api.vietqr.io/image/970407-8521041985-1vjL582.jpg?accountName=DO%20TRONG%20NGUYEN';
 
   constructor(
     public dialogRef: MatDialogRef<CartDialog>,
@@ -44,6 +45,25 @@ export class CartDialog implements OnInit {
     this.order = this.data.order;
     console.log(this.order);
     this.orderDate = this.datePipe.transform(new Date(this.order.date), 'dd/MM/YYYY');
+    this.qrcode += '&amount=' + this.calculatorOrderPrice(this.order);
+    this.qrcode += '&addInfo=TTDH%20' + this.order.key;
+  }
+  calculatorOrderPrice(o: Order) {
+    let total = 0;
+    if (!o) {
+      return 0;
+    }
+    o.item.forEach((item: Cart) => {
+      total += (item.qty - this.getQtyReturn(item.qtyReturn)) * item.price;
+    });
+    return total;
+  }
+
+  getQtyReturn(qtyReturn: any) {
+    if (qtyReturn === '' || qtyReturn === ' ') {
+      return 0;
+    }
+    return qtyReturn;
   }
 
   printOrder() {
