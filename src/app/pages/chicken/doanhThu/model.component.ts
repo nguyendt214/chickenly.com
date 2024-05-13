@@ -286,14 +286,21 @@ export class DoanhThuComponent implements OnInit {
   }
 
   filterByDate(startDate: any, endDate: any) {
-    if (!(startDate instanceof Date)) {
-      this.orderService.filterStartDate = this.utilService.getDateFromString(startDate.value);
-      this.orderService.filterEndDate = this.utilService.getDateFromString(endDate.value);
-      this.oFilter.startDate = this.orderService.filterStartDate;
-      this.oFilter.endDate = this.orderService.filterEndDate;
-      this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
-        this.orderService.filterStartDate.getTime() === this.orderService.filterEndDate.getTime();
-      this.getLastDataByDate();
+    console.log(startDate, endDate);
+    try {
+      if (!(startDate instanceof Date)) {
+        this.orderService.filterStartDate = this.utilService.getDateFromString(startDate.value);
+        this.orderService.filterEndDate = this.utilService.getDateFromString(endDate.value);
+        this.oFilter.startDate = this.orderService.filterStartDate;
+        this.oFilter.endDate = this.orderService.filterEndDate;
+        this.isSameDay = this.oFilter.startDate && this.oFilter.endDate &&
+          this.orderService.filterStartDate.getTime() === this.orderService.filterEndDate.getTime();
+        this.updateDateFilterObject();
+        this.updateDoanhThuLabel(-999);
+        this.getLastDataByDate();
+      }
+    } catch (e) {
+      console.log('Do not thing!!!')
     }
   }
 
@@ -392,7 +399,8 @@ export class DoanhThuComponent implements OnInit {
         this.doantThuLabel = '4 Tuần trước';
         break;
       default:
-        this.doantThuLabel = 'Tuần này';
+        this.doantThuLabel = new Date(this.dateFilter.startDate).toLocaleDateString() + ' - ' + new Date(this.dateFilter.endDate).toLocaleDateString();
+        this.cnTheoTuan = -999;
         break;
     }
   }

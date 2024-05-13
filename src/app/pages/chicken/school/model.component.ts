@@ -113,9 +113,18 @@ export class SchoolComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.schoolService.create(e?.newData)
+    const oSchool = e?.newData;
+    oSchool.address = oSchool?.address ?? '';
+    oSchool.phone = oSchool?.phone ?? '';
+    oSchool.note = oSchool?.note ?? '';
+    oSchool.printNumber = oSchool?.printNumber ?? 2;
+    oSchool.showOrderPrice = oSchool?.showOrderPrice ?? 0;
+    oSchool.showQRCode = oSchool?.showQRCode ?? 0;
+    oSchool.owner = oSchool?.owner ?? this.customers[0].key;
+    this.schoolService.create(oSchool)
       .then(() => {
         this.utilService.clearCache([this.schoolService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }

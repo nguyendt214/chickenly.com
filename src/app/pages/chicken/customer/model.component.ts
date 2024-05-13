@@ -122,9 +122,14 @@ export class CustomerComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
+    const oCustomer = e?.newData;
+    oCustomer.phone = oCustomer?.phone ?? '';
+    oCustomer.address = oCustomer?.address ?? '';
+    oCustomer.note = oCustomer?.note ?? '';
     this.customerService.create(e?.newData)
       .then(() => {
         this.utilService.clearCache([this.customerService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
@@ -133,6 +138,7 @@ export class CustomerComponent implements OnInit {
     this.customerService.update(e?.newData?.key, e?.newData)
       .then(() => {
         this.utilService.clearCache([this.customerService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
