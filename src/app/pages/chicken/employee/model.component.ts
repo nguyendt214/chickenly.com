@@ -87,9 +87,14 @@ export class EmployeeComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    const oEmployee = e?.newData;
+    oEmployee.phone = oEmployee?.phone ?? '';
+    oEmployee.address = oEmployee?.address ?? '';
+    oEmployee.note = oEmployee?.note ?? '';
+    this.modelService.create(oEmployee)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
@@ -98,6 +103,7 @@ export class EmployeeComponent implements OnInit {
     this.modelService.update(e?.newData?.key, e?.newData)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }

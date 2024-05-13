@@ -117,7 +117,6 @@ export class ProductComponent implements OnInit {
     this.getAllCategories();
     this.getAllProductType();
     this.getAllProducts();
-    this.utilService.loaded = true;
   }
   getAllProducts() {
     this.modelService.getAll3().subscribe(all => {
@@ -129,13 +128,23 @@ export class ProductComponent implements OnInit {
       });
       this.source.load(this.all);
       this.allProducts = this.modelService.sortByCategory(this.all);
+      this.utilService.loaded = true;
     });
   }
 
   onCreateConfirm(e: any) {
-    const p: Product = Object.assign({}, this.modelService.initProductBeforeSave(e?.newData));
+    const oProduct = e?.newData;
+    oProduct.categoryKey = oProduct?.categoryKey ?? this.categories[0].key;
+    oProduct.productTypeKey = oProduct?.productTypeKey ?? this.productTypes[0].key;
+    oProduct.price = oProduct?.price ?? 0;
+    oProduct.priceStock = oProduct?.priceStock ?? 0;
+    oProduct.qty = oProduct?.qty ?? 0;
+    oProduct.note = oProduct?.note ?? '';
+    const p: Product = Object.assign({}, this.modelService.initProductBeforeSave(oProduct));
     this.modelService.create(p)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
@@ -144,6 +153,8 @@ export class ProductComponent implements OnInit {
     const p: Product = Object.assign({}, this.modelService.initProductBeforeSave(e?.newData));
     this.modelService.update(e?.newData?.key, p)
       .then(() => {
+        this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }

@@ -89,10 +89,15 @@ export class NhaCungCapComponent implements OnInit {
 
   onCreateConfirm(e: any) {
     const ncc = e?.newData;
-    ncc.price = +ncc?.price ?? 0;
+    ncc.price = ncc?.price ? parseInt(ncc?.price) : 0;
+    ncc.phone = ncc?.phone ?? '';
+    ncc.address = ncc?.address ?? '';
+    ncc.note = ncc?.note ?? '';
+    console.log(ncc);
     this.modelService.create(ncc)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
@@ -103,6 +108,7 @@ export class NhaCungCapComponent implements OnInit {
     this.modelService.update(e?.newData?.key, ncc)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }

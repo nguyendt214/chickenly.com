@@ -65,9 +65,12 @@ export class ProductTypeComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    const oProductType = e?.newData;
+    oProductType.note = oProductType?.note ?? '';
+    this.modelService.create(oProductType)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
@@ -76,6 +79,7 @@ export class ProductTypeComponent implements OnInit {
     this.modelService.update(e?.newData?.key, e?.newData)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }

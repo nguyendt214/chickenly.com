@@ -73,9 +73,13 @@ export class CategoryComponent implements OnInit {
   }
 
   onCreateConfirm(e: any) {
-    this.modelService.create(e?.newData)
+    const oCategory = e?.newData;
+    oCategory.note = oCategory?.note ?? '';
+    oCategory.order = oCategory?.order ?? 100;
+    this.modelService.create(oCategory)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
@@ -84,6 +88,7 @@ export class CategoryComponent implements OnInit {
     this.modelService.update(e?.newData?.key, e?.newData)
       .then(() => {
         this.utilService.clearCache([this.modelService.lcKey]);
+        window.location.reload();
       })
       .catch(() => e.confirm.reject());
   }
